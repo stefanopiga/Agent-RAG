@@ -52,13 +52,23 @@ class RAGClient:
             logger.error(f"❌ Unexpected error in search: {e}", exc_info=True)
             raise RuntimeError(f"Unexpected error during search: {str(e)}") from e
 
-    def get_health_status(self) -> Dict[str, Any]:
+    async def get_health_status(self) -> Dict[str, Any]:
         """Check API health status."""
         try:
-            import httpx
-            response = httpx.get(f"{self.base_url}/health", timeout=5.0)
-            return {"status": "healthy" if response.status_code == 200 else "unhealthy", "status_code": response.status_code}
+            async with httpx.AsyncClient(timeout=5.0) as client:
+                response = await client.get(f"{self.base_url}/health")
+                return {
+                    "status": "healthy" if response.status_code == 200 else "unhealthy",
+                    "status_code": response.status_code,
+                }
+        except httpx.HTTPStatusError as e:
+            logger.error(f"❌ Health check HTTP error {e.response.status_code}")
+            return {"status": "unhealthy", "status_code": e.response.status_code}
+        except httpx.RequestError as e:
+            logger.error(f"❌ Health check network error: {e}")
+            return {"status": "error", "error": f"Network error: {str(e)}"}
         except Exception as e:
+            logger.error(f"❌ Unexpected error in health check: {e}", exc_info=True)
             return {"status": "error", "error": str(e)}
 
     async def trigger_ingestion(
