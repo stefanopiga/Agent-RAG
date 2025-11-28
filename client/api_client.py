@@ -52,6 +52,15 @@ class RAGClient:
             logger.error(f"❌ Unexpected error in search: {e}", exc_info=True)
             raise RuntimeError(f"Unexpected error during search: {str(e)}") from e
 
+    def get_health_status(self) -> Dict[str, Any]:
+        """Check API health status."""
+        try:
+            import httpx
+            response = httpx.get(f"{self.base_url}/health", timeout=5.0)
+            return {"status": "healthy" if response.status_code == 200 else "unhealthy", "status_code": response.status_code}
+        except Exception as e:
+            return {"status": "error", "error": str(e)}
+
     async def trigger_ingestion(
         self, documents_folder: str = "documents", clean: bool = False, fast_mode: bool = False
     ) -> Dict[str, Any]:
