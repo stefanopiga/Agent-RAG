@@ -1,0 +1,30 @@
+# CodeRabbit Configuration
+# AI-powered code review for pull requests
+# Reference: docs/stories/4/tech-spec-epic-4.md#CodeRabbit-Integration
+
+reviews:
+  # Enable automatic code review on every PR
+  auto_review:
+    enabled: true
+    # Review draft PRs as well
+    drafts: true
+  
+  # Include high-level summary in reviews
+  high_level_summary: true
+  
+  # Review profile: chill (less aggressive, constructive feedback)
+  profile: chill
+  
+  # Don't automatically request changes (advisory mode)
+  request_changes_workflow: false
+  
+  # Show review status in PR
+  review_status: true
+
+chat:
+  # Disable ASCII art in responses
+  art: false
+
+# Review language
+language: en-US
+

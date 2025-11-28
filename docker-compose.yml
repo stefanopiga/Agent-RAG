@@ -1,0 +1,47 @@
+services:
+  rag-api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: docling-rag-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/ragdb
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-text-embedding-3-small}
+      - LLM_CHOICE=${LLM_CHOICE:-gpt-4.1-mini}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - rag-network
+    volumes:
+      - ./documents:/app/documents
+
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: docling-rag-db
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=ragdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - rag-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+networks:
+  rag-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

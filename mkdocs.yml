@@ -1,0 +1,49 @@
+site_name: Docling RAG Agent
+site_description: Documentation for the Docling RAG Agent
+site_author: Stefano
+repo_url: https://github.com/stefanopiga/docling-rag-agent
+repo_name: docling-rag-agent
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - toc.integrate
+    - content.code.copy
+  palette:
+    - scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [.]
+          options:
+            docstring_style: google
+            show_source: true
+            show_root_heading: true
+            show_signature_annotations: true
+
+docs_dir: guide
+
+nav:
+  - Home: index.md
+  - API Reference:
+    - Overview: api-reference/index.md
+    - Core: api-reference/core.md
+    - Ingestion: api-reference/ingestion.md
+    - Utilities: api-reference/utils.md

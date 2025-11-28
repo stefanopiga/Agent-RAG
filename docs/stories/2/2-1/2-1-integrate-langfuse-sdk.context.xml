@@ -1,0 +1,169 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.1</storyId>
+    <title>Integrate LangFuse SDK</title>
+    <status>drafted</status>
+    <generatedAt>2025-01-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/2/2-1/2-1-integrate-langfuse-sdk.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>LangFuse integrated in the MCP server</iWant>
+    <soThat>all operations are automatically traced</soThat>
+    <tasks>
+      <task id="1" ac="1">Initialize LangFuse Client at MCP Server Startup</task>
+      <task id="2" ac="2,3">Add LangFuse Tracing to MCP Tools</task>
+      <task id="3" ac="4">Implement Graceful Degradation</task>
+      <task id="4" ac="1">Update Documentation and Environment Configuration</task>
+      <task id="5" ac="1,2,3,4">Testing</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">Given docling_mcp/server.py, When I start the MCP server, Then LangFuse client is initialized with API keys from environment variables (LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY)</ac>
+    <ac id="2">Given a query, When query_knowledge_base tool is called, Then a new trace is created in LangFuse with metadata (tool_name, query, limit)</ac>
+    <ac id="3">Given LangFuse dashboard, When I view traces, Then I see all MCP queries with timestamps and tool names</ac>
+    <ac id="4">Given LangFuse unavailable, When I call MCP tools, Then system continues to function without errors (graceful degradation)</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" section="ADR-001: LangFuse Integration Pattern">
+        ADR-001 defines LangFuse decorator-based pattern (@observe()) with langfuse.openai wrapper for automatic cost tracking. Decision: Use LangFuse SDK v3.0.0+ (OTel-based, async HTTP). Implementation: Initialize client with get_client() from langfuse module (reads env vars automatically). Decorate critical functions with @observe() decorator. Use langfuse.openai wrapper for LLM calls. Graceful degradation if LangFuse unavailable.
+      </doc>
+      <doc path="docs/architecture.md" section="Integration Points">
+        LangFuse Integration Pattern: Decorator-Based Observability Pattern. Implementation: @observe() decorator on critical functions. Communication: LangFuse SDK v3 (async HTTP, OpenTelemetry-based). Lifecycle: Initialized at startup via env vars, graceful degradation if unavailable. Cost Tracking: Automatic via langfuse.openai wrapper.
+      </doc>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" section="Story 2.1: Integrate LangFuse SDK">
+        Story 2.1 requirements: Initialize LangFuse client at MCP server startup with API keys from environment variables. Create traces for all MCP tool calls with metadata (tool_name, query, limit). Ensure traces visible in LangFuse dashboard with timestamps and tool names. Implement graceful degradation when LangFuse unavailable.
+      </doc>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" section="Dependencies and Integrations">
+        LangFuse Python SDK: v3.0.0+ (OTel-based, async HTTP). Purpose: Observability tracing and cost tracking. Integration: Decorator pattern @observe(), langfuse.openai wrapper. Environment Variables: LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL (optional).
+      </doc>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" section="Data Models and Contracts">
+        LangFuse Trace Structure: Trace with id, name (tool_name), metadata (tool_name, query, limit, source="mcp"), start_time, end_time, duration_ms, cost. Spans include embedding_generation, vector_search, llm_generation with timing and cost breakdown.
+      </doc>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" section="Test Strategy Summary">
+        Unit Tests: Mock LangFuse client, verify decorator application, test initialization logic. Integration Tests: Real LangFuse client (test instance), verify trace creation and metadata. E2E Tests: Verify traces visible in LangFuse dashboard with correct timestamps and tool names. Coverage Target: docling_mcp/ module LangFuse integration &gt;80% coverage (critical path).
+      </doc>
+      <doc path="docs/stories/2/2-5/2-5-refactor-mcp-server-architecture-standalone.md" section="Dev Agent Record">
+        Story 2.5 learnings: MCP server is now in docling_mcp/ module (renamed from mcp/ to avoid package conflict). Use docling_mcp/lifespan.py for server lifecycle management (DB init, embedder init) - initialize LangFuse client here. MCP tools import directly from core/rag_service.py - apply @observe() decorator to these tool functions. Use @mcp.tool() decorator pattern for tool registration - combine with @observe() decorator.
+      </doc>
+      <doc path="docs/epics.md" section="Story 2.1: Integrate LangFuse SDK">
+        Acceptance criteria: LangFuse client initialized with API key from env, trace created on query_knowledge_base call, traces visible in LangFuse dashboard with timestamps. Technical notes: Use langfuse Python SDK. Configure via LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_HOST env vars.
+      </doc>
+    </docs>
+    <code>
+      <file path="docling_mcp/lifespan.py" kind="lifespan" symbol="lifespan" lines="12-45">
+        FastMCP lifespan context manager for server lifecycle. Currently initializes database connection pool and global embedder on startup, cleans up on shutdown. Must be updated to initialize LangFuse client in startup phase. Uses @asynccontextmanager decorator pattern. Error handling with try-except-finally blocks.
+      </file>
+      <file path="docling_mcp/server.py" kind="server" symbol="mcp" lines="22-25">
+        FastMCP server instance initialization. Uses lifespan from docling_mcp.lifespan. Server name: "Docling RAG Agent". Must add LangFuse client initialization in lifespan startup.
+      </file>
+      <file path="docling_mcp/server.py" kind="tool" symbol="query_knowledge_base" lines="39-78">
+        MCP tool for semantic search. Currently uses @mcp.tool() decorator. Calls search_knowledge_base_structured from core/rag_service.py. Must add @observe() decorator with name="query_knowledge_base" and metadata (tool_name, query, limit, source="mcp").
+      </file>
+      <file path="docling_mcp/server.py" kind="tool" symbol="ask_knowledge_base" lines="80-124">
+        MCP tool for asking questions. Currently uses @mcp.tool() decorator. Calls search_knowledge_base_structured. Must add @observe() decorator with name="ask_knowledge_base" and metadata.
+      </file>
+      <file path="docling_mcp/server.py" kind="tool" symbol="list_knowledge_base_documents" lines="126-161">
+        MCP tool for listing documents. Currently uses @mcp.tool() decorator. Calls list_documents from utils/db_utils.py. Must add @observe() decorator with name="list_knowledge_base_documents" and metadata.
+      </file>
+      <file path="docling_mcp/server.py" kind="tool" symbol="get_knowledge_base_document" lines="163-212">
+        MCP tool for getting document by ID. Currently uses @mcp.tool() decorator. Calls get_document from utils/db_utils.py. Must add @observe() decorator with name="get_knowledge_base_document" and metadata.
+      </file>
+      <file path="docling_mcp/server.py" kind="tool" symbol="get_knowledge_base_overview" lines="214-270">
+        MCP tool for knowledge base overview. Currently uses @mcp.tool() decorator. Calls list_documents. Must add @observe() decorator with name="get_knowledge_base_overview" and metadata.
+      </file>
+      <file path="core/rag_service.py" kind="service" symbol="search_knowledge_base_structured" lines="220-298">
+        Main RAG search function. Called by query_knowledge_base and ask_knowledge_base tools. Returns structured results dict. Note: This function will be decorated with @observe() in Story 2.2 for cost tracking, but MCP tools should also have their own traces.
+      </file>
+      <file path="tests/unit/test_mcp_server_validation.py" kind="test" symbol="TestQueryKnowledgeBaseValidation" lines="30-31">
+        Unit tests for MCP server validation logic. Tests use .fn attribute to access underlying function from FunctionTool objects. Pattern: query_knowledge_base_fn = query_knowledge_base.fn. Must add tests for LangFuse decorator application and initialization.
+      </file>
+      <file path="tests/integration/test_mcp_server_integration.py" kind="test" symbol="TestMCPServerIntegration" lines="30-31">
+        Integration tests for MCP server tools. Tests end-to-end flow with mocked dependencies. Must add integration tests for LangFuse trace creation with real LangFuse client (test instance).
+      </file>
+    </code>
+    <dependencies>
+      <python>
+        <package name="langfuse" version=">=3.0.0">LangFuse Python SDK for observability tracing and cost tracking. OTel-based, async HTTP. NOT YET IN pyproject.toml - must be added.</package>
+        <package name="fastmcp" version=">=0.1.1">FastMCP framework for MCP server implementation. Already in dependencies.</package>
+        <package name="python-dotenv" version=">=1.0.0">Environment variable management. Already in dependencies.</package>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">
+      LangFuse Integration Pattern: Must follow ADR-001 pattern - decorator-based (@observe()) with langfuse.openai wrapper. Use LangFuse SDK v3.0.0+ (OTel-based, async HTTP). Initialize client with get_client() from langfuse module (reads env vars automatically).
+    </constraint>
+    <constraint type="initialization">
+      Initialization Pattern: LangFuse client initialized in docling_mcp/lifespan.py at server startup using FastMCP lifespan pattern. Store LangFuse client instance in module-level variable or context for tool access. Wrap initialization in try-except block for graceful degradation.
+    </constraint>
+    <constraint type="decorator">
+      Decorator Pattern: Apply @observe() decorator directly to tool functions in docling_mcp/server.py. Combine with existing @mcp.tool() decorator. Add trace metadata: tool_name, query, limit, source="mcp" to trace metadata. Use name parameter matching tool function name.
+    </constraint>
+    <constraint type="graceful-degradation">
+      Graceful Degradation: System must continue to function if LangFuse unavailable (no blocking). Wrap LangFuse initialization in try-except block. Log warning if initialization fails, continue server startup. Make @observe() decorator optional: check if LangFuse client available before decorating. Add fallback: if LangFuse unavailable, tools execute normally without tracing.
+    </constraint>
+    <constraint type="error-handling">
+      Error Handling: Use structured JSON logging for LangFuse errors (error, context, exc_info). Log warnings but don't crash. LangFuse errors should not use ToolError (ToolError is for user-facing errors), use logging instead.
+    </constraint>
+    <constraint type="environment">
+      Environment Variables: LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY (required), LANGFUSE_BASE_URL (optional, defaults to https://cloud.langfuse.com). Already configured in .env.example. Must be documented in README.md and guide/development-guide.md.
+    </constraint>
+    <constraint type="testing">
+      Testing Standards: Unit tests mock LangFuse client, verify decorator application, test initialization logic. Integration tests use real LangFuse client (test instance), verify trace creation and metadata. E2E tests verify traces visible in LangFuse dashboard. Coverage target: docling_mcp/ module LangFuse integration &gt;80% coverage (critical path).
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="get_client" kind="function" signature="from langfuse import get_client; langfuse = get_client()" path="docling_mcp/lifespan.py">
+      Initialize LangFuse client. Reads environment variables automatically: LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL (optional). Returns LangFuse client instance. Must be called in lifespan startup phase.
+    </interface>
+    <interface name="observe" kind="decorator" signature="from langfuse import observe; @observe(name='tool_name')" path="docling_mcp/server.py">
+      LangFuse observe decorator for automatic tracing. Apply to tool functions with name parameter matching tool name. Automatic trace creation with inputs, outputs, timing, errors. Combine with @mcp.tool() decorator.
+    </interface>
+    <interface name="lifespan" kind="context-manager" signature="@asynccontextmanager async def lifespan(server: FastMCP)" path="docling_mcp/lifespan.py">
+      FastMCP lifespan pattern for resource initialization. Startup: initialize DB pool, embedder, and LangFuse client. Shutdown: cleanup resources. Pattern from ADR-002. Must add LangFuse client initialization in startup phase.
+    </interface>
+    <interface name="query_knowledge_base" kind="tool" signature="@mcp.tool() @observe(name='query_knowledge_base') async def query_knowledge_base(query: str, limit: int = 5, source_filter: Optional[str] = None, ctx: Context = None) -> str" path="docling_mcp/server.py">
+      MCP tool for semantic search. Must add @observe() decorator with metadata (tool_name, query, limit, source="mcp"). Currently uses @mcp.tool() decorator only.
+    </interface>
+    <interface name="ask_knowledge_base" kind="tool" signature="@mcp.tool() @observe(name='ask_knowledge_base') async def ask_knowledge_base(question: str, limit: int = 5, ctx: Context = None) -> str" path="docling_mcp/server.py">
+      MCP tool for asking questions. Must add @observe() decorator with metadata. Currently uses @mcp.tool() decorator only.
+    </interface>
+    <interface name="list_knowledge_base_documents" kind="tool" signature="@mcp.tool() @observe(name='list_knowledge_base_documents') async def list_knowledge_base_documents(limit: int = 50, offset: int = 0, ctx: Context = None) -> str" path="docling_mcp/server.py">
+      MCP tool for listing documents. Must add @observe() decorator with metadata. Currently uses @mcp.tool() decorator only.
+    </interface>
+    <interface name="get_knowledge_base_document" kind="tool" signature="@mcp.tool() @observe(name='get_knowledge_base_document') async def get_knowledge_base_document(document_id: str, ctx: Context = None) -> str" path="docling_mcp/server.py">
+      MCP tool for getting document by ID. Must add @observe() decorator with metadata. Currently uses @mcp.tool() decorator only.
+    </interface>
+    <interface name="get_knowledge_base_overview" kind="tool" signature="@mcp.tool() @observe(name='get_knowledge_base_overview') async def get_knowledge_base_overview(ctx: Context = None) -> str" path="docling_mcp/server.py">
+      MCP tool for knowledge base overview. Must add @observe() decorator with metadata. Currently uses @mcp.tool() decorator only.
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Unit tests: Mock LangFuse client, verify decorator application (@observe() applied to all tools), test initialization logic (get_client() called in lifespan startup). Integration tests: Real LangFuse client (test instance), verify trace creation with correct metadata (tool_name, query, limit, source="mcp"), verify traces appear in LangFuse dashboard. E2E tests: Verify traces visible in LangFuse dashboard with correct timestamps and tool names. Graceful degradation tests: Test MCP tools work correctly when LangFuse API keys are invalid or service unavailable. Coverage target: docling_mcp/ module LangFuse integration &gt;80% coverage (critical path). Test pattern: Use .fn attribute to access underlying function from FunctionTool objects (query_knowledge_base_fn = query_knowledge_base.fn).
+    </standards>
+    <locations>
+      tests/unit/ - Unit tests for LangFuse initialization and decorator application
+      tests/integration/ - Integration tests for LangFuse trace creation with real client
+      tests/e2e/ - E2E tests for LangFuse dashboard visibility (if applicable)
+      Manual testing: Verify traces visible in LangFuse dashboard after implementation
+    </locations>
+    <ideas>
+      <test ac="1">Test LangFuse client initialization in docling_mcp/lifespan.py startup phase. Mock get_client() and verify it's called with correct environment variables. Test error handling when API keys missing (log warning, continue without LangFuse). Test MCP server starts successfully with and without LangFuse env vars set.</test>
+      <test ac="2">Test @observe() decorator applied to query_knowledge_base tool. Mock LangFuse client, verify trace created with metadata (tool_name="query_knowledge_base", query, limit, source="mcp"). Test trace includes correct inputs and outputs. Verify trace appears in LangFuse dashboard.</test>
+      <test ac="3">Test all MCP tools have @observe() decorator: query_knowledge_base, ask_knowledge_base, list_knowledge_base_documents, get_knowledge_base_document, get_knowledge_base_overview. Verify traces visible in LangFuse dashboard with timestamps and tool names. Test trace metadata includes tool_name, query (where applicable), limit (where applicable), source="mcp".</test>
+      <test ac="4">Test graceful degradation: Remove or invalidate LangFuse API keys, verify MCP server starts successfully. Test tools execute normally without tracing when LangFuse unavailable. Test error handling: LangFuse initialization fails, log warning, continue server startup. Test structured JSON logging for LangFuse errors (error, context, exc_info).</test>
+    </ideas>
+  </tests>
+</story-context>
+

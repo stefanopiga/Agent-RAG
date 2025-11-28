@@ -1,0 +1,155 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.4</storyId>
+    <title>Create LangFuse Dashboard</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-01-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/2/2-4/2-4-create-langfuse-dashboard.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>product owner</asA>
+    <iWant>a real-time dashboard showing MCP performance and costs</iWant>
+    <soThat>I can monitor the system without technical knowledge</soThat>
+    <tasks>
+      <task id="1" ac="1">Configure LangFuse Dashboard Views
+        - Access LangFuse UI and verify project is configured correctly
+        - Create default dashboard view showing key metrics (total queries, avg latency, total cost)
+        - Configure time period filters (today, week, month) for metrics aggregation
+        - Verify metrics are calculated correctly from existing traces (Story 2.1, 2.2, 2.3)
+        - Unit test: Verify dashboard configuration via LangFuse API (if available)
+        - Integration test: Verify metrics displayed match actual trace data
+      </task>
+      <task id="2" ac="2">Implement Cost Trends Visualization
+        - Configure cost trend chart in LangFuse dashboard
+        - Set up date range filter functionality
+        - Verify cost data aggregation (daily/weekly/monthly) from traces
+        - Test filtering by date range and verify chart updates correctly
+        - Documentation: Add dashboard configuration guide to README or architecture docs
+        - Integration test: Verify cost trends match Prometheus metrics (if applicable)
+      </task>
+      <task id="3" ac="3">Verify Trace Detail View
+        - Verify trace detail view shows input query text
+        - Verify trace detail view shows output response
+        - Verify trace detail view shows cost breakdown (embedding_cost + llm_generation_cost)
+        - Verify trace detail view shows timing breakdown (embedding_time, db_search_time, llm_generation_time)
+        - Verify trace detail view shows nested spans (embedding-generation, vector-search, llm-generation)
+        - Integration test: Execute query and verify all details visible in LangFuse UI
+      </task>
+      <task id="4" ac="4">Configure Custom Charts for Cost Trends
+        - Create custom chart configuration for cost trends visualization
+        - Configure chart type (line chart recommended for time series)
+        - Set up dimensions and metrics for cost aggregation
+        - Verify custom charts are saved and accessible in dashboard
+        - Documentation: Add custom chart configuration guide
+        - Integration test: Verify custom charts display correct cost data
+      </task>
+      <task id="5" ac="1,2,3,4">Documentation and Testing
+        - Update README.md with LangFuse dashboard setup instructions
+        - Document dashboard views configuration and custom charts setup
+        - Add screenshots or examples of dashboard views (optional)
+        - Update architecture.md with dashboard configuration details (if needed)
+        - E2E test: Verify complete dashboard workflow (access dashboard, view metrics, filter by date, view trace details)
+        - E2E test: Verify custom charts display correctly
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">Given LangFuse UI, When I open the dashboard, Then I see key metrics: total queries, avg latency, total cost (today/week/month)</ac>
+    <ac id="2">Given the dashboard, When I filter by date range, Then I see cost trends over time with charts</ac>
+    <ac id="3">Given the dashboard, When I click a trace, Then I see full query details (input, output, cost breakdown, timing breakdown, spans)</ac>
+    <ac id="4">Given dashboard views, When I configure them, Then custom charts for cost trends are available</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" title="Epic Technical Specification: MCP Server Observability (LangFuse)" section="Story 2.4: Create LangFuse Dashboard">
+        Story 2.4 acceptance criteria: dashboard metrics (total queries, avg latency, total cost), cost trends with date filtering, trace detail view with full query details, custom charts configuration. LangFuse UI provides built-in dashboard views and custom chart configuration. Metrics automatically calculated from traces.
+      </doc>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" title="Epic Technical Specification: MCP Server Observability (LangFuse)" section="Data Models and Contracts">
+        LangFuse Trace Structure: hierarchical structure with nested spans (embedding-generation, vector-search, llm-generation). Trace metadata includes tool_name, query, limit, source. Cost breakdown: embedding_cost + llm_generation_cost. Timing breakdown: embedding_time, db_search_time, llm_generation_time.
+      </doc>
+      <doc path="docs/epics.md" title="Product Epics" section="Story 2.4: Create LangFuse Dashboard">
+        Story requirements: real-time dashboard showing MCP performance and costs. Acceptance criteria: key metrics (total queries, avg latency, total cost), cost trends with date filtering, trace detail view, custom charts.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture" section="ADR-001: LangFuse Integration Pattern">
+        LangFuse decorator-based pattern (@observe()) with automatic cost tracking via langfuse.openai wrapper. Graceful degradation: system continues if LangFuse unavailable. Trace completeness: 100% of MCP tool calls traced with nested spans.
+      </doc>
+      <doc path="docs/stories/2/2-4/2-4-create-langfuse-dashboard.md" title="Story 2.4: Create LangFuse Dashboard" section="Dev Notes">
+        LangFuse Dashboard Pattern: UI-based configuration, no code changes needed for basic dashboard views. Custom charts via UI with dimensions (time, tool_name) and metrics (totalCost, avg latency). Dashboard aggregates cost data automatically from traces. Real-time updates without polling.
+      </doc>
+      <doc path="docs/stories/2/2-4/2-4-create-langfuse-dashboard.md" title="Story 2.4: Create LangFuse Dashboard" section="Learnings from Previous Story">
+        LangFuse Spans Structure: separate spans for embedding-generation and vector-search created via generate_query_embedding() and search_with_embedding() functions in core/rag_service.py. Timing measurements (duration_ms) recorded in span metadata. Cost tracking implemented via langfuse.openai wrapper.
+      </doc>
+      <doc path="docs/stories/2/2-2/2-2-implement-cost-tracking.md" title="Story 2.2: Implement Cost Tracking" section="Completion Notes List">
+        Cost tracking implemented via langfuse.openai wrapper. Nested spans created for embedding-generation and llm-generation. Cost breakdown visible in LangFuse trace with separate spans. Pricing matches OpenAI current rates.
+      </doc>
+      <doc path="docs/stories/2/2-3/2-3-add-performance-metrics.md" title="Story 2.3: Add Performance Metrics" section="Completion Notes List">
+        Timing breakdown recorded in LangFuse spans: embedding_time, db_search_time, llm_generation_time. Separate spans for embedding-generation and vector-search created via generate_query_embedding() and search_with_embedding() functions. Duration measurements in span metadata.
+      </doc>
+      <doc path="documents_copy_mia/langfuse-docs/pages/docs/metrics/features/custom-dashboards.mdx" title="LangFuse Custom Dashboards Documentation" section="Key Capabilities">
+        LangFuse supports custom dashboards with flexible query engine, rich visualization options (line charts, bar charts, time series), advanced filtering by metadata and timestamps, multi-level aggregations, real-time updates, team collaboration. Charts can be configured with dimensions (e.g., time, tool_name) and metrics (e.g., totalCost, avg latency).
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture" section="Technology Stack Details">
+        LangFuse Python SDK v3.0.0+ (OTel-based, async HTTP) for observability tracing and cost tracking. Integration via decorator pattern @observe(), langfuse.openai wrapper. Environment variables: LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY, LANGFUSE_BASE_URL (optional).
+      </doc>
+    </docs>
+    <code>
+      <artifact path="core/rag_service.py" kind="service" symbol="generate_query_embedding" lines="100-150" reason="Creates LangFuse span for embedding-generation with timing metadata. Dashboard displays this span in trace detail view." />
+      <artifact path="core/rag_service.py" kind="service" symbol="search_with_embedding" lines="150-200" reason="Creates LangFuse span for vector-search with timing metadata. Dashboard displays this span in trace detail view." />
+      <artifact path="docling_mcp/tools/search.py" kind="tool" symbol="query_knowledge_base" reason="Creates root LangFuse trace with metadata (tool_name, query, limit, source). Dashboard aggregates metrics from these traces." />
+      <artifact path="docling_mcp/tools/search.py" kind="tool" symbol="ask_knowledge_base" reason="Creates LangFuse trace with llm-generation span. Dashboard displays cost breakdown and timing in trace detail view." />
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="langfuse" version=">=3.0.0" reason="LangFuse Python SDK for observability tracing and dashboard integration" />
+        <package name="openai" version=">=1.0.0" reason="OpenAI SDK wrapped by langfuse.openai for automatic cost tracking" />
+        <package name="prometheus_client" version=">=0.19.0" reason="Prometheus metrics client (optional: for cost trends comparison)" />
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>LangFuse Dashboard Pattern: Dashboard configuration is UI-based, no code changes needed for basic dashboard views. Metrics automatically calculated from traces created in Story 2.1-2.3.</constraint>
+    <constraint>Cost Tracking Integration: Cost data already tracked in LangFuse traces via langfuse.openai wrapper (Story 2.2). Dashboard aggregates this data automatically.</constraint>
+    <constraint>Performance Metrics Integration: Timing breakdown (embedding_time, db_search_time, llm_generation_time) already recorded in LangFuse spans (Story 2.3). Dashboard displays this data in trace detail view.</constraint>
+    <constraint>Trace Structure: Traces follow hierarchical structure with nested spans (embedding-generation, vector-search, llm-generation) as implemented in Story 2.3.</constraint>
+    <constraint>Dashboard Load Time: LangFuse dashboard loads metrics from database. For large datasets, use date range filters to reduce load time.</constraint>
+    <constraint>Real-time Updates: LangFuse dashboard updates automatically as new traces are created. No polling or refresh needed.</constraint>
+    <constraint>Cost Aggregation: Cost data aggregated server-side by LangFuse. No client-side calculation needed.</constraint>
+    <constraint>Custom Charts: LangFuse supports custom chart configuration via UI. Charts configured with dimensions (e.g., time, tool_name) and metrics (e.g., totalCost, avg latency).</constraint>
+    <constraint>Trace Metadata: Traces created in Story 2.1-2.3 include metadata (tool_name, query, limit, source) which can be used for filtering and grouping in dashboard.</constraint>
+    <constraint>No Code Changes Needed: Dashboard configuration primarily UI-based. No code changes needed unless using LangFuse API for programmatic configuration.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="LangFuse Dashboard UI" kind="web_ui" signature="Accessible via LangFuse UI URL (cloud or self-hosted). Dashboard views configurable via UI. Custom charts configurable via UI with dimensions and metrics." path="LangFuse UI (no code files)" />
+    <interface name="LangFuse Metrics API" kind="rest_api" signature="Optional API for programmatic dashboard configuration. Query format: view (traces), metrics (count, latency aggregations), dimensions (name, model, user_id), filters (metadata, timestamps), time granularity (hourly, daily, weekly, monthly)." path="documents_copy_mia/langfuse-docs/pages/docs/analytics/metrics-api" />
+    <interface name="LangFuse Trace Structure" kind="data_model" signature="Trace with metadata (tool_name, query, limit, source), nested spans (embedding-generation, vector-search, llm-generation), cost breakdown (embedding_cost + llm_generation_cost), timing breakdown (embedding_time, db_search_time, llm_generation_time)." path="docs/stories/2/tech-spec-epic-2.md#Data-Models-and-Contracts" />
+  </interfaces>
+
+  <tests>
+    <standards>
+      Unit tests use pytest with pytest-asyncio for async support. Mock LangFuse API (if available) to verify dashboard configuration. Integration tests verify dashboard metrics match actual trace data, verify cost trends aggregation, verify trace detail view shows all required information. E2E tests execute complete dashboard workflow (access dashboard, view metrics, filter by date, view trace details, configure custom charts). Coverage target: Dashboard configuration code (if any) >70% coverage. Most dashboard functionality is UI-based, so coverage may be minimal. Tests organized in tests/unit/ (unit tests), tests/integration/ (integration tests), tests/e2e/ (E2E tests).
+    </standards>
+    <locations>
+      <location>tests/unit/</location>
+      <location>tests/integration/</location>
+      <location>tests/e2e/</location>
+    </locations>
+    <ideas>
+      <test ac="1">Unit test: Mock LangFuse API (if available), verify dashboard configuration (default view with key metrics, time period filters)</test>
+      <test ac="1">Integration test: Verify metrics displayed in dashboard match actual trace data (total queries, avg latency, total cost for today/week/month)</test>
+      <test ac="2">Integration test: Verify cost trend chart displays correctly with date range filtering (daily/weekly/monthly aggregation)</test>
+      <test ac="2">Integration test: Verify cost trends match Prometheus metrics (if applicable) for validation</test>
+      <test ac="3">Integration test: Execute query and verify trace detail view shows input query text, output response, cost breakdown (embedding_cost + llm_generation_cost), timing breakdown (embedding_time, db_search_time, llm_generation_time), nested spans (embedding-generation, vector-search, llm-generation)</test>
+      <test ac="4">Integration test: Verify custom charts can be configured with dimensions (time, tool_name) and metrics (totalCost, avg latency), saved and accessible in dashboard</test>
+      <test ac="1,2,3,4">E2E test: Execute complete dashboard workflow - access dashboard, view metrics, filter by date range, view trace details, configure custom charts</test>
+      <test ac="4">E2E test: Verify custom charts display correct cost data with proper aggregation</test>
+    </ideas>
+  </tests>
+</story-context>
+

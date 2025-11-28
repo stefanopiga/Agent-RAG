@@ -1,0 +1,319 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.1</storyId>
+    <title>Document Current Architecture</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-1-document-current-architecture.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>comprehensive documentation of the existing RAG architecture</iWant>
+    <soThat>I can understand the system before adding monitoring</soThat>
+    <tasks>
+      <task id="1" ac="1">
+        <title>Review existing architecture documentation</title>
+        <subtasks>
+          <subtask>Load `docs/architecture.md` and review current content</subtask>
+          <subtask>Scan codebase to identify all components: `core/`, `ingestion/`, `utils/`, `mcp/`, `app.py` (Streamlit)</subtask>
+          <subtask>Compare documented components vs actual codebase structure</subtask>
+          <subtask>Identify gaps or outdated information</subtask>
+        </subtasks>
+      </task>
+      <task id="2" ac="1">
+        <title>Verify accuracy against codebase</title>
+        <subtasks>
+          <subtask>Check `core/rag_service.py` responsibilities match documentation</subtask>
+          <subtask>Verify `ingestion/` pipeline components (ingest.py, chunker.py, embedder.py) are documented</subtask>
+          <subtask>Validate `mcp/` module structure (server.py, tools/, lifespan.py) matches architecture doc</subtask>
+          <subtask>Confirm `utils/` modules (db_utils.py, models.py, providers.py) are documented</subtask>
+          <subtask>Verify Streamlit integration (`app.py`, `core/agent.py`) is documented</subtask>
+        </subtasks>
+      </task>
+      <task id="3" ac="1,3">
+        <title>Update architecture documentation</title>
+        <subtasks>
+          <subtask>Update component descriptions if responsibilities changed</subtask>
+          <subtask>Add MCP server architecture details (FastMCP pattern, standalone architecture)</subtask>
+          <subtask>Document LangFuse integration pattern (if already present)</subtask>
+          <subtask>Update project structure section to reflect current state</subtask>
+          <subtask>Ensure all modules have clear responsibility descriptions</subtask>
+        </subtasks>
+      </task>
+      <task id="4" ac="2">
+        <title>Add data flow diagrams</title>
+        <subtasks>
+          <subtask>Create ingestion pipeline diagram (document → Docling → chunker → embedder → PostgreSQL)</subtask>
+          <subtask>Create query pipeline diagram (query → embedding → vector search → LLM generation → response)</subtask>
+          <subtask>Add MCP server flow diagram (MCP tool → core/rag_service → response)</subtask>
+          <subtask>Document Streamlit UI flow (user query → agent → RAG service → response)</subtask>
+        </subtasks>
+      </task>
+      <task id="5" ac="1,2,3">
+        <title>Validate completeness</title>
+        <subtasks>
+          <subtask>Review all sections for completeness</subtask>
+          <subtask>Verify all components are documented</subtask>
+          <subtask>Check diagrams are clear and accurate</subtask>
+          <subtask>Ensure responsibilities are clearly stated for each module</subtask>
+          <subtask>Validate links and references are correct</subtask>
+        </subtasks>
+      </task>
+      <task id="6" ac="1,2,3">
+        <title>Testing and validation</title>
+        <subtasks>
+          <subtask>Manual review: Verify all components match codebase structure (AC: #1)</subtask>
+          <subtask>Manual review: Validate diagrams accuracy against actual data flows (AC: #2)</subtask>
+          <subtask>Manual review: Check all module responsibilities are clearly documented (AC: #3)</subtask>
+          <subtask>Link checker: Validate all internal links in architecture.md are valid</subtask>
+          <subtask>Cross-reference: Verify architecture.md sections match referenced code files</subtask>
+          <subtask>Completeness checklist: Ensure all required sections are present and complete</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">
+      <given>the current codebase</given>
+      <when>I read `docs/architecture.md`</when>
+      <then>it accurately reflects all components (core, ingestion, utils, MCP, Streamlit)</then>
+    </ac>
+    <ac id="2">
+      <given>the architecture doc</given>
+      <when>I review data flows</when>
+      <then>I see complete diagrams for ingestion and query pipelines</then>
+    </ac>
+    <ac id="3">
+      <given>the architecture doc</given>
+      <when>I check component descriptions</when>
+      <then>each module has clear responsibilities documented</then>
+    </ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" title="Architecture Documentation" section="Executive Summary">
+        <snippet>docling-rag-agent è un sistema RAG production-ready che fornisce accesso conversazionale a knowledge base documentali tramite Streamlit UI e MCP Server. L'architettura è basata su Service-Oriented Architecture (SOA) con core business logic decoupled.</snippet>
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Epic 1">
+        <snippet>Epic 1 stabilisce la baseline documentale del sistema RAG esistente, creando le fondamenta necessarie per gli epic successivi di monitoring e observability. Questo epic trasforma il sistema da prototipo funzionale a sistema production-ready con documentazione completa.</snippet>
+      </doc>
+      <doc path="docs/stories/tech-spec-epic-1.md" title="Epic Technical Specification" section="Story 1.1">
+        <snippet>Story 1.1: Document Current Architecture. Review existing `docs/architecture.md`, verify accuracy against current codebase, update sections if needed (MCP server architecture, component descriptions), add data flow diagrams if missing, validate completeness.</snippet>
+      </doc>
+      <doc path="docs/prd.md" title="Product Requirements Document" section="Core RAG Capabilities">
+        <snippet>Il sistema DEVE supportare ingestione di documenti PDF, DOCX, PPTX, XLSX, HTML, MD, TXT via Docling. Il sistema DEVE generare embeddings vettoriali (1536 dimensioni) per ogni chunk di documento. Il sistema DEVE memorizzare documenti e chunks in PostgreSQL con estensione PGVector.</snippet>
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Documentation" section="Project Structure">
+        <snippet>Project structure organized by responsibility: mcp/ (MCP Server standalone), core/ (RAG Business Logic), ingestion/ (Document Processing), utils/ (Shared Utilities), tests/ (Testing Infrastructure).</snippet>
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Documentation" section="Integration Points">
+        <snippet>MCP Server → Core RAG Service uses Direct Service Integration Pattern. Streamlit → Core Agent uses Agent Wrapper Integration Pattern. LangFuse Integration uses Decorator-Based Observability Pattern with @observe().</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file path="docs/architecture.md" kind="documentation" symbol="architecture.md" reason="Main architecture documentation file to update - must reflect all components accurately">
+        <lines>1-926</lines>
+      </file>
+      <file path="core/rag_service.py" kind="service" symbol="search_knowledge_base_structured" reason="Core RAG logic - verify responsibilities match documentation">
+        <lines>1-298</lines>
+      </file>
+      <file path="core/agent.py" kind="service" symbol="RAGAgent" reason="PydanticAI agent wrapper for Streamlit - verify integration documented">
+        <lines>1-100</lines>
+      </file>
+      <file path="ingestion/ingest.py" kind="service" symbol="DocumentIngestionPipeline" reason="Document ingestion pipeline - verify components documented">
+        <lines>1-200</lines>
+      </file>
+      <file path="ingestion/chunker.py" kind="service" symbol="HybridChunker" reason="Document chunking logic - verify documented">
+        <lines>1-150</lines>
+      </file>
+      <file path="ingestion/embedder.py" kind="service" symbol="EmbeddingGenerator" reason="Embedding generation - verify documented">
+        <lines>1-200</lines>
+      </file>
+      <file path="mcp/server.py" kind="service" symbol="FastMCP" reason="FastMCP server instance - verify standalone architecture documented">
+        <lines>1-150</lines>
+      </file>
+      <file path="mcp/tools/" kind="module" symbol="MCP tools" reason="MCP tools organized by domain - verify structure documented">
+        <lines>N/A</lines>
+      </file>
+      <file path="mcp/lifespan.py" kind="service" symbol="lifespan" reason="Server lifecycle management - verify FastMCP pattern documented">
+        <lines>1-100</lines>
+      </file>
+      <file path="utils/db_utils.py" kind="utility" symbol="db_pool" reason="Database connection pooling - verify documented">
+        <lines>1-150</lines>
+      </file>
+      <file path="utils/models.py" kind="model" symbol="Pydantic models" reason="Pydantic data models - verify documented">
+        <lines>1-100</lines>
+      </file>
+      <file path="utils/providers.py" kind="utility" symbol="get_provider_config" reason="OpenAI provider configuration - verify documented">
+        <lines>1-100</lines>
+      </file>
+      <file path="app.py" kind="entry" symbol="Streamlit app" reason="Streamlit UI entry point - verify integration documented">
+        <lines>1-200</lines>
+      </file>
+    </code>
+    <dependencies>
+      <python>
+        <package name="python-dotenv" version=">=1.0.0"/>
+        <package name="pydantic-ai" version=">=0.7.4"/>
+        <package name="asyncpg" version=">=0.30.0"/>
+        <package name="openai" version=">=1.0.0"/>
+        <package name="docling" version=">=2.55.0"/>
+        <package name="streamlit" version=">=1.31.0"/>
+        <package name="fastmcp" version=">=0.1.1"/>
+        <package name="fastapi" version=">=0.109.0"/>
+        <package name="pytest" version=">=8.0.0"/>
+        <package name="pytest-asyncio" version=">=0.23.0"/>
+        <package name="pytest-cov" version=">=4.1.0"/>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <type>Architecture Pattern</type>
+      <description>Service-Oriented Architecture (SOA): Core business logic decoupled in `core/rag_service.py`</description>
+      <source>docs/architecture.md#Executive-Summary</source>
+    </constraint>
+    <constraint>
+      <type>Integration Pattern</type>
+      <description>MCP Server Standalone: MCP server uses direct service integration pattern, no HTTP dependency</description>
+      <source>docs/architecture.md#Integration-Points</source>
+    </constraint>
+    <constraint>
+      <type>Integration Pattern</type>
+      <description>LangFuse Integration: Decorator-based observability pattern with `@observe()`</description>
+      <source>docs/architecture.md#Integration-Points</source>
+    </constraint>
+    <constraint>
+      <type>Project Structure</type>
+      <description>Code organized by responsibility (`mcp/`, `core/`, `ingestion/`, `utils/`)</description>
+      <source>docs/architecture.md#Project-Structure</source>
+    </constraint>
+    <constraint>
+      <type>Documentation Standard</type>
+      <description>Documentation follows BMAD structure: `docs/` directory for project documentation</description>
+      <source>docs/stories/1-1-document-current-architecture.md#Project-Structure-Notes</source>
+    </constraint>
+    <constraint>
+      <type>Testing Standard</type>
+      <description>Manual review: Verify documentation accuracy against codebase. No automated tests required for this documentation story.</description>
+      <source>docs/stories/1-1-document-current-architecture.md#Testing-Standards-Summary</source>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>core/rag_service.py::search_knowledge_base_structured</name>
+      <kind>function</kind>
+      <signature>async def search_knowledge_base_structured(query: str, limit: int = 5) -> List[Dict[str, Any]]</signature>
+      <path>core/rag_service.py</path>
+      <description>Main RAG search function - pure business logic, decoupled from UI/frameworks</description>
+    </interface>
+    <interface>
+      <name>core/agent.py::RAGAgent</name>
+      <kind>class</kind>
+      <signature>class RAGAgent</signature>
+      <path>core/agent.py</path>
+      <description>PydanticAI agent wrapper for Streamlit integration</description>
+    </interface>
+    <interface>
+      <name>ingestion/ingest.py::DocumentIngestionPipeline</name>
+      <kind>class</kind>
+      <signature>class DocumentIngestionPipeline</signature>
+      <path>ingestion/ingest.py</path>
+      <description>Document ingestion pipeline orchestrator</description>
+    </interface>
+    <interface>
+      <name>mcp/server.py::FastMCP</name>
+      <kind>instance</kind>
+      <signature>mcp = FastMCP("docling-rag-agent")</signature>
+      <path>mcp/server.py</path>
+      <description>FastMCP server instance with tool registration</description>
+    </interface>
+    <interface>
+      <name>utils/db_utils.py::db_pool</name>
+      <kind>variable</kind>
+      <signature>db_pool: asyncpg.Pool</signature>
+      <path>utils/db_utils.py</path>
+      <description>Global database connection pool for async PostgreSQL access</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Manual review: Verify documentation accuracy against codebase. No automated tests required for this documentation story. Validation: Manual review of architecture doc completeness. Testing follows manual review pattern with link checker and cross-reference validation.
+    </standards>
+    <locations>
+      <location>Manual review process</location>
+      <location>Link checker validation</location>
+      <location>Cross-reference verification</location>
+    </locations>
+    <ideas>
+      <test ac="1">
+        <description>Manual review: Verify all components match codebase structure</description>
+        <type>Manual Review</type>
+        <steps>
+          <step>Load `docs/architecture.md`</step>
+          <step>Scan codebase: `core/`, `ingestion/`, `utils/`, `mcp/`, `app.py`</step>
+          <step>Compare documented components vs actual structure</step>
+          <step>Verify all components are documented</step>
+        </steps>
+      </test>
+      <test ac="2">
+        <description>Manual review: Validate diagrams accuracy against actual data flows</description>
+        <type>Manual Review</type>
+        <steps>
+          <step>Review ingestion pipeline diagram</step>
+          <step>Review query pipeline diagram</step>
+          <step>Review MCP server flow diagram</step>
+          <step>Review Streamlit UI flow diagram</step>
+          <step>Validate against actual code flow</step>
+        </steps>
+      </test>
+      <test ac="3">
+        <description>Manual review: Check all module responsibilities are clearly documented</description>
+        <type>Manual Review</type>
+        <steps>
+          <step>Review component descriptions in architecture.md</step>
+          <step>Verify each module has clear responsibility statement</step>
+          <step>Check responsibilities match actual code implementation</step>
+        </steps>
+      </test>
+      <test ac="1,2,3">
+        <description>Link checker: Validate all internal links in architecture.md are valid</description>
+        <type>Link Validation</type>
+        <steps>
+          <step>Extract all internal links from architecture.md</step>
+          <step>Verify each link target exists</step>
+          <step>Check section anchors are correct</step>
+        </steps>
+      </test>
+      <test ac="1,2,3">
+        <description>Cross-reference: Verify architecture.md sections match referenced code files</description>
+        <type>Cross-Reference Validation</type>
+        <steps>
+          <step>Extract code file references from architecture.md</step>
+          <step>Verify each referenced file exists</step>
+          <step>Check file paths are correct</step>
+          <step>Validate component descriptions match actual code</step>
+        </steps>
+      </test>
+      <test ac="1,2,3">
+        <description>Completeness checklist: Ensure all required sections are present and complete</description>
+        <type>Completeness Check</type>
+        <steps>
+          <step>Review architecture.md structure</step>
+          <step>Verify all required sections present</step>
+          <step>Check each section has complete content</step>
+          <step>Validate no missing information</step>
+        </steps>
+      </test>
+    </ideas>
+  </tests>
+</story-context>
+

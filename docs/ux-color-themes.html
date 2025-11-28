@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX Color Theme - docling-rag-agent</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #0F0A1A;
+            color: #E8E4F0;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: #B794F6;
+            margin-bottom: 0.5rem;
+            font-size: 2.5rem;
+        }
+
+        .subtitle {
+            color: #A0AEC0;
+            margin-bottom: 3rem;
+            font-size: 1.1rem;
+        }
+
+        .theme-section {
+            background: #1A0F2E;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid #2D1B4E;
+        }
+
+        .theme-title {
+            color: #B794F6;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-description {
+            color: #A0AEC0;
+            margin-bottom: 2rem;
+            font-size: 1rem;
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .color-swatch {
+            background: var(--swatch-bg);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .color-swatch:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 16px rgba(181, 148, 246, 0.2);
+        }
+
+        .swatch-color {
+            width: 100%;
+            height: 80px;
+            border-radius: 6px;
+            margin-bottom: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .swatch-label {
+            font-weight: 600;
+            color: #E8E4F0;
+            margin-bottom: 0.25rem;
+            font-size: 0.95rem;
+        }
+
+        .swatch-hex {
+            color: #A0AEC0;
+            font-size: 0.85rem;
+            font-family: 'Courier New', monospace;
+        }
+
+        .swatch-usage {
+            color: #718096;
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        .components-section {
+            margin-top: 3rem;
+        }
+
+        .components-title {
+            color: #B794F6;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .component-card {
+            background: #1A0F2E;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #2D1B4E;
+        }
+
+        .component-title {
+            color: #B794F6;
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: #805AD5;
+            color: #FFFFFF;
+        }
+
+        .btn-primary:hover {
+            background: #9F7AEA;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(128, 90, 213, 0.4);
+        }
+
+        .btn-secondary {
+            background: #2D1B4E;
+            color: #B794F6;
+            border: 1px solid #805AD5;
+        }
+
+        .btn-secondary:hover {
+            background: #3D2B5E;
+            border-color: #9F7AEA;
+        }
+
+        .btn-disabled {
+            background: #2D1B4E;
+            color: #718096;
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        /* Input Styles */
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-label {
+            display: block;
+            color: #E8E4F0;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 0.75rem;
+            background: #0F0A1A;
+            border: 1px solid #2D1B4E;
+            border-radius: 6px;
+            color: #E8E4F0;
+            font-size: 0.95rem;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #805AD5;
+            box-shadow: 0 0 0 3px rgba(128, 90, 213, 0.1);
+        }
+
+        .input-error {
+            border-color: #FC8181;
+        }
+
+        /* Metric Card */
+        .metric-card {
+            background: #1A0F2E;
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 1px solid #2D1B4E;
+        }
+
+        .metric-label {
+            color: #A0AEC0;
+            font-size: 0.85rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .metric-value {
+            color: #E8E4F0;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-change {
+            font-size: 0.85rem;
+        }
+
+        .metric-positive {
+            color: #68D391;
+        }
+
+        .metric-negative {
+            color: #FC8181;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            border-left: 4px solid;
+        }
+
+        .alert-success {
+            background: rgba(104, 211, 145, 0.1);
+            border-color: #68D391;
+            color: #68D391;
+        }
+
+        .alert-error {
+            background: rgba(252, 129, 129, 0.1);
+            border-color: #FC8181;
+            color: #FC8181;
+        }
+
+        .alert-warning {
+            background: rgba(251, 211, 141, 0.1);
+            border-color: #FBD68D;
+            color: #FBD68D;
+        }
+
+        .alert-info {
+            background: rgba(144, 205, 244, 0.1);
+            border-color: #90CDF4;
+            color: #90CDF4;
+        }
+
+        /* Chat Message */
+        .chat-message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            max-width: 80%;
+        }
+
+        .chat-user {
+            background: #2D1B4E;
+            margin-left: auto;
+            border: 1px solid #805AD5;
+        }
+
+        .chat-assistant {
+            background: #1A0F2E;
+            border: 1px solid #2D1B4E;
+        }
+
+        .chat-text {
+            color: #E8E4F0;
+            line-height: 1.6;
+        }
+
+        .chat-source {
+            color: #B794F6;
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Tema Colore - docling-rag-agent</h1>
+        <p class="subtitle">Dark Purple Theme - Tema scuro con viola scuro scuro</p>
+
+        <div class="theme-section">
+            <h2 class="theme-title">🎯 Tema Scelto: Dark Purple Professional</h2>
+            <p class="theme-description">
+                Tema scuro professionale basato su viola scuro scuro, perfetto per tool per sviluppatori con monitoring.
+                Bilancia professionalità enterprise con un'estetica moderna e confortevole per uso prolungato.
+            </p>
+
+            <h3 style="color: #B794F6; margin-bottom: 1rem;">Palette Colori</h3>
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #0F0A1A;"></div>
+                    <div class="swatch-label">Background</div>
+                    <div class="swatch-hex">#0F0A1A</div>
+                    <div class="swatch-usage">Sfondo principale</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #1A0F2E;"></div>
+                    <div class="swatch-label">Surface</div>
+                    <div class="swatch-hex">#1A0F2E</div>
+                    <div class="swatch-usage">Card, container</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #2D1B4E;"></div>
+                    <div class="swatch-label">Primary Dark</div>
+                    <div class="swatch-hex">#2D1B4E</div>
+                    <div class="swatch-usage">Bordi, elementi secondari</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #805AD5;"></div>
+                    <div class="swatch-label">Primary</div>
+                    <div class="swatch-hex">#805AD5</div>
+                    <div class="swatch-usage">Azioni primarie, link</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #9F7AEA;"></div>
+                    <div class="swatch-label">Primary Light</div>
+                    <div class="swatch-hex">#9F7AEA</div>
+                    <div class="swatch-usage">Hover states</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #B794F6;"></div>
+                    <div class="swatch-label">Accent</div>
+                    <div class="swatch-hex">#B794F6</div>
+                    <div class="swatch-usage">Titoli, enfasi</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #E8E4F0;"></div>
+                    <div class="swatch-label">Text Primary</div>
+                    <div class="swatch-hex">#E8E4F0</div>
+                    <div class="swatch-usage">Testo principale</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #A0AEC0;"></div>
+                    <div class="swatch-label">Text Secondary</div>
+                    <div class="swatch-hex">#A0AEC0</div>
+                    <div class="swatch-usage">Testo secondario</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #718096;"></div>
+                    <div class="swatch-label">Text Muted</div>
+                    <div class="swatch-hex">#718096</div>
+                    <div class="swatch-usage">Testo disabilitato</div>
+                </div>
+            </div>
+
+            <h3 style="color: #B794F6; margin-bottom: 1rem; margin-top: 2rem;">Colori Semantici</h3>
+            <div class="color-grid">
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #68D391;"></div>
+                    <div class="swatch-label">Success</div>
+                    <div class="swatch-hex">#68D391</div>
+                    <div class="swatch-usage">Query riuscite, metriche positive</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #FBD68D;"></div>
+                    <div class="swatch-label">Warning</div>
+                    <div class="swatch-hex">#FBD68D</div>
+                    <div class="swatch-usage">Avvisi, latenza elevata</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #FC8181;"></div>
+                    <div class="swatch-label">Error</div>
+                    <div class="swatch-hex">#FC8181</div>
+                    <div class="swatch-usage">Errori query, fallimenti</div>
+                </div>
+
+                <div class="color-swatch">
+                    <div class="swatch-color" style="background: #90CDF4;"></div>
+                    <div class="swatch-label">Info</div>
+                    <div class="swatch-hex">#90CDF4</div>
+                    <div class="swatch-usage">Informazioni, tooltip</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="components-section">
+            <h2 class="components-title">Componenti Live nel Tema</h2>
+            <div class="component-grid">
+                <div class="component-card">
+                    <h3 class="component-title">Bottoni</h3>
+                    <button class="btn btn-primary">Query Knowledge Base</button>
+                    <br><br>
+                    <button class="btn btn-secondary">Visualizza Metriche</button>
+                    <br><br>
+                    <button class="btn btn-disabled" disabled>Disabilitato</button>
+                </div>
+
+                <div class="component-card">
+                    <h3 class="component-title">Input Forms</h3>
+                    <div class="input-group">
+                        <label class="input-label">Query</label>
+                        <input type="text" class="input-field" placeholder="Inserisci la tua domanda...">
+                    </div>
+                    <div class="input-group">
+                        <label class="input-label">Source Filter</label>
+                        <input type="text" class="input-field input-error" placeholder="Errore di validazione">
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <h3 class="component-title">Metric Cards</h3>
+                    <div class="metric-card">
+                        <div class="metric-label">Costo Totale</div>
+                        <div class="metric-value">$12.45</div>
+                        <div class="metric-change metric-positive">+2.3% oggi</div>
+                    </div>
+                    <br>
+                    <div class="metric-card">
+                        <div class="metric-label">Latency Media</div>
+                        <div class="metric-value">1.2s</div>
+                        <div class="metric-change metric-negative">+0.1s</div>
+                    </div>
+                </div>
+
+                <div class="component-card">
+                    <h3 class="component-title">Alert & Feedback</h3>
+                    <div class="alert alert-success">Query completata con successo</div>
+                    <div class="alert alert-error">Errore nella query: timeout</div>
+                    <div class="alert alert-warning">Latenza elevata rilevata</div>
+                    <div class="alert alert-info">Nuovo documento aggiunto alla knowledge base</div>
+                </div>
+
+                <div class="component-card">
+                    <h3 class="component-title">Chat Messages</h3>
+                    <div class="chat-message chat-user">
+                        <div class="chat-text">Quali sono i requisiti per il monitoring?</div>
+                    </div>
+                    <div class="chat-message chat-assistant">
+                        <div class="chat-text">Il sistema deve tracciare ogni chiamata query_knowledge_base con timestamp, latency e risultato...</div>
+                        <div class="chat-source">Fonte: docs/prd.md</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="theme-section" style="margin-top: 3rem;">
+            <h2 class="theme-title">📋 Note Implementazione</h2>
+            <p class="theme-description">
+                Questo tema è ottimizzato per Streamlit con CSS custom minimale. I colori sono scelti per:
+            </p>
+            <ul style="color: #A0AEC0; margin-left: 2rem; line-height: 2;">
+                <li><strong>Contrasto WCAG AA:</strong> Tutti i colori testo su background rispettano il minimo 4.5:1</li>
+                <li><strong>Dark Mode Native:</strong> Viola scuro scuro riduce affaticamento visivo per uso prolungato</li>
+                <li><strong>Professionalità:</strong> Palette sobria ma distintiva, perfetta per tool enterprise</li>
+                <li><strong>Monitoring Visibility:</strong> Colori semantici chiari per metriche e alert</li>
+            </ul>
+        </div>
+    </div>
+</body>
+</html>
+

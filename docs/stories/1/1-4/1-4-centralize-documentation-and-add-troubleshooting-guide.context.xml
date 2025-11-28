@@ -1,0 +1,133 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.4</storyId>
+    <title>Centralize Documentation and Add Troubleshooting Guide</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-4/1-4-centralize-documentation-and-add-troubleshooting-guide.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>all documentation centralized in guide/ with a complete troubleshooting guide</iWant>
+    <soThat>I can quickly find information and resolve issues</soThat>
+    <tasks>
+      <task id="1" ac="1,4">Create guide/ directory structure</task>
+      <task id="2" ac="1,4">Identify and categorize root-level markdown files</task>
+      <task id="3" ac="2">Integrate MCP troubleshooting content</task>
+      <task id="4" ac="3">Integrate FastMCP and architecture content</task>
+      <task id="5" ac="3">Integrate testing reference content</task>
+      <task id="6" ac="3">Integrate walkthrough content</task>
+      <task id="7" ac="1">Remove root-level markdown files</task>
+      <task id="8" ac="4">Update internal links and references</task>
+      <task id="9" ac="1,2,3,4">Validate final structure</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Given the project root, When I check for markdown files, Then all project .md files are in guide/ (except README.md, docs/ remains for BMAD)</criterion>
+    <criterion id="2">Given the documentation, When I look for troubleshooting, Then I find complete troubleshooting guide for MCP server issues</criterion>
+    <criterion id="3">Given the documentation, When I check project structure, Then I find guide explaining directory organization and code structure</criterion>
+    <criterion id="4">Given scattered documentation files, When I review them, Then they are integrated into appropriate guides in guide/</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/tech-spec-epic-1.md" title="Epic Technical Specification: Core RAG Baseline & Documentation" section="Story 1.4: Centralize Documentation">
+        Story 1.4 workflow: Create guide/ directory, identify root-level .md files, integrate content from scattered files (MCP_TROUBLESHOOTING.md, mat-FastMCP-e-architecture.md, pydantic_ai_testing_reference.md, walkthrough.md, flusso-mcp-tool.md), create troubleshooting-guide.md and development-guide.md, update links, validate structure.
+      </doc>
+      <doc path="docs/stories/tech-spec-epic-1.md" title="Epic Technical Specification" section="Detailed Design">
+        Documentation structure: guide/ directory for project documentation (new, separate from BMAD docs/), guide/troubleshooting-guide.md for MCP server troubleshooting, guide/development-guide.md for project structure and code organization. Root cleanup: remove all project .md files except README.md.
+      </doc>
+      <doc path="docs/stories/tech-spec-epic-1.md" title="Epic Technical Specification" section="Acceptance Criteria">
+        AC9: No project .md files in root (except README.md, docs/ remains for BMAD). AC10: All scattered markdown files integrated into guide/ appropriate guides. AC11: Root directory clean from obsolete files. AC12: guide/troubleshooting-guide.md contains complete MCP server troubleshooting section. AC13: guide/development-guide.md contains project structure and code organization guide. AC14: All internal links valid (no broken links).
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 1.4: Centralize Documentation and Add Troubleshooting Guide">
+        Acceptance criteria: all project .md files in guide/ (except README.md), complete troubleshooting guide for MCP server issues, guide explaining directory organization and code structure, scattered files integrated into guide/. Technical notes: Move root-level .md files to guide/, integrate content from MCP_TROUBLESHOOTING.md, mat-FastMCP-e-architecture.md, pydantic_ai_testing_reference.md, walkthrough.md, flusso-mcp-tool.md.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture" section="Project Structure">
+        Code organized by responsibility: mcp/ (MCP server), core/ (business logic), ingestion/ (processing), utils/ (shared utilities). Documentation structure: docs/ for BMAD workflow docs, guide/ for project documentation (new). Root should contain only essential files (README.md, pyproject.toml, docker-compose.yml, app.py entry point).
+      </doc>
+      <doc path="docs/prd.md" title="Product Requirements Document" section="Documentation & Developer Experience">
+        FR30.1: Documentation centralized in docs/ without scattered markdown files. FR30.2: Complete troubleshooting guide for MCP server. FR30.3: Guide for project structure and code organization. Documentation should be easily accessible and well-organized.
+      </doc>
+      <doc path="docs/stories/1-3/1-3-create-production-ready-readme.md" title="Story 1.3" section="Dev Agent Record">
+        README.md references guide/ directory for detailed documentation. Troubleshooting section in README should link to guide/troubleshooting-guide.md. Guide directory structure established for detailed project documentation.
+      </doc>
+    </docs>
+    <code>
+      <file path="README.md" kind="documentation" symbol="README" reason="Root-level README.md that references guide/ directory - needs link updates to point to guide/troubleshooting-guide.md and guide/development-guide.md">
+        <signature>README.md - Project documentation entry point</signature>
+      </file>
+      <file path="MCP_TROUBLESHOOTING.md" kind="documentation" symbol="MCP_TROUBLESHOOTING" reason="Root-level troubleshooting file to be integrated into guide/troubleshooting-guide.md - contains MCP server troubleshooting content">
+        <signature>MCP_TROUBLESHOOTING.md - MCP server troubleshooting guide</signature>
+      </file>
+      <file path="mat-FastMCP-e-architecture.md" kind="documentation" symbol="FastMCP_Architecture" reason="Root-level architecture file to be integrated into guide/development-guide.md - contains FastMCP patterns and architecture details">
+        <signature>mat-FastMCP-e-architecture.md - FastMCP architecture patterns</signature>
+      </file>
+      <file path="pydantic_ai_testing_reference.md" kind="documentation" symbol="Testing_Reference" reason="Root-level testing reference to be integrated into guide/development-guide.md - contains PydanticAI testing patterns">
+        <signature>pydantic_ai_testing_reference.md - PydanticAI testing reference</signature>
+      </file>
+      <file path="walkthrough.md" kind="documentation" symbol="Walkthrough" reason="Root-level walkthrough to be integrated into guide/development-guide.md - contains implementation walkthrough">
+        <signature>walkthrough.md - Implementation walkthrough</signature>
+      </file>
+      <file path="flusso-mcp-tool.md" kind="documentation" symbol="MCP_Tool_Flow" reason="Root-level MCP tool flow documentation to be integrated into guide/development-guide.md - contains MCP tool usage flow">
+        <signature>flusso-mcp-tool.md - MCP tool flow documentation</signature>
+      </file>
+      <file path="guide/" kind="directory" symbol="guide_directory" reason="New guide/ directory to be created for project documentation - will contain troubleshooting-guide.md and development-guide.md">
+        <signature>guide/ - Project documentation directory (to be created)</signature>
+      </file>
+      <file path="docs/architecture.md" kind="documentation" symbol="Architecture" reason="Architecture documentation that may need link updates if it references root-level files being moved">
+        <signature>docs/architecture.md - System architecture documentation</signature>
+      </file>
+    </code>
+    <dependencies>
+      <python>
+        <package name="markdown" reason="Markdown parsing for content integration (if needed for validation)"/>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Documentation structure: guide/ directory for project documentation (new, separate from BMAD docs/), docs/ remains for BMAD workflow documentation only</constraint>
+    <constraint type="architecture">Root cleanup: Only README.md remains in root, all other project markdown files moved to guide/</constraint>
+    <constraint type="organization">File integration: Content from scattered files must be integrated logically - MCP_TROUBLESHOOTING.md → guide/troubleshooting-guide.md, architecture/testing/walkthrough files → guide/development-guide.md</constraint>
+    <constraint type="links">Link updates: All internal links referencing moved files must be updated to point to guide/ location</constraint>
+    <constraint type="validation">Content preservation: No information should be lost during integration - all content from root files must be preserved in guide/</constraint>
+    <constraint type="structure">Directory structure: guide/ directory structure must match Epic 1 tech spec requirements (guide/troubleshooting-guide.md, guide/development-guide.md)</constraint>
+    <constraint type="testing">Testing: Manual review and link checker validation required - no automated tests for documentation reorganization</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="Guide Directory Structure" kind="directory" signature="guide/" path="guide/" reason="New directory structure for project documentation - contains troubleshooting-guide.md and development-guide.md"/>
+    <interface name="Troubleshooting Guide" kind="markdown" signature="guide/troubleshooting-guide.md" path="guide/" reason="MCP server troubleshooting guide - integrates content from MCP_TROUBLESHOOTING.md"/>
+    <interface name="Development Guide" kind="markdown" signature="guide/development-guide.md" path="guide/" reason="Project structure and code organization guide - integrates content from mat-FastMCP-e-architecture.md, pydantic_ai_testing_reference.md, walkthrough.md, flusso-mcp-tool.md"/>
+    <interface name="README Links" kind="markdown" signature="README.md" path="." reason="README.md links that need updating to point to guide/ files instead of root-level files"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Manual review for documentation structure and content integration. Link checker validation for internal links (verify no broken references). Content validation to ensure no information is lost during integration. No automated tests required for documentation reorganization - manual validation sufficient per story requirements.
+    </standards>
+    <locations>
+      <location>guide/</location>
+      <location>README.md</location>
+      <location>docs/architecture.md</location>
+      <location>docs/epics.md</location>
+    </locations>
+    <ideas>
+      <test ac="1">Manual review: Verify root directory has no .md files except README.md after file removal</test>
+      <test ac="1">Script validation: Scan root directory for .md files, verify only README.md exists</test>
+      <test ac="2">Manual review: Verify guide/troubleshooting-guide.md contains complete MCP server troubleshooting section with all content from MCP_TROUBLESHOOTING.md</test>
+      <test ac="2">Content validation: Compare MCP_TROUBLESHOOTING.md content with guide/troubleshooting-guide.md to ensure no information lost</test>
+      <test ac="3">Manual review: Verify guide/development-guide.md contains project structure and code organization sections</test>
+      <test ac="3">Content validation: Verify all content from mat-FastMCP-e-architecture.md, pydantic_ai_testing_reference.md, walkthrough.md, flusso-mcp-tool.md is integrated into guide/development-guide.md</test>
+      <test ac="4">Link checker: Run link checker on all documentation files to verify no broken internal links</test>
+      <test ac="4">Manual review: Verify README.md links point to guide/ files instead of root-level files</test>
+      <test ac="4">Content validation: Verify all scattered documentation files are integrated into appropriate guides in guide/</test>
+    </ideas>
+  </tests>
+</story-context>
+

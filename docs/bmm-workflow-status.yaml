@@ -1,0 +1,112 @@
+# Workflow Status Template
+
+# This tracks progress through BMM methodology Analysis, Planning, and Solutioning phases.
+# Implementation phase is tracked separately in sprint-status.yaml
+
+# STATUS DEFINITIONS:
+# ==================
+# Initial Status (before completion):
+#   - required: Must be completed to progress
+#   - optional: Can be completed but not required
+#   - recommended: Strongly suggested but not required
+#   - conditional: Required only if certain conditions met (e.g., if_has_ui)
+#
+# Completion Status:
+#   - {file-path}: File created/found (e.g., "docs/product-brief.md")
+#   - skipped: Optional/conditional workflow that was skipped
+
+generated: "2025-11-24"
+project: "docling-rag-agent"
+project_type: "brownfield"
+selected_track: "bmad-method"
+field_type: "brownfield"
+workflow_path: ".bmad/bmm/workflows/workflow-status/paths/method-brownfield.yaml"
+
+workflow_status:
+  # Prerequisite (not a phase)
+  - workflow: "document-project"
+    status: "docs/index.md"
+    agent: "analyst"
+    command: "/bmad:bmm:workflows:document-project"
+    output: "Comprehensive project documentation"
+    purpose: "Understand existing codebase before planning"
+    note: "Completed: 6 generated docs + index"
+
+  # Phase 0: Discovery (Optional)
+  - workflow: "brainstorm-project"
+    status: "skipped"
+    agent: "analyst"
+    command: "/bmad:bmm:workflows:brainstorm-project"
+    note: "Not selected during init"
+
+  - workflow: "research"
+    status: "optional"
+    agent: "analyst"
+    command: "/bmad:bmm:workflows:research"
+    note: "Selected during init - domain/competitive analysis"
+
+  - workflow: "product-brief"
+    status: "skipped"
+    agent: "analyst"
+    command: "/bmad:bmm:workflows:product-brief"
+    note: "Not selected during init"
+
+  # Phase 1: Planning
+  - workflow: "prd"
+    status: "docs/prd.md"
+    agent: "pm"
+    command: "/bmad:bmm:workflows:prd"
+    output: "PRD focused on new features/changes"
+    note: "Completed: Production-ready PRD with LangFuse monitoring"
+
+  - workflow: "validate-prd"
+    status: "docs/documents/validation-report-prd-2025-11-26-final.md"
+    agent: "pm"
+    command: "/bmad:bmm:workflows:validate-prd"
+    note: "Completed: PRD validation - 98/100 (98%) - EXCELLENT, Ready for architecture phase"
+
+  - workflow: "create-design"
+    status: "docs/ux-design-specification.md"
+    agent: "ux-designer"
+    command: "/bmad:bmm:workflows:create-design"
+    note: "Completed: UX Design Specification with Streamlit Native Components, Dark Purple theme, foundation complete"
+
+  # Phase 2: Solutioning
+  - workflow: "create-architecture"
+    status: "docs/architecture.md"
+    agent: "architect"
+    command: "/bmad:bmm:workflows:create-architecture"
+    output: "Integration architecture - solution design for THIS project"
+    note: "Completed: Decision architecture with 15 decisions documented, all epics mapped"
+
+  - workflow: "create-epics-and-stories"
+    status: "docs/epics.md"
+    agent: "pm"
+    command: "/bmad:bmm:workflows:create-epics-and-stories"
+    note: "Completed: 6 Epics, 20 Stories with BMAD-compliant sequencing, 100% FR coverage (49/49)"
+
+  - workflow: "test-design"
+    status: "docs/test-design-system.md"
+    agent: "tea"
+    command: "/bmad:bmm:workflows:test-design"
+    output: "System-level testability review"
+    note: "Completed: System-level testability assessment - PASS WITH CONCERNS, 8 risks identified (3 high-priority), test levels strategy defined (60/25/15), NFR testing approach documented"
+
+  - workflow: "validate-architecture"
+    status: "docs/documents/validation-report-architecture-2025-11-26.md"
+    agent: "architect"
+    command: "/bmad:bmm:workflows:validate-architecture"
+    note: "Completed: Architecture validation - 48/50 (96%) - EXCELLENT, Ready for implementation"
+
+  - workflow: "implementation-readiness"
+    status: "docs/documents/implementation-readiness-report-2025-11-26-final.md"
+    agent: "architect"
+    command: "/bmad:bmm:workflows:implementation-readiness"
+    note: "Completed: READY WITH CONDITIONS - All documents complete and aligned, 100% FR coverage, ready for Phase 4 implementation"
+
+  # Phase 3: Implementation
+  - workflow: "sprint-planning"
+    status: "docs/stories/sprint-status.yaml"
+    agent: "sm"
+    command: "/bmad:bmm:workflows:sprint-planning"
+    note: "Completed: Sprint status file generated with 6 epics, 20 stories"

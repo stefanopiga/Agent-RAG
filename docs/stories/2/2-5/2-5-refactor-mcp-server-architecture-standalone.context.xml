@@ -1,0 +1,197 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.5</storyId>
+    <title>Refactor MCP Server Architecture (Standalone) - Align Code with Architecture</title>
+    <status>drafted</status>
+    <generatedAt>2025-01-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/2/2-5/2-5-refactor-mcp-server-architecture-standalone.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>the MCP server refactored to work standalone and aligned with the documented architecture structure</iWant>
+    <soThat>it's simpler to deploy, debug, and matches the design decisions defined in the architecture documentation</soThat>
+    <tasks>
+      <task id="1" ac="2,3">Refactor MCP Server Location and Structure</task>
+      <task id="2" ac="1,4">Implement Direct Service Integration Pattern</task>
+      <task id="3" ac="5">Implement FastMCP Native Patterns</task>
+      <task id="4" ac="7">Implement Error Handling and Graceful Degradation</task>
+      <task id="5" ac="8">Organize Scripts Directory Structure</task>
+      <task id="6" ac="9">Clean Up Root Directory</task>
+      <task id="7" ac="6">Test MCP Tools Functionality</task>
+      <task id="8" ac="10">Update Imports and References</task>
+      <task id="9" ac="2,3,4,5">Update Documentation</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">Given the MCP server, When I start it, Then it works without api/main.py running</ac>
+    <ac id="2">Given the codebase, When I check MCP server location, Then it's in mcp/server.py (not mcp_server.py at root)</ac>
+    <ac id="3">Given the MCP server structure, When I inspect it, Then it's organized in mcp/ module with lifespan.py and tools separated by domain (mcp/tools/search.py, mcp/tools/documents.py, mcp/tools/overview.py)</ac>
+    <ac id="4">Given the MCP server, When I inspect it, Then it uses core/rag_service.py directly instead of client/api_client.py</ac>
+    <ac id="5">Given the MCP server, When I check implementation, Then it uses FastMCP native patterns (lifespan management, context injection)</ac>
+    <ac id="6">Given all MCP tools, When I test them, Then query_knowledge_base, list_knowledge_base_documents, get_knowledge_base_document, get_knowledge_base_overview, and ask_knowledge_base all work correctly without errors</ac>
+    <ac id="7">Given an error occurs, When the MCP server handles it, Then it provides informative error messages and graceful degradation</ac>
+    <ac id="8">Given the scripts directory, When I inspect it, Then scripts are organized in subdirectories: scripts/verification/ and scripts/debug/</ac>
+    <ac id="9">Given the project root, When I check for temporary files, Then no debug or temporary files exist (e.g., debug_mcp_tools.py, temp_query.py removed or moved to appropriate location)</ac>
+    <ac id="10">Given the codebase, When I check imports, Then all imports work correctly after reorganization</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/architecture.md" section="ADR-002: MCP Server Standalone Architecture">
+        ADR-002 defines the standalone MCP server architecture pattern. Decision: Refactor MCP server to use core/rag_service.py directly, eliminating HTTP dependency. Implementation uses FastMCP lifespan pattern with @asynccontextmanager for resource initialization.
+      </doc>
+      <doc path="docs/architecture.md" section="Project Structure">
+        Project structure defines mcp/ module organization: mcp/server.py (FastMCP instance), mcp/lifespan.py (server lifecycle), mcp/tools/search.py, mcp/tools/documents.py, mcp/tools/overview.py (tools separated by domain).
+      </doc>
+      <doc path="docs/architecture.md" section="Integration Points">
+        Direct Service Integration Pattern: MCP Server → Core RAG Service uses direct import from core.rag_service import search_knowledge_base_structured. Communication via function calls (no HTTP overhead). Lifecycle: FastMCP lifespan initializes DB pool + embedder at startup.
+      </doc>
+      <doc path="docs/stories/1/1-1/1-1-gap-analysis-report.md" section="1. MCP Server Architecture">
+        CRITICAL gap: MCP server is at root level (mcp_server.py) instead of mcp/server.py. Pattern is HTTP Proxy instead of Direct Service Integration. Tools are inline instead of separated by domain.
+      </doc>
+      <doc path="docs/stories/1/1-1/1-1-gap-analysis-report.md" section="2. Integration Patterns">
+        CRITICAL gap: MCP server uses RAGClient HTTP calls instead of direct imports from core/rag_service.py. Current code: from client.api_client import RAGClient; response = await client.search(query, limit, source_filter).
+      </doc>
+      <doc path="docs/stories/1/1-1/1-1-gap-analysis-report.md" section="3. Project Structure Gaps">
+        MAJOR gap: Scripts are flat in scripts/ directory instead of organized in scripts/verification/ and scripts/debug/ subdirectories. Root directory contains temporary files (debug_mcp_tools.py, temp_query.py).
+      </doc>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" section="Story 2.5: Refactor MCP Server Architecture (Standalone)">
+        Story 2.5 requirements: Create mcp/ directory structure with server.py, lifespan.py, and tools separated by domain. Remove dependency on client/api_client.py. Use direct calls to core/rag_service.py functions. Implement FastMCP lifespan pattern for resource initialization.
+      </doc>
+      <doc path="docs/epics.md" section="Story 2.5">
+        Acceptance criteria: MCP server works standalone, organized in mcp/ module, uses core/rag_service.py directly, implements FastMCP native patterns, all tools work correctly, error handling with informative messages.
+      </doc>
+    </docs>
+    <code>
+      <file path="mcp_server.py" kind="server" symbol="mcp" lines="1-311">
+        Current MCP server implementation at root level. Uses RAGClient HTTP client. Contains all tools inline: query_knowledge_base, list_knowledge_base_documents, get_knowledge_base_document, get_knowledge_base_overview, ask_knowledge_base. Lifespan checks API health via client.health_check(). Must be refactored to mcp/server.py with direct service integration.
+      </file>
+      <file path="core/rag_service.py" kind="service" symbol="search_knowledge_base_structured" lines="220-298">
+        Main RAG search function returning structured results. Signature: async def search_knowledge_base_structured(query: str, limit: int = 5, source_filter: str | None = None) -> Dict[str, Any]. Returns dict with results list and timing metrics. Uses global embedder instance via get_global_embedder().
+      </file>
+      <file path="core/rag_service.py" kind="service" symbol="initialize_global_embedder" lines="45-90">
+        Initialize global embedder instance at server startup. Critical performance optimization. Runs in background to prevent blocking. Must be called in MCP lifespan startup.
+      </file>
+      <file path="core/rag_service.py" kind="service" symbol="close_global_embedder" lines="92-110">
+        Close global embedder and cleanup resources. Must be called in MCP lifespan shutdown.
+      </file>
+      <file path="core/rag_service.py" kind="service" symbol="get_global_embedder" lines="112-136">
+        Get global embedder instance. Waits for initialization if still in progress. Raises RuntimeError if not initialized. Used internally by search_knowledge_base_structured.
+      </file>
+      <file path="utils/db_utils.py" kind="utility" symbol="initialize_database" lines="85-87">
+        Initialize database connection pool. Must be called in MCP lifespan startup. Uses global db_pool instance.
+      </file>
+      <file path="utils/db_utils.py" kind="utility" symbol="close_database" lines="90-92">
+        Close database connection pool. Must be called in MCP lifespan shutdown.
+      </file>
+      <file path="utils/db_utils.py" kind="utility" symbol="list_documents" lines="136-197">
+        List documents with optional filtering. Signature: async def list_documents(limit: int = 100, offset: int = 0, metadata_filter: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]. Returns list of documents with chunk_count. Used by list_knowledge_base_documents tool.
+      </file>
+      <file path="utils/db_utils.py" kind="utility" symbol="get_document" lines="95-133">
+        Get document by ID. Signature: async def get_document(document_id: str) -> Optional[Dict[str, Any]]. Returns document data or None if not found. Used by get_knowledge_base_document tool.
+      </file>
+      <file path="utils/db_utils.py" kind="utility" symbol="db_pool" lines="82">
+        Global database pool instance of type DatabasePool. Used by core/rag_service.py for vector search queries.
+      </file>
+      <file path="client/api_client.py" kind="client" symbol="RAGClient" lines="9-176">
+        HTTP client for RAG API Service. Currently used by mcp_server.py. Should NOT be used by new MCP server (use direct imports from core/rag_service.py instead). May still be used by Streamlit/API.
+      </file>
+      <file path="api/main.py" kind="api" symbol="get_overview" lines="130-162">
+        Overview endpoint implementation. Uses list_documents from utils/db_utils.py. Calculates statistics (total_documents, total_chunks, unique_sources). Can be reused as helper function for get_knowledge_base_overview tool.
+      </file>
+      <file path="mcp/__init__.py" kind="module" symbol="" lines="1">
+        Empty mcp module init file. Must be updated to export server instance.
+      </file>
+      <file path="mcp/tools/__init__.py" kind="module" symbol="" lines="1">
+        Empty mcp/tools module init file. Must be updated to export tools.
+      </file>
+    </code>
+    <dependencies>
+      <python>
+        <package name="fastmcp" version=">=0.1.1">FastMCP framework for MCP server implementation</package>
+        <package name="asyncpg" version=">=0.30.0">PostgreSQL async driver for database operations</package>
+        <package name="python-dotenv" version=">=1.0.0">Environment variable management</package>
+        <package name="httpx" version=">=0.27.0">HTTP client (currently used, should be removed from MCP server dependencies)</package>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">
+      MCP Server Architecture: Must follow ADR-002 pattern - standalone with direct service integration. Pattern: Direct Service Integration - from core.rag_service import search_knowledge_base_structured. No HTTP dependency.
+    </constraint>
+    <constraint type="structure">
+      Project Structure: Code organized by responsibility (mcp/, core/, ingestion/, utils/). MCP server must be in mcp/server.py, not root level. Tools separated by domain in mcp/tools/ subdirectory.
+    </constraint>
+    <constraint type="pattern">
+      FastMCP Patterns: Use lifespan pattern (@asynccontextmanager) for resource initialization. Use ToolError from FastMCP for user-facing errors instead of generic exceptions. Context injection via Context parameter (type-hinted) instead of global state.
+    </constraint>
+    <constraint type="error-handling">
+      Error Handling: FastMCP ToolError Pattern for user-facing errors, exception wrapping for unexpected errors. Log errors with structured JSON logging (error, context, stack_trace). Implement graceful degradation for optional services.
+    </constraint>
+    <constraint type="organization">
+      Scripts Organization: Verification scripts in scripts/verification/, debug utilities in scripts/debug/. Root directory must contain only essential files (README.md, pyproject.toml, docker-compose.yml, app.py, etc.).
+    </constraint>
+    <constraint type="testing">
+      Testing Standards: Unit tests for each MCP tool independently with mocked dependencies. Integration tests for MCP server startup and tool execution without external API. Manual testing in Cursor/Claude Desktop. Import validation via python -m py_compile.
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="search_knowledge_base_structured" kind="function" signature="async def search_knowledge_base_structured(query: str, limit: int = 5, source_filter: str | None = None) -> Dict[str, Any]" path="core/rag_service.py">
+      Main RAG search function. Returns structured results dict with 'results' list and 'timing' metrics. Used by query_knowledge_base and ask_knowledge_base tools.
+    </interface>
+    <interface name="list_documents" kind="function" signature="async def list_documents(limit: int = 100, offset: int = 0, metadata_filter: Optional[Dict[str, Any]] = None) -> List[Dict[str, Any]]" path="utils/db_utils.py">
+      List documents with optional filtering. Returns list of document dicts with chunk_count. Used by list_knowledge_base_documents tool.
+    </interface>
+    <interface name="get_document" kind="function" signature="async def get_document(document_id: str) -> Optional[Dict[str, Any]]" path="utils/db_utils.py">
+      Get document by ID. Returns document dict or None if not found. Used by get_knowledge_base_document tool.
+    </interface>
+    <interface name="initialize_database" kind="function" signature="async def initialize_database()" path="utils/db_utils.py">
+      Initialize database connection pool. Must be called in MCP lifespan startup.
+    </interface>
+    <interface name="close_database" kind="function" signature="async def close_database()" path="utils/db_utils.py">
+      Close database connection pool. Must be called in MCP lifespan shutdown.
+    </interface>
+    <interface name="initialize_global_embedder" kind="function" signature="async def initialize_global_embedder()" path="core/rag_service.py">
+      Initialize global embedder instance at server startup. Critical performance optimization. Must be called in MCP lifespan startup.
+    </interface>
+    <interface name="close_global_embedder" kind="function" signature="async def close_global_embedder()" path="core/rag_service.py">
+      Close global embedder and cleanup resources. Must be called in MCP lifespan shutdown.
+    </interface>
+    <interface name="FastMCP.lifespan" kind="pattern" signature="@asynccontextmanager async def lifespan(app: FastMCP)" path="mcp/lifespan.py">
+      FastMCP lifespan pattern for resource initialization. Startup: initialize DB pool and embedder. Shutdown: cleanup resources. Pattern from ADR-002.
+    </interface>
+    <interface name="ToolError" kind="exception" signature="from fastmcp import ToolError" path="mcp/tools/*.py">
+      FastMCP ToolError for user-facing errors. Raise ToolError("User-friendly message") instead of generic exceptions.
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Unit tests: Test each MCP tool independently with mocked dependencies (mock embedder, mock DB). Integration tests: Test MCP server startup and tool execution without external API. Manual testing: Verify MCP server works in Cursor/Claude Desktop after refactoring. Import validation: Run python -m py_compile on all modules to verify imports. Smoke tests: Start MCP server and execute each tool to verify functionality. Error handling tests: Verify ToolError is raised for user-facing errors, proper error messages displayed.
+    </standards>
+    <locations>
+      tests/unit/ - Unit tests for individual MCP tools
+      tests/integration/ - Integration tests for MCP server startup and tool execution
+      Manual testing in Cursor/Claude Desktop MCP client
+    </locations>
+    <ideas>
+      <test ac="1">Test MCP server starts successfully without api/main.py running. Verify lifespan initializes DB pool and embedder.</test>
+      <test ac="2">Test mcp/server.py exists and mcp_server.py removed from root. Verify mcp/__init__.py exports server instance.</test>
+      <test ac="3">Test mcp/tools/search.py, mcp/tools/documents.py, mcp/tools/overview.py exist and properly export tools. Verify mcp/lifespan.py exists.</test>
+      <test ac="4">Test MCP tools import directly from core/rag_service.py. Verify no imports from client/api_client.py in MCP server code.</test>
+      <test ac="5">Test FastMCP lifespan pattern implementation. Verify @asynccontextmanager decorator, ToolError usage, context injection if needed.</test>
+      <test ac="6">Test all 5 MCP tools: query_knowledge_base, ask_knowledge_base, list_knowledge_base_documents, get_knowledge_base_document, get_knowledge_base_overview. Verify they return expected formats and handle errors gracefully.</test>
+      <test ac="7">Test error handling: Verify ToolError raised for user-facing errors. Test structured JSON logging. Test graceful degradation for optional services.</test>
+      <test ac="8">Test scripts/verification/ and scripts/debug/ directories exist. Verify scripts moved from root/flat structure.</test>
+      <test ac="9">Test root directory cleanup: Verify debug_mcp_tools.py and temp_query.py removed or moved. Verify only essential files remain.</test>
+      <test ac="10">Test imports: Run python -m py_compile on all modified modules. Test import statements in Python REPL. Verify no broken imports in dependent modules.</test>
+    </ideas>
+  </tests>
+</story-context>
+

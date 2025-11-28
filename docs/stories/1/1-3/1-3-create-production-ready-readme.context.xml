@@ -1,0 +1,290 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>3</storyId>
+    <title>Create Production-Ready README</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-3/1-3-create-production-ready-readme.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>new developer</asA>
+    <iWant>to setup the project locally in &lt; 5 minutes</iWant>
+    <soThat>I can start contributing immediately</soThat>
+    <tasks>
+      <task id="1" ac="1,2">
+        <title>Review existing README.md</title>
+        <subtasks>
+          <subtask>Load current README.md and analyze structure</subtask>
+          <subtask>Identify gaps: missing prerequisites versions, missing badges, unclear setup steps</subtask>
+          <subtask>Verify setup instructions completeness and clarity</subtask>
+          <subtask>Check if setup can be completed in &lt; 5 minutes (validate with timing)</subtask>
+        </subtasks>
+      </task>
+      <task id="2" ac="2">
+        <title>Add prerequisites section with version numbers</title>
+        <subtasks>
+          <subtask>List all required tools: Python, PostgreSQL, UV, Docker (if needed)</subtask>
+          <subtask>Add specific version numbers for each tool (Python 3.10+, PostgreSQL 16+, UV 0.9.13+)</subtask>
+          <subtask>Add installation links or commands for each prerequisite</subtask>
+          <subtask>Verify prerequisites match pyproject.toml and architecture requirements</subtask>
+        </subtasks>
+      </task>
+      <task id="3" ac="1">
+        <title>Optimize quick start section for &lt; 5 minutes</title>
+        <subtasks>
+          <subtask>Review current quick start steps</subtask>
+          <subtask>Ensure steps are sequential and clear</subtask>
+          <subtask>Add time estimates for each step</subtask>
+          <subtask>Remove unnecessary complexity or verbose explanations</subtask>
+          <subtask>Add troubleshooting quick fixes for common issues</subtask>
+          <subtask>Validate total time &lt; 5 minutes</subtask>
+        </subtasks>
+      </task>
+      <task id="4" ac="3">
+        <title>Add GitHub badges to README header</title>
+        <subtasks>
+          <subtask>Add build status badge using shields.io format</subtask>
+          <subtask>Add coverage badge: Use Codecov or shields.io coverage badge</subtask>
+          <subtask>Add version badge from pyproject.toml (current: 0.1.0)</subtask>
+          <subtask>Add license badge (if LICENSE file exists)</subtask>
+          <subtask>Configure badge URLs with correct repository owner/name</subtask>
+          <subtask>Verify badges are functional and display correctly in GitHub preview</subtask>
+        </subtasks>
+      </task>
+      <task id="5" ac="1">
+        <title>Add Docker setup instructions</title>
+        <subtasks>
+          <subtask>Add Docker quick start section</subtask>
+          <subtask>Include docker-compose commands</subtask>
+          <subtask>Add Docker prerequisites (Docker Desktop, docker-compose)</subtask>
+          <subtask>Link to existing docker-compose.yml documentation</subtask>
+        </subtasks>
+      </task>
+      <task id="6" ac="1">
+        <title>Add troubleshooting section</title>
+        <subtasks>
+          <subtask>Document common setup issues</subtask>
+          <subtask>Add solutions for frequent problems (DB connection, API keys, etc.)</subtask>
+          <subtask>Link to detailed troubleshooting guide if exists</subtask>
+        </subtasks>
+      </task>
+      <task id="7" ac="1,2,3">
+        <title>Testing and validation</title>
+        <subtasks>
+          <subtask>Manual test: Follow README setup instructions from scratch on clean environment</subtask>
+          <subtask>Time validation methodology: Test with 2-3 new developers, measure time for each step, calculate average total time - must be &lt; 5 minutes</subtask>
+          <subtask>Manual review: Verify all prerequisites have version numbers</subtask>
+          <subtask>Manual review: Verify badges are present and functional</subtask>
+          <subtask>Cross-reference: Verify prerequisites match architecture requirements</subtask>
+          <subtask>Completeness checklist: Ensure all sections are present and clear</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">
+      <given>the README</given>
+      <when>I follow setup instructions</when>
+      <then>I have a working local environment in &lt; 5 minutes</then>
+    </ac>
+    <ac id="2">
+      <given>the README</given>
+      <when>I check prerequisites</when>
+      <then>all required tools are listed with version numbers</then>
+    </ac>
+    <ac id="3">
+      <given>the README</given>
+      <when>I view the top</when>
+      <then>I see GitHub badges (build status, coverage, version)</then>
+    </ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown - docling-rag-agent</title>
+        <section>Story 1.3: Create Production-Ready README</section>
+        <snippet>Story 1.3 requirements: setup instructions completabili in &lt; 5 minuti, prerequisites con versioni, GitHub badges (build status, coverage, version). Technical notes include quick start, Docker setup, troubleshooting section, shields.io badges.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Core RAG Baseline &amp; Documentation</title>
+        <section>Story 1.3: Create Production-Ready README</section>
+        <snippet>Workflow steps: Review existing README.md, Add quick start section (&lt; 5 minuti), Add prerequisites con versioni, Add GitHub badges (build status, coverage, version), Add Docker setup instructions, Add troubleshooting section, Validate setup instructions.</snippet>
+      </doc>
+      <doc>
+        <path>docs/prd.md</path>
+        <title>Product Requirements Document</title>
+        <section>Documentation &amp; Developer Experience</section>
+        <snippet>FR26: Il sistema DEVE avere README con setup instructions completabili in &lt; 5 minuti. FR30: Il sistema DEVE avere badge GitHub (build status, coverage, version, license).</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture - docling-rag-agent</title>
+        <section>Development Environment</section>
+        <snippet>Prerequisites: Python 3.11+ (3.10+ minimum), UV Latest version (package manager), PostgreSQL 16+ with PGVector extension, Docker Latest (for containerized development), Git Latest (for version control). Setup commands include uv sync, cp .env.example .env, psql setup, streamlit run app.py.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture - docling-rag-agent</title>
+        <section>CI/CD Pipeline</section>
+        <snippet>GitHub Actions workflow includes lint (ruff check zero warnings), type-check (mypy zero errors), test (pytest with coverage &gt;70%), build (Docker build test), secret-scan (TruffleHog OSS scan). Release workflow triggers on git tag creation.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/1-2-generate-api-reference-documentation.md</path>
+        <title>Story 1.2: Generate API Reference Documentation</title>
+        <section>Dev Agent Record</section>
+        <snippet>MkDocs configured and working for API reference generation. GitHub Actions workflow .github/workflows/docs.yml exists for documentation deployment. Local server command: uv run mkdocs serve available for local documentation viewing.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>README.md</path>
+        <kind>documentation</kind>
+        <symbol>README.md</symbol>
+        <lines>1-580</lines>
+        <reason>Current README.md file to be reviewed and improved. Contains existing quick start, prerequisites, Docker setup, but missing version numbers in prerequisites and GitHub badges in header.</reason>
+      </file>
+      <file>
+        <path>pyproject.toml</path>
+        <kind>configuration</kind>
+        <symbol>pyproject.toml</symbol>
+        <lines>1-50</lines>
+        <reason>Contains project version (0.1.0) for badge, Python version requirement (&gt;=3.10), and all dependencies. Used to verify prerequisites and extract version for badge.</reason>
+      </file>
+      <file>
+        <path>docker-compose.yml</path>
+        <kind>configuration</kind>
+        <symbol>docker-compose.yml</symbol>
+        <lines>1-48</lines>
+        <reason>Contains Docker services configuration (rag-api, db). Used to document Docker setup instructions and prerequisites in README.</reason>
+      </file>
+      <file>
+        <path>.github/workflows/docs.yml</path>
+        <kind>ci-cd</kind>
+        <symbol>docs.yml</symbol>
+        <lines>1-40</lines>
+        <reason>Existing GitHub Actions workflow for documentation deployment. Can be referenced for CI/CD badge configuration. Note: Main CI workflow (ci.yml) will be created in Epic 4 Story 4.1.</reason>
+      </file>
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="python" version="&gt;=3.10"/>
+        <package name="uv" version="latest"/>
+        <package name="postgresql" version="16+"/>
+        <package name="pgvector" version="0.8.0+"/>
+        <package name="streamlit" version="&gt;=1.31.0"/>
+        <package name="pydantic-ai" version="&gt;=0.7.4"/>
+        <package name="docling" version="&gt;=2.55.0"/>
+        <package name="openai" version="&gt;=1.0.0"/>
+        <package name="asyncpg" version="&gt;=0.30.0"/>
+        <package name="fastmcp" version="&gt;=0.1.1"/>
+        <package name="mkdocs" version="&gt;=1.6.1"/>
+        <package name="mkdocs-material" version="&gt;=9.7.0"/>
+        <package name="mkdocstrings[python]" version="&gt;=0.30.1"/>
+      </ecosystem>
+      <ecosystem name="docker">
+        <package name="docker" version="latest"/>
+        <package name="docker-compose" version="latest"/>
+        <package name="pgvector/pgvector" version="pg16"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <type>Documentation Structure</type>
+      <rule>README.md is root-level entry point, detailed docs in guide/ directory</rule>
+      <source>docs/stories/tech-spec-epic-1.md#Detailed-Design</source>
+    </constraint>
+    <constraint>
+      <type>Package Manager</type>
+      <rule>UV is the standard package manager (not pip)</rule>
+      <source>docs/architecture.md#Technology-Stack-Details</source>
+    </constraint>
+    <constraint>
+      <type>Python Version</type>
+      <rule>Python 3.10+ required (3.11 recommended)</rule>
+      <source>docs/architecture.md#Technology-Stack-Details</source>
+    </constraint>
+    <constraint>
+      <type>Database</type>
+      <rule>PostgreSQL 16+ with PGVector extension required</rule>
+      <source>docs/architecture.md#Technology-Stack-Details</source>
+    </constraint>
+    <constraint>
+      <type>Badge Configuration</type>
+      <rule>Use shields.io format for GitHub badges. Build status badge requires GitHub Actions workflow (will be created in Epic 4 Story 4.1). Coverage badge requires Codecov integration or GitHub Actions coverage reporting. Version badge reads from pyproject.toml (current: 0.1.0)</rule>
+      <source>docs/prd.md#Documentation-Developer-Experience</source>
+    </constraint>
+    <constraint>
+      <type>Repository Info</type>
+      <rule>Badge URLs must use format {owner}/{repo} - verify actual GitHub repository owner/name before finalizing badges</rule>
+      <source>docs/stories/1-3-create-production-ready-readme.md#Architecture-Patterns-and-Constraints</source>
+    </constraint>
+    <constraint>
+      <type>Time Requirement</type>
+      <rule>Setup must be completable in &lt; 5 minutes (validated with 2-3 new developers, average time)</rule>
+      <source>docs/epics.md#Story-1.3, docs/prd.md#FR26</source>
+    </constraint>
+    <constraint>
+      <type>Testing</type>
+      <rule>Manual review and user testing required. No automated tests required for README (manual validation sufficient)</rule>
+      <source>docs/stories/1-3-create-production-ready-readme.md#Testing-Standards-Summary</source>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>README.md Structure</name>
+      <kind>Documentation Format</kind>
+      <signature>Markdown format with sections: Header (with badges), Prerequisites (with versions), Quick Start (sequential steps with time estimates), Docker Setup, Troubleshooting</signature>
+      <path>README.md</path>
+    </interface>
+    <interface>
+      <name>GitHub Badges API</name>
+      <kind>Shields.io Badge URLs</kind>
+      <signature>Build Status: https://img.shields.io/github/actions/workflow/status/{owner}/{repo}/.github/workflows/ci.yml?branch=main | Coverage: https://img.shields.io/codecov/c/github/{owner}/{repo} | Version: https://img.shields.io/github/v/release/{owner}/{repo}?include_prereleases | License: https://img.shields.io/github/license/{owner}/{repo}</signature>
+      <path>README.md (header section)</path>
+    </interface>
+    <interface>
+      <name>Docker Compose Commands</name>
+      <kind>CLI Commands</kind>
+      <signature>docker-compose up --build -d | docker-compose --profile ingestion up ingestion | docker-compose logs -f rag-agent</signature>
+      <path>docker-compose.yml, README.md</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Manual review and user testing required. Time validation methodology: Test with 2-3 new developers (or simulate fresh setup), measure time for each step (prerequisites install, dependencies sync, DB setup, first run), calculate average total time - must be &lt; 5 minutes. Manual review: Verify all prerequisites have version numbers, verify badges are present and functional, cross-reference prerequisites match architecture requirements. No automated tests required for README (manual validation sufficient).</standards>
+    <locations>No test files required for this documentation story. Validation performed manually on README.md content.</locations>
+    <ideas>
+      <test ac="1">
+        <title>Time Validation Test</title>
+        <description>Follow README setup instructions from scratch on clean environment. Test with 2-3 new developers. Measure time for each step: prerequisites install, dependencies sync (uv sync), DB setup (psql), first run (streamlit run app.py). Calculate average total time - must be &lt; 5 minutes. Document timing breakdown.</description>
+      </test>
+      <test ac="2">
+        <title>Prerequisites Version Check</title>
+        <description>Manual review: Verify all prerequisites have version numbers listed. Check: Python 3.10+, PostgreSQL 16+, UV latest, Docker latest. Verify prerequisites match pyproject.toml (Python &gt;=3.10) and architecture requirements.</description>
+      </test>
+      <test ac="3">
+        <title>Badge Functionality Test</title>
+        <description>Manual review: Verify badges are present in README header. Verify badges are functional (clickable links work, images display correctly). Check: Build status badge (requires GitHub Actions workflow - will be created in Epic 4), Coverage badge (requires Codecov or coverage reporting), Version badge (reads from pyproject.toml 0.1.0), License badge (if LICENSE file exists).</description>
+      </test>
+      <test ac="1">
+        <title>Docker Setup Test</title>
+        <description>Manual test: Follow Docker setup instructions. Verify docker-compose commands work correctly. Test: docker-compose up --build -d, docker-compose --profile ingestion up ingestion, docker-compose logs -f rag-agent. Verify Docker prerequisites are documented (Docker Desktop, docker-compose).</description>
+      </test>
+      <test ac="1">
+        <title>Troubleshooting Guide Test</title>
+        <description>Manual review: Verify troubleshooting section documents common setup issues. Check: DB connection issues, API keys configuration, environment variables setup. Verify solutions are clear and actionable. Link to detailed troubleshooting guide if exists.</description>
+      </test>
+    </ideas>
+  </tests>
+</story-context>
+

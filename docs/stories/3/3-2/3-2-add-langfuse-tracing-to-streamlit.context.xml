@@ -1,0 +1,215 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>2</storyId>
+    <title>Add LangFuse Tracing to Streamlit</title>
+    <status>drafted</status>
+    <generatedAt>2025-01-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/3/3-2/3-2-add-langfuse-tracing-to-streamlit.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>Streamlit queries traced in LangFuse</iWant>
+    <soThat>I can compare MCP and UI performance</soThat>
+    <tasks>
+      <task id="1" ac="1,2,4">
+        <title>Create LangFuse Streamlit Context Module</title>
+        <subtasks>
+          <subtask>Create `utils/langfuse_streamlit.py` with `with_streamlit_context(session_id: UUID, query: str)` context manager</subtask>
+          <subtask>Implement `langfuse.start_as_current_observation()` root span with name `streamlit_query`</subtask>
+          <subtask>Implement `propagate_attributes()` context manager per propagare `session_id` e `source: streamlit` a nested spans</subtask>
+          <subtask>Add metadata extraction: `session_id`, `source: streamlit`, `query_text` (user_agent non disponibile in Streamlit)</subtask>
+          <subtask>Return trace_id per cost extraction post-esecuzione</subtask>
+          <subtask>Unit test: `test_with_streamlit_context()` - Verify trace creation con metadata</subtask>
+          <subtask>Unit test: `test_propagate_attributes()` - Verify session_id propagation</subtask>
+          <subtask>Integration test: `test_langfuse_trace_creation()` - Verify trace in LangFuse con metadata corretti</subtask>
+        </subtasks>
+      </task>
+      <task id="2" ac="1,2,4">
+        <title>Integrate LangFuse Tracing in Streamlit App</title>
+        <subtasks>
+          <subtask>Update `app.py` to wrap `run_agent()` call con `with_streamlit_context(session_id, query)`</subtask>
+          <subtask>Extract trace_id dal root span per cost extraction (già implementato in Story 3.1)</subtask>
+          <subtask>Ensure nested spans (embedding, DB, LLM) ereditano automaticamente session_id tramite propagate_attributes</subtask>
+          <subtask>Add graceful degradation: if LangFuse unavailable, continue senza tracing (log warning)</subtask>
+          <subtask>Integration test: `test_streamlit_trace_integration()` - Verify trace creation end-to-end</subtask>
+          <subtask>Integration test: `test_nested_spans_propagation()` - Verify session_id in nested spans</subtask>
+        </subtasks>
+      </task>
+      <task id="3" ac="3">
+        <title>Verify LangFuse Dashboard Filtering</title>
+        <subtasks>
+          <subtask>Manual test: Verifica filtro `source: streamlit` nel dashboard LangFuse mostra solo query Streamlit</subtask>
+          <subtask>Manual test: Verifica filtro `source: mcp` mostra solo query MCP (già implementato Epic 2)</subtask>
+          <subtask>Documentazione: Aggiungere sezione in `docs/stories/3/epic-3-setup-guide.md` su come filtrare trace nel dashboard</subtask>
+        </subtasks>
+      </task>
+      <task id="4" ac="5">
+        <title>Add Graceful Degradation for LangFuse</title>
+        <subtasks>
+          <subtask>Implement fallback logic in `with_streamlit_context()`: if LangFuse unavailable, log warning e continue senza tracing</subtask>
+          <subtask>Ensure `run_agent()` continua a funzionare anche senza LangFuse tracing</subtask>
+          <subtask>Add structured logging per degradation events (JSON format)</subtask>
+          <subtask>Integration test: `test_graceful_degradation_langfuse()` - Mock LangFuse failure, verify system continua</subtask>
+        </subtasks>
+      </task>
+      <task id="5" ac="3,4">
+        <title>Update Documentation</title>
+        <subtasks>
+          <subtask>Update `docs/architecture.md` con sezione LangFuse Streamlit Integration</subtask>
+          <subtask>Document pattern `with_streamlit_context()` e `propagate_attributes()` usage</subtask>
+          <subtask>Add esempio codice in architecture.md per context injection pattern</subtask>
+          <subtask>Update `docs/stories/3/epic-3-setup-guide.md` con istruzioni dashboard filtering</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="AC3.2.1">Dato una query Streamlit, quando viene processata tramite `run_agent()`, allora un trace LangFuse è creato con nome `streamlit_query` e metadata `{"source": "streamlit", "session_id": "..."}` (user_agent non disponibile in Streamlit)</ac>
+    <ac id="AC3.2.2">Dato il trace LangFuse, quando viene creato, allora il `session_id` è propagato a tutti i nested spans (embedding-generation, vector-search, llm-generation) tramite LangFuse context injection</ac>
+    <ac id="AC3.2.3">Dato il dashboard LangFuse, quando viene filtrato per `source: streamlit`, allora mostra solo query provenienti da Streamlit UI (separate da query MCP)</ac>
+    <ac id="AC3.2.4">Dato un trace LangFuse, quando viene visualizzato, allora i metadata mostrano: `session_id` (UUID), `source: streamlit`, `query_text` (testo query) (user_agent non disponibile in Streamlit)</ac>
+    <ac id="AC3.2.5">Dato LangFuse non disponibile, quando una query viene processata, allora il sistema continua a funzionare senza tracing (graceful degradation)</ac>
+    <ac id="AC3.2.6">Dato PostgreSQL non disponibile, quando una sessione viene inizializzata, allora il sistema usa solo `st.session_state` per storage in-memory (fallback mode)</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/3/tech-spec-epic-3.md" title="Epic Technical Specification: Streamlit UI Observability" section="Story 3.2: Add LangFuse Tracing to Streamlit">
+        <snippet>Story 3.2 estende il monitoring LangFuse implementato in Epic 2 alla Streamlit UI, fornendo tracing completo con session_id propagation e separazione MCP vs Streamlit nel dashboard. Implementa context injection pattern usando `langfuse.start_as_current_observation()` con `propagate_attributes()` per propagare metadata a nested spans.</snippet>
+      </doc>
+      <doc path="docs/stories/3/tech-spec-epic-3.md" title="Epic Technical Specification: Streamlit UI Observability" section="APIs and Interfaces">
+        <snippet>LangFuse Integration Interface: Context Injection `with_streamlit_context(session_id, query)` sets LangFuse trace attributes `session_id` e `source: streamlit`, propagates attributes to child observations usando `propagate_attributes()` context manager. Trace name: `streamlit_query`, metadata: `{"source": "streamlit", "session_id": "..."}`.</snippet>
+      </doc>
+      <doc path="docs/stories/3/tech-spec-epic-3.md" title="Epic Technical Specification: Streamlit UI Observability" section="Workflows and Sequencing">
+        <snippet>LangFuse Trace Flow: User Query (Streamlit) → `langfuse.start_as_current_observation(name="streamlit_query")` [Trace Root] → `propagate_attributes(session_id="...", metadata={"source": "streamlit"})` → `run_agent(query)` → nested spans (embedding-generation, vector-search, llm-generation) ereditano automaticamente session_id.</snippet>
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="ADR-001: LangFuse Integration Pattern">
+        <snippet>LangFuse decorator-based pattern (`@observe()`) con `langfuse.openai` wrapper per automatic cost tracking. Use `langfuse.start_as_current_observation()` per nested spans, `propagate_attributes()` context manager per propagare trace attributes (user_id, session_id) a tutti child observations.</snippet>
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="LangFuse Integration Pattern">
+        <snippet>Implementation Guide: Use `@observe()` per automatic tracing, `langfuse.start_as_current_observation()` per nested spans, `as_type="generation"` per LLM calls, `langfuse.openai` wrapper invece di direct `openai` import per automatic cost tracking. Trace attributes possono essere settati via `propagate_attributes()` context manager.</snippet>
+      </doc>
+      <doc path="docs/epics.md" title="docling-rag-agent - Epic Breakdown" section="Story 3.2: Add LangFuse Tracing to Streamlit">
+        <snippet>Story 3.2 aggiunge LangFuse tracing a Streamlit queries con session_id propagation. Prerequisites: Story 2.1 (LangFuse SDK), Story 3.1 (session tracking). Technical Notes: Tag traces con `source: streamlit` metadata, module `utils/langfuse_streamlit.py` per context injection, graceful degradation se LangFuse unavailable.</snippet>
+      </doc>
+      <doc path="docs/stories/3/3-1/3-1-implement-session-tracking.md" title="Story 3.1: Implement Session Tracking" section="Dev Agent Record">
+        <snippet>Story 3.1 ha creato `utils/session_manager.py` con session tracking completo. Session Manager già implementato con `generate_session_id()`, `create_session()`, `get_session_stats()`, `log_query()`, `extract_cost_from_langfuse()`. Story 3.2 riutilizza `session_id` già disponibile in `st.session_state.session_id` e deve solo fornire `trace_id` dal root span per cost extraction.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file path="app.py" kind="streamlit_app" symbol="run_agent_with_tracking" lines="108-156">
+        <reason>Funzione esistente che esegue agent con tracking. Story 3.2 deve wrappare questa chiamata con `with_streamlit_context()` per aggiungere LangFuse tracing. Attualmente estrae trace_id usando attributo interno `_current_trace_id` che deve essere sostituito con pattern context manager.</reason>
+      </file>
+      <file path="app.py" kind="streamlit_app" symbol="run_agent" lines="159-180">
+        <reason>Wrapper principale per esecuzione agent. Story 3.2 deve integrare `with_streamlit_context()` qui per creare root span LangFuse con session_id propagation.</reason>
+      </file>
+      <file path="utils/session_manager.py" kind="utility" symbol="extract_cost_from_langfuse" lines="227-273">
+        <reason>Funzione già implementata in Story 3.1 per estrarre costi da LangFuse trace. Story 3.2 deve fornire `trace_id` dal root span per questa funzione.</reason>
+      </file>
+      <file path="utils/session_manager.py" kind="utility" symbol="generate_session_id" lines="20-27">
+        <reason>Funzione per generare session_id UUID v4. Story 3.2 riutilizza session_id già disponibile in `st.session_state.session_id`.</reason>
+      </file>
+      <file path="docling_mcp/lifespan.py" kind="mcp_lifespan" symbol="_initialize_langfuse" lines="33-71">
+        <reason>Pattern di inizializzazione LangFuse client con graceful degradation già implementato in Epic 2. Story 3.2 riutilizza stesso pattern per verificare disponibilità LangFuse.</reason>
+      </file>
+      <file path="core/rag_service.py" kind="service" symbol="search_knowledge_base_structured" lines="100-200">
+        <reason>Core RAG service già tracciato con `@observe()` decorator in Epic 2. Story 3.2 deve assicurarsi che nested spans ereditino session_id tramite `propagate_attributes()`.</reason>
+      </file>
+      <file path="core/agent.py" kind="agent" symbol="agent" lines="1-90">
+        <reason>PydanticAI agent wrapper che chiama RAG service. Story 3.2 deve assicurarsi che trace root Streamlit propaghi session_id a tutti nested spans agent.</reason>
+      </file>
+      <file path="tests/integration/test_streamlit_observability.py" kind="test" symbol="test_streamlit_observability" lines="1-332">
+        <reason>Test suite esistente per Streamlit observability creata in Story 3.1. Story 3.2 aggiunge test per LangFuse tracing integration.</reason>
+      </file>
+    </code>
+    <dependencies>
+      <python>
+        <package name="langfuse" version=">=3.0.0">LangFuse Python SDK per tracing e cost tracking. Già installato in Epic 2.</package>
+        <package name="streamlit" version=">=1.31.0">Streamlit framework per UI. Già installato.</package>
+        <package name="pydantic-ai" version=">=0.7.4">PydanticAI agent framework. Già installato.</package>
+        <package name="asyncpg" version=">=0.30.0">PostgreSQL async driver. Già installato.</package>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture_pattern">
+      <name>LangFuse Context Injection Pattern</name>
+      <description>Usa `langfuse.start_as_current_observation()` con `propagate_attributes()` per propagare metadata a nested spans. Root span `streamlit_query` separato da nested spans RAG (embedding, DB, LLM).</description>
+      <source>docs/stories/3/tech-spec-epic-3.md#APIs-and-Interfaces</source>
+    </constraint>
+    <constraint type="architecture_pattern">
+      <name>Graceful Degradation Pattern</name>
+      <description>Sistema continua senza tracing se LangFuse unavailable. Pattern già stabilito in Story 3.1 per DB failures, Story 3.2 segue stesso pattern per LangFuse failures.</description>
+      <source>docs/stories/3/tech-spec-epic-3.md#Reliability/Availability</source>
+    </constraint>
+    <constraint type="integration_point">
+      <name>Streamlit Integration Point</name>
+      <description>Estende `app.py` con context injection wrapper, non modifica `core/rag_service.py`. Riutilizza LangFuse client già inizializzato in Epic 2, nessuna nuova inizializzazione richiesta.</description>
+      <source>docs/stories/3/tech-spec-epic-3.md#System-Architecture-Alignment</source>
+    </constraint>
+    <constraint type="testing_requirement">
+      <name>Test Coverage Target</name>
+      <description>Coverage >70% per `utils/langfuse_streamlit.py`. Test Pattern: Red-Green-Refactor rigoroso (test prima del codice).</description>
+      <source>docs/architecture.md#ADR-003</source>
+    </constraint>
+    <constraint type="project_structure">
+      <name>Module Organization</name>
+      <description>Nuovo modulo `utils/langfuse_streamlit.py` segue struttura esistente `utils/`. Nessun conflitto con struttura esistente, aggiunge solo nuovo modulo utility.</description>
+      <source>docs/architecture.md#Project-Structure</source>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="with_streamlit_context" kind="context_manager" signature="with_streamlit_context(session_id: UUID, query: str) -> ContextManager[LangFuseTrace]">
+      <description>Context manager per LangFuse tracing in Streamlit. Crea root span `streamlit_query` con metadata `{"source": "streamlit", "session_id": "..."}` e propaga session_id a tutti nested spans tramite `propagate_attributes()`.</description>
+      <path>utils/langfuse_streamlit.py</path>
+      <returns>Context manager che restituisce trace_id per cost extraction post-esecuzione</returns>
+    </interface>
+    <interface name="langfuse.get_client" kind="function" signature="get_client() -> LangFuseClient">
+      <description>Ottiene LangFuse client già inizializzato. Riutilizzato da Epic 2, nessuna nuova inizializzazione richiesta.</description>
+      <path>langfuse</path>
+    </interface>
+    <interface name="langfuse.start_as_current_observation" kind="context_manager" signature="start_as_current_observation(as_type: str, name: str, input: dict) -> ContextManager[Observation]">
+      <description>Crea observation LangFuse (trace root o nested span). Story 3.2 usa `as_type="span"`, `name="streamlit_query"` per root span.</description>
+      <path>langfuse</path>
+    </interface>
+    <interface name="langfuse.propagate_attributes" kind="context_manager" signature="propagate_attributes(session_id: str, metadata: dict) -> ContextManager">
+      <description>Propaga attributi a tutti child observations. Story 3.2 usa per propagare `session_id` e `source: streamlit` a nested spans.</description>
+      <path>langfuse</path>
+    </interface>
+    <interface name="run_agent_with_tracking" kind="function" signature="run_agent_with_tracking(user_input: str) -> tuple[str, Decimal, Decimal, str | None]">
+      <description>Funzione esistente che esegue agent con tracking. Story 3.2 deve wrappare questa chiamata con `with_streamlit_context()`.</description>
+      <path>app.py</path>
+      <returns>Tuple di (response_text, cost, latency_ms, trace_id)</returns>
+    </interface>
+    <interface name="extract_cost_from_langfuse" kind="function" signature="extract_cost_from_langfuse(trace_id: str) -> Decimal">
+      <description>Funzione già implementata in Story 3.1 per estrarre costi da LangFuse trace. Story 3.2 deve fornire `trace_id` dal root span.</description>
+      <path>utils/session_manager.py</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing standards seguono TDD rigoroso con coverage >70% per `utils/langfuse_streamlit.py`. Test organizzati in `tests/unit/test_langfuse_streamlit.py` (unit tests) e `tests/integration/test_streamlit_observability.py` (integration tests). Pattern Red-Green-Refactor: test prima del codice. Unit tests per context manager, propagate_attributes, metadata extraction. Integration tests per trace creation end-to-end, nested spans propagation, graceful degradation. Manual tests per dashboard LangFuse filtering verification.
+    </standards>
+    <locations>
+      <location>tests/unit/test_langfuse_streamlit.py</location>
+      <location>tests/integration/test_streamlit_observability.py</location>
+    </locations>
+    <ideas>
+      <test ac="AC3.2.1" type="unit">test_with_streamlit_context() - Verifica trace creation con metadata corretti (`source: streamlit`, `session_id`)</test>
+      <test ac="AC3.2.2" type="unit">test_propagate_attributes() - Verifica session_id propagation a nested spans usando mock LangFuse client</test>
+      <test ac="AC3.2.4" type="integration">test_langfuse_trace_creation() - Verifica trace in LangFuse con metadata corretti (session_id, source, query_text)</test>
+      <test ac="AC3.2.1,AC3.2.2" type="integration">test_streamlit_trace_integration() - Verifica trace creation end-to-end con `run_agent()` wrapper</test>
+      <test ac="AC3.2.2" type="integration">test_nested_spans_propagation() - Verifica session_id presente in nested spans (embedding-generation, vector-search, llm-generation)</test>
+      <test ac="AC3.2.5" type="integration">test_graceful_degradation_langfuse() - Mock LangFuse failure, verifica sistema continua senza tracing</test>
+      <test ac="AC3.2.3" type="manual">Verifica filtro `source: streamlit` nel dashboard LangFuse mostra solo query Streamlit</test>
+    </ideas>
+  </tests>
+</story-context>
+

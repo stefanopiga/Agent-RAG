@@ -1,0 +1,204 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>1</storyId>
+    <title>Implement Session Tracking</title>
+    <status>drafted</status>
+    <generatedAt>2025-01-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/3/3-1/3-1-implement-session-tracking.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Streamlit user</asA>
+    <iWant>to see my session statistics in the sidebar</iWant>
+    <soThat>I know how many queries I've made and their total cost</soThat>
+    <tasks>
+      <task id="1" ac="1,2">
+        <title>Create Session Manager Module</title>
+        <subtasks>
+          <subtask>Create `utils/session_manager.py` with `generate_session_id()` function (UUID v4)</subtask>
+          <subtask>Create `create_session(session_id: UUID)` function to insert record in `sessions` table</subtask>
+          <subtask>Create `get_session_stats(session_id: UUID) -> SessionStats` function to retrieve statistics</subtask>
+          <subtask>Create `update_session_stats(session_id: UUID, cost: Decimal, latency_ms: Decimal)` function</subtask>
+          <subtask>Add error handling with graceful degradation (fallback to in-memory if DB unavailable)</subtask>
+          <subtask>Unit test: `test_generate_session_id()` - Verify UUID v4 generation</subtask>
+          <subtask>Integration test: `test_create_session()` - Verify DB record creation</subtask>
+          <subtask>Integration test: `test_get_session_stats()` - Verify stats retrieval</subtask>
+        </subtasks>
+      </task>
+      <task id="2" ac="2,3,5">
+        <title>Create Session Models</title>
+        <subtasks>
+          <subtask>Add `SessionStats` model to `utils/models.py` with fields: session_id, query_count, total_cost, avg_latency_ms, created_at, last_activity</subtask>
+          <subtask>Add `QueryLog` model to `utils/models.py` with fields: session_id, query_text, response_text, cost, latency_ms, timestamp, langfuse_trace_id</subtask>
+          <subtask>Validate: Models match PostgreSQL schema from `sql/epic-3-sessions-schema.sql`</subtask>
+          <subtask>Unit test: `test_session_stats_model()` - Verify model validation</subtask>
+        </subtasks>
+      </task>
+      <task id="3" ac="2,3">
+        <title>Create Database Schema</title>
+        <subtasks>
+          <subtask>Create `sql/epic-3-sessions-schema.sql` with `sessions` table (session_id UUID PRIMARY KEY, created_at, last_activity, query_count, total_cost, total_latency_ms)</subtask>
+          <subtask>Create `query_logs` table (id SERIAL PRIMARY KEY, session_id UUID REFERENCES sessions, query_text TEXT, response_text TEXT, cost DECIMAL, latency_ms DECIMAL, timestamp TIMESTAMP, langfuse_trace_id VARCHAR)</subtask>
+          <subtask>Create indexes: `idx_query_logs_session_id`, `idx_query_logs_timestamp`, `idx_sessions_last_activity`</subtask>
+          <subtask>Add RLS policies: `service_role` only access for both tables</subtask>
+          <subtask>Integration test: `test_schema_creation()` - Verify tables and indexes created</subtask>
+          <subtask>Integration test: `test_rls_policies()` - Verify RLS protection (anon role returns 0 rows)</subtask>
+        </subtasks>
+      </task>
+      <task id="4" ac="3,4,5">
+        <title>Implement Query Logging</title>
+        <subtasks>
+          <subtask>Create `log_query(session_id: UUID, query_text: str, cost: Decimal, latency_ms: Decimal, langfuse_trace_id: str | None)` function in `utils/session_manager.py`</subtask>
+          <subtask>Implement cost extraction from LangFuse trace via SDK API (`langfuse.api.trace.get(trace_id)`, sum `calculated_total_cost` from GENERATION observations)</subtask>
+          <subtask>Update `update_session_stats()` to increment query_count, add cost, add latency, update last_activity</subtask>
+          <subtask>Add async insert pattern (non-blocking) for query logging</subtask>
+          <subtask>Integration test: `test_log_query()` - Verify query log insert with cost/latency</subtask>
+          <subtask>Integration test: `test_cost_extraction_from_langfuse()` - Mock LangFuse trace, verify cost extraction</subtask>
+          <subtask>Integration test: `test_session_stats_update()` - Verify stats aggregation after query</subtask>
+        </subtasks>
+      </task>
+      <task id="5" ac="1,6">
+        <title>Integrate Session Tracking in Streamlit App</title>
+        <subtasks>
+          <subtask>Update `app.py` to initialize `session_id` in `st.session_state` if not exists</subtask>
+          <subtask>Call `create_session(session_id)` on first access (async, non-blocking)</subtask>
+          <subtask>Wrap `run_agent()` call with session tracking: capture query, start timing, call agent, calculate latency, extract cost from LangFuse trace, log query, update stats</subtask>
+          <subtask>Create sidebar section displaying: query count, total cost (formatted as "$0.00XX"), avg latency (formatted as "XXXms")</subtask>
+          <subtask>Query `get_session_stats(session_id)` on every rerun (cache in `st.session_state` for performance)</subtask>
+          <subtask>Add graceful degradation: if DB unavailable, use only `st.session_state` for in-memory stats</subtask>
+          <subtask>E2E test: `test_sidebar_stats_display()` - Playwright verifica visualizzazione stats</subtask>
+          <subtask>E2E test: `test_session_persistence()` - Verifica session_id persiste tra page reloads</subtask>
+          <subtask>Integration test: `test_session_initialization()` - Verify session_id generation and DB record creation</subtask>
+        </subtasks>
+      </task>
+      <task id="6" ac="1,2,3">
+        <title>Add Graceful Degradation</title>
+        <subtasks>
+          <subtask>Implement fallback logic in `create_session()`: if DB unavailable, log warning and continue without persistence</subtask>
+          <subtask>Implement fallback logic in `log_query()`: if DB unavailable, store in `st.session_state` only</subtask>
+          <subtask>Implement fallback logic in `get_session_stats()`: if DB unavailable, return stats from `st.session_state`</subtask>
+          <subtask>Add structured logging for degradation events (JSON format)</subtask>
+          <subtask>Integration test: `test_graceful_degradation_db()` - Mock DB failure, verify in-memory fallback</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="AC3.1.1">Dato una sessione Streamlit, quando l'app viene aperta, allora un `session_id` univoco UUID v4 è generato e memorizzato in `st.session_state.session_id`</ac>
+    <ac id="AC3.1.2">Dato un `session_id` generato, quando la sessione viene inizializzata, allora un record è creato nella tabella `sessions` PostgreSQL con `session_id`, `created_at`, `last_activity`</ac>
+    <ac id="AC3.1.3">Dato una query utente, quando viene inviata tramite chat input, allora è loggata nella tabella `query_logs` con `session_id`, `query_text`, `timestamp`, `cost`, `latency_ms`</ac>
+    <ac id="AC3.1.4">Dato il calcolo del costo query, quando una query viene processata, allora il costo è estratto dal trace LangFuse (nested spans: embedding + LLM) e memorizzato in `query_logs.cost`</ac>
+    <ac id="AC3.1.5">Dato l'aggiornamento statistiche sessione, quando una query viene loggata, allora `sessions.query_count`, `sessions.total_cost`, `sessions.total_latency_ms`, `sessions.last_activity` sono aggiornati</ac>
+    <ac id="AC3.1.6">Dato la sidebar Streamlit, quando viene visualizzata, allora mostra: query count (`sessions.query_count`), total cost (`sessions.total_cost` formattato come "$0.00XX"), avg latency (`sessions.total_latency_ms / sessions.query_count` formattato come "XXXms")</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/3/tech-spec-epic-3.md" title="Epic Technical Specification: Streamlit UI Observability" section="Story 3.1: Implement Session Tracking">
+        Story 3.1 implementa session tracking completo per Streamlit UI con generazione session_id UUID v4, logging query in PostgreSQL, e visualizzazione statistiche nella sidebar. Include graceful degradation se DB non disponibile.
+      </doc>
+      <doc path="docs/stories/3/tech-spec-epic-3.md" title="Epic Technical Specification: Streamlit UI Observability" section="Acceptance Criteria">
+        Sei Acceptance Criteria (AC3.1.1-AC3.1.6) definiscono requisiti per session ID generation, DB persistence, query logging, cost extraction, stats update, e sidebar display.
+      </doc>
+      <doc path="docs/stories/3/tech-spec-epic-3.md" title="Epic Technical Specification: Streamlit UI Observability" section="Data Models and Contracts">
+        Schema PostgreSQL per tabelle `sessions` e `query_logs` con RLS policies. Modelli Pydantic `SessionStats` e `QueryLog` da aggiungere a `utils/models.py`.
+      </doc>
+      <doc path="docs/stories/3/tech-spec-epic-3.md" title="Epic Technical Specification: Streamlit UI Observability" section="APIs and Interfaces">
+        LangFuse context injection pattern con `propagate_attributes()` per session_id propagation. Cost extraction via LangFuse SDK API post-esecuzione.
+      </doc>
+      <doc path="docs/epics.md" title="docling-rag-agent - Epic Breakdown" section="Story 3.1: Implement Session Tracking">
+        Story statement e Acceptance Criteria high-level. Prerequisites: Story 2.2 (cost tracking logic). Technical notes su `st.session_state`, PostgreSQL storage, RLS protection.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="Lifecycle Patterns">
+        Session Management Pattern: `st.session_state` per session_id persistence. Pattern già documentato e riutilizzabile per Epic 3.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="Data Architecture">
+        Database Schema: PostgreSQL con PGVector. Connection pool configurazione (min_size=2, max_size=10, statement_cache_size=100). RLS policies per protezione dati.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="ADR-001">
+        LangFuse Integration Pattern: Decorator-based `@observe()` già implementato in Epic 2. Epic 3 riutilizza pattern con context injection per Streamlit.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="Integration Points">
+        Cost Tracking Pattern: Logica cost tracking Epic 2 riutilizzata tramite `langfuse.openai` wrapper. Automatic cost tracking per embedding e LLM calls.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="Project Structure">
+        Struttura directory: `utils/` per shared utilities, `sql/` per database schema, `tests/unit/`, `tests/integration/`, `tests/e2e/` per test organization.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="ADR-003">
+        TDD Structure Rigorosa: Coverage >70% enforcement, Red-Green-Refactor pattern, test organization in unit/integration/e2e directories.
+      </doc>
+      <doc path="docs/stories/3/epic-3-security-hardening-guide.md" title="Epic 3 Security Hardening Guide" section="Cost Protection">
+        Cost monitoring opzionale con threshold enforcement. Documentato separatamente per uso privato. Non parte di Story 3.1 ma disponibile per future enhancement.
+      </doc>
+    </docs>
+    <code>
+      <file path="app.py" kind="entry_point" symbol="run_agent" lines="75-92" reason="Streamlit entry point da estendere con session tracking. Funzione `run_agent()` da wrappare con session tracking e LangFuse tracing."/>
+      <file path="app.py" kind="entry_point" symbol="st.session_state" lines="39-41" reason="Session state initialization esistente. Da estendere con session_id generation e session stats caching."/>
+      <file path="app.py" kind="ui" symbol="sidebar" lines="94-119" reason="Sidebar esistente da estendere con sezione statistiche sessione (query count, total cost, avg latency)."/>
+      <file path="utils/db_utils.py" kind="service" symbol="DatabasePool" lines="24-79" reason="Connection pool PostgreSQL riutilizzabile per session storage. Pattern `async with db_pool.acquire()` per operazioni DB."/>
+      <file path="utils/db_utils.py" kind="service" symbol="db_pool" lines="82-82" reason="Global database pool instance già inizializzato. Riutilizzabile per session manager senza modifiche."/>
+      <file path="utils/models.py" kind="model" symbol="BaseModel" lines="1-110" reason="Pydantic models esistenti. Da estendere con `SessionStats` e `QueryLog` models seguendo pattern esistente."/>
+      <file path="core/agent.py" kind="service" symbol="agent" lines="1-90" reason="PydanticAI agent wrapper esistente. Nessuna modifica richiesta, solo integrazione observability tramite wrapper in app.py."/>
+      <file path="sql/epic-3-sessions-schema.sql" kind="schema" symbol="sessions" lines="4-11" reason="Schema PostgreSQL già definito per tabelle sessions e query_logs. Include indexes e RLS policies. Da eseguire prima dell'implementazione."/>
+      <file path="sql/epic-3-sessions-schema.sql" kind="schema" symbol="query_logs" lines="13-22" reason="Schema query_logs con foreign key a sessions. Include indexes per performance e RLS policies per sicurezza."/>
+    </code>
+    <dependencies>
+      <python>
+        <package name="streamlit" version=">=1.31.0" reason="UI framework per Streamlit app. `st.session_state` API per session persistence."/>
+        <package name="asyncpg" version=">=0.30.0" reason="PostgreSQL async driver. Già utilizzato in `utils/db_utils.py` per connection pooling."/>
+        <package name="langfuse" version=">=3.0.0" reason="LangFuse SDK per tracing e cost tracking. Già integrato in Epic 2, riutilizzabile per Epic 3."/>
+        <package name="pydantic" version=">=2.0.0" reason="Pydantic models per `SessionStats` e `QueryLog`. Già utilizzato in `utils/models.py`."/>
+        <package name="pytest" version=">=8.0.0" reason="Testing framework. Già configurato per unit/integration/E2E tests."/>
+        <package name="pytest-asyncio" version=">=0.23.0" reason="Async test support. Richiesto per test di funzioni async in session_manager."/>
+        <package name="pytest-cov" version=">=4.1.0" reason="Coverage reporting. Richiesto per enforcement coverage >70%."/>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Session Management Pattern: Usare `st.session_state` per session_id persistence (già documentato in architecture.md)</constraint>
+    <constraint>Database Storage: Riutilizzare PostgreSQL esistente e connection pool da `utils/db_utils.py` (min_size=2, max_size=10)</constraint>
+    <constraint>LangFuse Integration: Riutilizzare pattern decorator-based già implementato in Epic 2. Nessuna modifica a `core/rag_service.py`</constraint>
+    <constraint>Cost Tracking: Riutilizzare logica Epic 2 tramite `langfuse.openai` wrapper. Cost extraction post-esecuzione via LangFuse SDK API</constraint>
+    <constraint>Error Handling: Graceful degradation se PostgreSQL non disponibile (fallback a `st.session_state` only)</constraint>
+    <constraint>RLS Protection: Tabelle `sessions` e `query_logs` protette con RLS policies `service_role` only (backend access)</constraint>
+    <constraint>Project Structure: Nuovo modulo `utils/session_manager.py` segue struttura esistente `utils/`. Schema SQL in `sql/epic-3-sessions-schema.sql`</constraint>
+    <constraint>Testing: Coverage >70% per `utils/session_manager.py`. Test organization: `tests/unit/`, `tests/integration/`, `tests/e2e/`. Red-Green-Refactor pattern</constraint>
+    <constraint>Async Pattern: Query logging usa async insert non-blocking per non impattare latency query RAG</constraint>
+    <constraint>Sidebar Refresh: Cache stats in `st.session_state` per performance, refresh ogni rerun (Streamlit default)</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="DatabasePool.acquire()" kind="context_manager" signature="async with db_pool.acquire() as connection: ..." path="utils/db_utils.py" reason="Connection pool context manager per operazioni DB. Riutilizzabile per session manager senza modifiche."/>
+    <interface name="st.session_state" kind="session_state" signature="st.session_state[key] = value" path="app.py" reason="Streamlit session state API per persistence session_id e caching stats. Già utilizzato in app.py per messages."/>
+    <interface name="langfuse.api.trace.get()" kind="sdk_api" signature="langfuse.api.trace.get(trace_id)" path="langfuse" reason="LangFuse SDK API per cost extraction post-esecuzione. Somma `calculated_total_cost` da GENERATION observations."/>
+    <interface name="propagate_attributes()" kind="context_manager" signature="with propagate_attributes(session_id=..., metadata={...}): ..." path="langfuse" reason="LangFuse context injection per session_id propagation. Da utilizzare in Story 3.2, non richiesto per Story 3.1."/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing infrastructure segue TDD structure rigorosa con coverage >70% enforcement. Test organization: unit tests in `tests/unit/`, integration tests in `tests/integration/`, E2E tests in `tests/e2e/`. Pattern Red-Green-Refactor: scrivere test prima del codice. Usare `pytest-asyncio` per test async, `pytest-cov` per coverage reporting. Mock LangFuse client per unit tests, test database per integration tests, Playwright per E2E tests.
+    </standards>
+    <locations>
+      <location>tests/unit/test_session_manager.py</location>
+      <location>tests/integration/test_streamlit_observability.py</location>
+      <location>tests/e2e/test_streamlit_ui_observability.py</location>
+    </locations>
+    <ideas>
+      <test ac="AC3.1.1" type="unit" name="test_generate_session_id">Verifica UUID v4 generation su primo accesso. Mock `uuid.uuid4()` e verifica formato UUID valido.</test>
+      <test ac="AC3.1.2" type="integration" name="test_create_session">Verifica creazione record in `sessions` table. Mock DB connection, verifica insert con session_id, created_at, last_activity.</test>
+      <test ac="AC3.1.3" type="integration" name="test_log_query">Verifica query log insert con session_id, query_text, timestamp, cost, latency_ms. Mock DB connection e verifica record creato.</test>
+      <test ac="AC3.1.4" type="integration" name="test_cost_extraction_from_langfuse">Mock LangFuse trace con nested spans (embedding + LLM), verifica cost extraction via SDK API e somma calculated_total_cost.</test>
+      <test ac="AC3.1.5" type="integration" name="test_session_stats_update">Verifica aggiornamento stats dopo query: query_count incrementato, total_cost aggiunto, total_latency_ms aggiunto, last_activity aggiornato.</test>
+      <test ac="AC3.1.6" type="e2e" name="test_sidebar_stats_display">Playwright test: verifica visualizzazione sidebar con query count, total cost formattato "$0.00XX", avg latency formattato "XXXms".</test>
+      <test ac="AC3.1.1" type="integration" name="test_session_initialization">Verifica session_id generation e DB record creation end-to-end. Mock app.py initialization flow.</test>
+      <test ac="AC3.1.2" type="integration" name="test_graceful_degradation_db">Mock DB failure, verifica fallback a `st.session_state` only. Verifica warning loggato e sistema continua senza persistence.</test>
+      <test ac="AC3.1.6" type="e2e" name="test_session_persistence">Playwright test: verifica session_id persiste tra page reloads. Verifica stats mantengono valori dopo refresh.</test>
+      <test ac="AC3.1.2" type="integration" name="test_rls_policies">Verifica RLS protection: SET ROLE anon, verifica 0 rows restituiti da tabelle sessions e query_logs.</test>
+    </ideas>
+  </tests>
+</story-context>
+

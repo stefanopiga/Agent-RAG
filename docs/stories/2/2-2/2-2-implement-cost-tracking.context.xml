@@ -1,0 +1,153 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2.2</storyId>
+    <title>Implement Cost Tracking</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-01-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/2/2-2/2-2-implement-cost-tracking.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>product owner</asA>
+    <iWant>to know the exact cost of each MCP query</iWant>
+    <soThat>I can budget and optimize spending</soThat>
+    <tasks>
+      <task id="1" ac="1,2">Replace Direct OpenAI Calls with langfuse.openai Wrapper</task>
+      <task id="2" ac="3">Add Nested Spans for Cost Breakdown</task>
+      <task id="3" ac="4">Verify Cost Calculation Accuracy</task>
+      <task id="4" ac="3,4">Update Documentation</task>
+      <task id="5" ac="1,2,3,4">Testing</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">Given a query, When embeddings are generated via langfuse.openai, Then input tokens are counted and cost calculated automatically</ac>
+    <ac id="2">Given a query, When LLM generates response via langfuse.openai.chat.completions.create(), Then input/output tokens are counted and cost calculated automatically</ac>
+    <ac id="3">Given LangFuse trace, When I view it, Then I see total cost breakdown (embedding_cost + llm_generation_cost) in USD</ac>
+    <ac id="4">Given cost data, When I check pricing, Then it matches current OpenAI pricing (text-embedding-3-small = $0.00002/1K tokens, gpt-4o-mini = $0.00015/1K input, $0.0006/1K output)</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" section="Story 2.2: Implement Cost Tracking">
+        Story 2.2 requirements: Replace direct OpenAI calls with langfuse.openai wrapper for automatic token counting and cost calculation. Embedding generation via langfuse.openai tracks input tokens automatically. LLM generation via langfuse.openai.chat.completions.create() tracks input/output tokens automatically. Cost breakdown visible in LangFuse trace (embedding_cost + llm_generation_cost) in USD. Pricing must match OpenAI current rates.
+      </doc>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" section="Data Models and Contracts">
+        LangFuse Trace Structure includes cost field (total cost in USD) and spans with cost breakdown. Embedding generation span includes input_tokens and cost. LLM generation span includes input_tokens, output_tokens, and cost. Total cost = embedding_cost + llm_generation_cost.
+      </doc>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" section="NFR-OBS2: Cost Tracking Accuracy">
+        Cost calculated automatically via langfuse.openai wrapper. Pricing always current (LangFuse SDK updates pricing). Breakdown available: embedding_cost + llm_generation_cost.
+      </doc>
+      <doc path="docs/architecture.md" section="ADR-001: LangFuse Integration Pattern">
+        ADR-001 defines LangFuse decorator-based pattern (@observe()) with langfuse.openai wrapper for automatic cost tracking. Use langfuse.openai wrapper instead of direct openai import for automatic cost tracking. Use as_type="generation" for LLM calls to enable cost tracking. Use langfuse.start_as_current_observation() for nested spans.
+      </doc>
+      <doc path="docs/architecture.md" section="LangFuse Integration">
+        Implementation guide shows using from langfuse.openai import openai instead of import openai. For LLM calls, use langfuse.openai.chat.completions.create() for automatic cost tracking. Create nested spans with as_type="span" for embedding, as_type="generation" for LLM calls. Cost tracking automatic via langfuse.openai wrapper.
+      </doc>
+      <doc path="docs/epics.md" section="Story 2.2: Implement Cost Tracking">
+        Acceptance criteria: Embeddings generate with input tokens counted and cost calculated. LLM generates response with input/output tokens counted and cost calculated. LangFuse trace shows total cost breakdown (embedding + generation). Technical notes: Use OpenAI pricing: text-embedding-3-small = $0.00002/1K tokens, gpt-4o-mini = $0.00015/1K input, $0.0006/1K output.
+      </doc>
+      <doc path="docs/stories/2/2-1/2-1-integrate-langfuse-sdk.md" section="Dev Agent Record">
+        Story 2.1 learnings: LangFuse client initialized in docling_mcp/lifespan.py with _initialize_langfuse() function - reuse existing client instance. @observe decorator already applied to all 5 MCP tools in docling_mcp/server.py - cost tracking will enhance existing traces. Helper function _update_langfuse_metadata() exists in docling_mcp/server.py - can extend to include cost metadata. Test infrastructure tests/unit/test_langfuse_integration.py exists with 22 tests - add cost tracking tests to this file.
+      </doc>
+    </docs>
+    <code>
+      <file path="ingestion/embedder.py" kind="service" symbol="EmbeddingGenerator._generate_single_embedding" lines="177-184">
+        Currently uses direct OpenAI client: self.client.embeddings.create(). Must replace with langfuse.openai.embeddings.create() for automatic cost tracking. Method generates single embedding with retry logic. Returns List[float] embedding vector.
+      </file>
+      <file path="ingestion/embedder.py" kind="service" symbol="EmbeddingGenerator._generate_batch_embeddings" lines="187-197">
+        Currently uses direct OpenAI client: self.client.embeddings.create() for batch processing. Must replace with langfuse.openai.embeddings.create() for automatic cost tracking. Processes multiple texts in batch, returns List[List[float]] embeddings.
+      </file>
+      <file path="ingestion/embedder.py" kind="service" symbol="EmbeddingGenerator.__init__" lines="50-73">
+        Initializes OpenAI client with AsyncOpenAI(api_key, base_url). Must replace import from openai import AsyncOpenAI with from langfuse.openai import AsyncOpenAI. Client stored in self.client attribute, used by _generate_single_embedding and _generate_batch_embeddings methods.
+      </file>
+      <file path="core/rag_service.py" kind="service" symbol="search_knowledge_base_structured" lines="220-298">
+        Main RAG search function called by query_knowledge_base tool. Currently calls embedder.embed_query(query) which uses direct OpenAI client. Must wrap embedding generation in nested span with as_type="span" for cost tracking. Function already has timing metrics, can extend to include cost metadata.
+      </file>
+      <file path="docling_mcp/server.py" kind="tool" symbol="query_knowledge_base" lines="69-118">
+        MCP tool for semantic search. Already has @observe() decorator from Story 2.1. Must add nested span for embedding-generation with as_type="span" wrapping the embedding call. Currently calls search_knowledge_base_structured which internally calls embedder.embed_query().
+      </file>
+      <file path="docling_mcp/server.py" kind="tool" symbol="ask_knowledge_base" lines="120-170">
+        MCP tool for asking questions. Already has @observe() decorator from Story 2.1. Currently only performs semantic search, no LLM generation. If LLM generation is added in future, must use langfuse.openai.chat.completions.create() with as_type="generation" span for cost tracking.
+      </file>
+      <file path="docling_mcp/server.py" kind="helper" symbol="_update_langfuse_metadata" lines="33-49">
+        Helper function to update LangFuse metadata. Can be extended to include cost information. Currently updates current span metadata. Includes graceful degradation check for _langfuse_available.
+      </file>
+      <file path="docling_mcp/lifespan.py" kind="lifespan" symbol="_initialize_langfuse" lines="33-71">
+        LangFuse client initialization function. Already implemented in Story 2.1. Returns client instance stored in _langfuse_client module variable. Includes graceful degradation if API keys missing or SDK unavailable. Client can be accessed via get_langfuse_client() function.
+      </file>
+      <file path="tests/unit/test_langfuse_integration.py" kind="test" symbol="TestLangfuseInitialization" lines="14-50">
+        Unit tests for LangFuse initialization. Must add tests for langfuse.openai wrapper usage. Test file already has 22 tests covering initialization, shutdown, helpers, and decorator functionality. Can extend with cost tracking tests.
+      </file>
+    </code>
+    <dependencies>
+      <python>
+        <package name="langfuse" version=">=3.0.0">LangFuse Python SDK for observability tracing and cost tracking. Already installed in pyproject.toml. OTel-based, async HTTP. Provides langfuse.openai wrapper for automatic cost tracking.</package>
+        <package name="openai" version=">=1.0.0">OpenAI SDK. Currently used directly in ingestion/embedder.py. Must be replaced with langfuse.openai wrapper for cost tracking. Already in dependencies.</package>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">
+      Cost Tracking Pattern: Must use langfuse.openai wrapper instead of direct openai import for automatic cost tracking. Follow ADR-001 pattern - decorator-based (@observe()) with langfuse.openai wrapper. LangFuse SDK automatically updates pricing, no manual updates needed.
+    </constraint>
+    <constraint type="nested-spans">
+      Nested Spans Pattern: Use langfuse.start_as_current_observation() with as_type="span" for embedding operations, as_type="generation" for LLM calls. Create nested span embedding-generation in query_knowledge_base tool wrapping embedding generation call. Create nested span llm-generation in ask_knowledge_base tool if LLM generation is added.
+    </constraint>
+    <constraint type="graceful-degradation">
+      Graceful Degradation: Cost tracking must not break if LangFuse unavailable (use existing fallback pattern from Story 2.1). System functions normally when LangFuse env vars missing or SDK unavailable. No-op fallback decorator pattern already implemented.
+    </constraint>
+    <constraint type="pricing">
+      Pricing Accuracy: LangFuse SDK automatically updates pricing, no manual updates needed. Current OpenAI pricing: text-embedding-3-small = $0.00002/1K tokens, gpt-4o-mini = $0.00015/1K input, $0.0006/1K output. Verify pricing accuracy in tests.
+    </constraint>
+    <constraint type="cost-breakdown">
+      Cost Breakdown: Total cost = embedding_cost + llm_generation_cost, visible in LangFuse trace view. Cost breakdown must be visible in separate spans for embedding and LLM generation (if applicable).
+    </constraint>
+    <constraint type="testing">
+      Testing Standards: Unit tests mock langfuse.openai wrapper, verify wrapper usage, test cost calculation logic. Integration tests use real LangFuse client (test instance), verify token counting and cost calculation accuracy. E2E tests verify cost breakdown visible in LangFuse dashboard. Coverage target: Cost tracking integration &gt;80% coverage (critical path).
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="langfuse.openai" kind="module" signature="from langfuse.openai import openai; await openai.embeddings.create(model='text-embedding-3-small', input=text)" path="ingestion/embedder.py">
+      LangFuse OpenAI wrapper for automatic cost tracking. Replace direct openai import with from langfuse.openai import openai. Use openai.embeddings.create() instead of direct client.embeddings.create(). Automatically tracks input tokens and calculates cost.
+    </interface>
+    <interface name="langfuse.openai.chat.completions" kind="module" signature="from langfuse.openai import openai; await openai.chat.completions.create(model='gpt-4o-mini', messages=[...])" path="core/rag_service.py or docling_mcp/server.py">
+      LangFuse OpenAI wrapper for LLM generation cost tracking. Use langfuse.openai.chat.completions.create() instead of direct OpenAI client. Automatically tracks input/output tokens and calculates cost. Must be wrapped in span with as_type="generation".
+    </interface>
+    <interface name="start_as_current_observation" kind="function" signature="from langfuse import get_client; langfuse = get_client(); with langfuse.start_as_current_observation(as_type='span', name='embedding-generation') as span:" path="docling_mcp/server.py">
+      LangFuse nested span creation for cost breakdown. Use for embedding-generation span with as_type="span". Use for llm-generation span with as_type="generation". Update span with cost information from LangFuse response.
+    </interface>
+    <interface name="get_langfuse_client" kind="function" signature="from docling_mcp.lifespan import get_langfuse_client; langfuse = get_langfuse_client()" path="docling_mcp/lifespan.py">
+      Get LangFuse client instance. Returns client if available, None if LangFuse unavailable. Use for creating nested spans and updating metadata. Already initialized in lifespan startup phase.
+    </interface>
+    <interface name="_update_langfuse_metadata" kind="function" signature="_update_langfuse_metadata({'tool_name': 'query_knowledge_base', 'cost': 0.001})" path="docling_mcp/server.py">
+      Helper function to update LangFuse metadata. Can be extended to include cost information. Includes graceful degradation check. Currently updates current span metadata.
+    </interface>
+    <interface name="EmbeddingGenerator.embed_query" kind="method" signature="async def embed_query(self, text: str) -> List[float]" path="ingestion/embedder.py">
+      Embedding generation method. Currently uses direct OpenAI client internally. Must update to use langfuse.openai wrapper. Called by search_knowledge_base_structured in core/rag_service.py.
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Unit tests: Mock langfuse.openai wrapper, verify wrapper usage in embedding generation, test cost calculation logic. Integration tests: Real LangFuse client (test instance), verify token counting and cost calculation accuracy for embeddings and LLM (if applicable). E2E tests: Verify cost breakdown visible in LangFuse dashboard with correct USD amounts. Coverage target: Cost tracking integration &gt;80% coverage (critical path). Test pattern: Extend existing tests/unit/test_langfuse_integration.py with cost tracking tests.
+    </standards>
+    <locations>
+      tests/unit/test_langfuse_integration.py - Unit tests for LangFuse cost tracking (extend existing file)
+      tests/integration/ - Integration tests for cost tracking with real LangFuse client
+      tests/e2e/ - E2E tests for cost breakdown visibility in LangFuse dashboard (if applicable)
+      Manual testing: Verify cost breakdown visible in LangFuse dashboard after implementation
+    </locations>
+    <ideas>
+      <test ac="1">Test embedding generation uses langfuse.openai wrapper. Mock langfuse.openai.embeddings.create(), verify it's called instead of direct openai client. Verify input tokens are counted and cost calculated automatically. Test cost appears in LangFuse trace.</test>
+      <test ac="2">Test LLM generation uses langfuse.openai wrapper (if LLM calls exist). Mock langfuse.openai.chat.completions.create(), verify it's called instead of direct OpenAI client. Verify input/output tokens are counted and cost calculated automatically. Test cost appears in LangFuse trace.</test>
+      <test ac="3">Test cost breakdown visible in LangFuse trace. Create nested span embedding-generation with as_type="span". Create nested span llm-generation with as_type="generation" (if applicable). Verify total cost breakdown (embedding_cost + llm_generation_cost) visible in trace view. Test cost in USD format.</test>
+      <test ac="4">Test pricing accuracy. Test embedding generation with known token count, verify cost matches text-embedding-3-small pricing ($0.00002/1K tokens). Test LLM generation with known input/output tokens, verify cost matches gpt-4o-mini pricing ($0.00015/1K input, $0.0006/1K output). Compare LangFuse-reported cost with manual calculation.</test>
+    </ideas>
+  </tests>
+</story-context>
+

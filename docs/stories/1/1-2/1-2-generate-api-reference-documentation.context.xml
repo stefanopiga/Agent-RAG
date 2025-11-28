@@ -1,0 +1,155 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.2</storyId>
+    <title>Generate API Reference Documentation</title>
+    <status>drafted</status>
+    <generatedAt>2025-11-26</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/1-2-generate-api-reference-documentation.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>auto-generated API documentation for all public functions</iWant>
+    <soThat>I can quickly understand how to use and extend the system</soThat>
+    <tasks>
+      <task id="1" ac="1,2">Install and configure documentation generator</task>
+      <task id="2" ac="1">Scan codebase and verify docstrings completeness</task>
+      <task id="3" ac="2">Generate API reference documentation</task>
+      <task id="4" ac="3">Configure GitHub Actions for auto-build</task>
+      <task id="5" ac="3">Setup local server option</task>
+      <task id="6" ac="1,2,3">Testing and validation</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">Given the codebase, When I run documentation generation, Then all public functions in core/, ingestion/, utils/ have docstrings</criterion>
+    <criterion id="2">Given the generated docs, When I search for a function, Then I find parameters, return types, and usage examples</criterion>
+    <criterion id="3">Given the API docs, When I deploy them, Then they are accessible via GitHub Pages or local server</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/tech-spec-epic-1.md" title="Epic Technical Specification: Core RAG Baseline & Documentation" section="Story 1.2: Generate API Reference Documentation">
+        Story 1.2 workflow: Install Sphinx o MkDocs, configure generator, scan core/ingestion/utils/, verify docstrings, generate HTML, configure GitHub Actions, deploy to GitHub Pages or local server.
+      </doc>
+      <doc path="docs/stories/tech-spec-epic-1.md" title="Epic Technical Specification" section="Dependencies and Integrations">
+        Documentation tools: Sphinx (>=7.0.0) or MkDocs (>=1.5.0) for API reference generation, sphinx-autodoc or mkdocs-material for auto-documentation from docstrings, GitHub Pages for hosting static documentation.
+      </doc>
+      <doc path="docs/stories/tech-spec-epic-1.md" title="Epic Technical Specification" section="Detailed Design">
+        API reference structure: modules organized by directory (core/, ingestion/, utils/), each public function with complete docstring, usage examples for main functions, type hints for all parameters and return types. Documentation location: guide/api-reference/ directory (new structure from Epic 1).
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 1.2: Generate API Reference Documentation">
+        Acceptance criteria: all public functions in core/, ingestion/, utils/ have docstrings; generated docs contain parameters, return types, usage examples; API docs accessible via GitHub Pages or local server. Technical notes: Use Sphinx or MkDocs, configure auto-build in GitHub Actions.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture" section="Project Structure">
+        Code organized by responsibility: core/ (RAG business logic), ingestion/ (document processing), utils/ (shared utilities). Module organization follows directory structure for documentation.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture" section="Naming Patterns">
+        Public functions use snake_case naming. Only document public functions (not private _ prefixed). Functions should have docstrings with description, parameters, return types, usage examples.
+      </doc>
+      <doc path="docs/prd.md" title="Product Requirements Document" section="Documentation & Developer Experience">
+        FR27: System must have auto-generated API documentation (Sphinx or MkDocs). FR26: System must have README with setup instructions completable in < 5 minutes. Documentation should be accessible and comprehensive.
+      </doc>
+    </docs>
+    <code>
+      <file path="core/rag_service.py" kind="service" symbol="search_knowledge_base" lines="138-166" reason="Core RAG service function - main public API for knowledge base search, needs docstring verification and API documentation">
+        <signature>async def search_knowledge_base(query: str, limit: int = 5, source_filter: str | None = None) -> str</signature>
+      </file>
+      <file path="core/rag_service.py" kind="service" symbol="initialize_global_embedder" lines="45-91" reason="Global embedder initialization function - public API for embedder setup">
+        <signature>async def initialize_global_embedder()</signature>
+      </file>
+      <file path="core/rag_service.py" kind="service" symbol="get_global_embedder" lines="112-136" reason="Get global embedder instance - public API for accessing embedder">
+        <signature>async def get_global_embedder()</signature>
+      </file>
+      <file path="core/agent.py" kind="agent" symbol="search_knowledge_base" lines="18-63" reason="PydanticAI agent tool wrapper - public function for agent integration, needs docstring verification">
+        <signature>async def search_knowledge_base(ctx: RunContext[None], query: str, limit: int = 5, source_filter: str | None = None) -> str</signature>
+      </file>
+      <file path="ingestion/ingest.py" kind="pipeline" symbol="DocumentIngestionPipeline" lines="39-94" reason="Main ingestion pipeline class - public API for document ingestion, needs class and method docstrings">
+        <signature>class DocumentIngestionPipeline</signature>
+      </file>
+      <file path="ingestion/ingest.py" kind="pipeline" symbol="ingest_documents" lines="95-154" reason="Main ingestion method - public API for ingesting documents">
+        <signature>async def ingest_documents(self, progress_callback: Optional[callable] = None) -> List[IngestionResult]</signature>
+      </file>
+      <file path="ingestion/chunker.py" kind="service" symbol="create_chunker" lines="376-389" reason="Chunker factory function - public API for creating chunkers, needs docstring verification">
+        <signature>def create_chunker(config: ChunkingConfig)</signature>
+      </file>
+      <file path="ingestion/embedder.py" kind="service" symbol="EmbeddingGenerator" lines="47-102" reason="Embedding generator class - public API for generating embeddings, needs class and method docstrings">
+        <signature>class EmbeddingGenerator(BaseEmbedder)</signature>
+      </file>
+      <file path="ingestion/embedder.py" kind="service" symbol="create_embedder" lines="199-216" reason="Embedder factory function - public API for creating embedders, needs docstring verification">
+        <signature>def create_embedder(use_cache: bool = True, batch_size: int = 100, max_retries: int = 3, retry_delay: float = 1.0, model_name: Optional[str] = None) -> BaseEmbedder</signature>
+      </file>
+      <file path="utils/db_utils.py" kind="utility" symbol="DatabasePool" reason="Database connection pool class - public API for database operations, needs class and method docstrings">
+        <signature>class DatabasePool</signature>
+      </file>
+      <file path="utils/db_utils.py" kind="utility" symbol="initialize_database" lines="85-89" reason="Database initialization function - public API for DB setup">
+        <signature>async def initialize_database()</signature>
+      </file>
+      <file path="utils/models.py" kind="model" symbol="Document" reason="Pydantic data models - public API models for type safety, needs model docstrings">
+        <signature>class Document(BaseModel)</signature>
+      </file>
+      <file path="utils/providers.py" kind="utility" symbol="get_provider_config" lines="24-31" reason="Provider configuration function - public API for getting provider config">
+        <signature>def get_provider_config() -> ProviderConfig</signature>
+      </file>
+      <file path="utils/providers.py" kind="utility" symbol="get_llm_model" lines="33-46" reason="LLM model configuration function - public API for model setup">
+        <signature>def get_llm_model() -> OpenAIModel</signature>
+      </file>
+      <file path="utils/providers.py" kind="utility" symbol="get_embedding_client" lines="49-73" reason="Embedding client factory function - public API for embedding client">
+        <signature>def get_embedding_client() -> openai.AsyncOpenAI</signature>
+      </file>
+    </code>
+    <dependencies>
+      <python>
+        <package name="sphinx" version=">=7.0.0" reason="Documentation generator option 1 - API reference generation"/>
+        <package name="mkdocs" version=">=1.5.0" reason="Documentation generator option 2 - modern alternative to Sphinx"/>
+        <package name="sphinx-autodoc" reason="Sphinx plugin for auto-documentation from docstrings"/>
+        <package name="mkdocs-material" reason="MkDocs plugin for auto-documentation and modern UI"/>
+        <package name="pytest" version=">=8.0.0" reason="Testing framework for validation scripts"/>
+        <package name="pydantic-ai" version=">=0.7.4" reason="Agent framework - functions in core/agent.py use this"/>
+        <package name="asyncpg" version=">=0.30.0" reason="Database utilities - functions in utils/db_utils.py use this"/>
+        <package name="openai" version=">=1.0.0" reason="Embedding generation - functions in ingestion/embedder.py use this"/>
+        <package name="docling" version=">=2.55.0" reason="Document processing - functions in ingestion/ingest.py use this"/>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Documentation structure: API reference in guide/api-reference/ directory (new structure from Epic 1), not in docs/ (which is for BMAD workflow docs)</constraint>
+    <constraint type="architecture">Module organization: Documentation organized by directory (core/, ingestion/, utils/) matching code structure</constraint>
+    <constraint type="naming">Public functions: Only document public functions (not private _ prefixed functions)</constraint>
+    <constraint type="tool">Documentation tool: Sphinx (>=7.0.0) or MkDocs (>=1.5.0) with auto-documentation plugins (sphinx-autodoc or mkdocs-material)</constraint>
+    <constraint type="deployment">Deployment: GitHub Pages for public access, local server option for development (mkdocs serve or sphinx-autobuild)</constraint>
+    <constraint type="ci-cd">GitHub Actions: Auto-build workflow required for documentation generation on push to main branch</constraint>
+    <constraint type="docstring">Docstring format: Must include function description, parameters, return types, usage examples</constraint>
+    <constraint type="coverage">Coverage: All public functions in core/, ingestion/, utils/ must have docstrings</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="Documentation Generator CLI" kind="CLI" signature="sphinx-build or mkdocs build" path="guide/api-reference/conf.py or mkdocs.yml" reason="Command-line interface for generating documentation from docstrings"/>
+    <interface name="GitHub Actions Workflow" kind="YAML" signature=".github/workflows/docs.yml" path=".github/workflows/" reason="CI/CD workflow for automatic documentation build and deployment to GitHub Pages"/>
+    <interface name="Local Documentation Server" kind="CLI" signature="mkdocs serve or sphinx-autobuild" path="guide/api-reference/" reason="Local development server for previewing documentation"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Manual review for docstrings completeness and quality. Manual test for documentation accessibility (GitHub Pages and local server). Script validation for docstrings format and completeness (optional). No automated tests required for documentation generation - manual validation sufficient per story requirements.
+    </standards>
+    <locations>
+      <location>guide/api-reference/</location>
+      <location>tests/</location>
+      <location>scripts/verification/</location>
+    </locations>
+    <ideas>
+      <test ac="1">Manual review: Scan core/, ingestion/, utils/ directories, verify all public functions have docstrings with description, parameters, return types, usage examples</test>
+      <test ac="1">Script validation: Create script to scan Python files, extract public functions, verify docstring presence and format compliance</test>
+      <test ac="2">Manual review: Generate documentation, search for sample functions, verify each entry includes parameters, return types, usage examples</test>
+      <test ac="2">Cross-reference: Verify docstrings match actual function signatures in code</test>
+      <test ac="3">Manual test: Access documentation via GitHub Pages URL after deployment, verify all pages load correctly</test>
+      <test ac="3">Manual test: Run local server (mkdocs serve or sphinx-autobuild), verify documentation accessible at localhost, test navigation and search</test>
+      <test ac="3">CI/CD test: Verify GitHub Actions workflow builds documentation successfully on push to main branch</test>
+    </ideas>
+  </tests>
+</story-context>
+

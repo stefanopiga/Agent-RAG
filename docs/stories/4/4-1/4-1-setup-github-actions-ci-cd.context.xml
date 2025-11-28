@@ -1,0 +1,235 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>1</storyId>
+    <title>Setup GitHub Actions CI/CD</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-01-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4/4-1/4-1-setup-github-actions-ci-cd.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>automated testing and linting on every push</iWant>
+    <soThat>code quality is maintained automatically</soThat>
+    <tasks>
+- Task 1: Create GitHub Actions CI Workflow (AC: #1, #9, #10)
+  - Create `.github/workflows/ci.yml` con struttura workflow base
+  - Configure triggers: `pull_request` su `main`/`develop`, `push` su `main`/`develop`
+  - Setup job parallelism: lint, type-check, test, build, secret-scan eseguiti in parallelo
+  - Configure job dependencies e shared artifacts se necessario
+  - Add workflow status badge al README.md
+  - Manual test: Creare PR, verificare che tutti i job eseguano correttamente
+  - Manual test: Verificare che status check appaia su PR
+
+- Task 2: Implement Ruff Linting Job (AC: #2, #3)
+  - Create lint job con setup Python 3.11 e UV
+  - Install dependencies con `uv sync`
+  - Run `ruff check --output-format=github .` con zero warnings enforcement
+  - Run `ruff format --check .` per verificare formattazione
+  - Configure fail-fast se linting fallisce
+  - Integration test: Aggiungere warning intenzionale, verificare build failure
+  - Integration test: Verificare che ruff format check funzioni correttamente
+
+- Task 3: Implement Mypy Type Checking Job (AC: #4)
+  - Create type-check job con setup Python 3.11 e UV
+  - Install dependencies con `uv sync`
+  - Run `mypy core ingestion docling_mcp utils --ignore-missing-imports` con zero errors enforcement
+  - Configure fail-fast se type checking fallisce
+  - Integration test: Aggiungere type error intenzionale, verificare build failure
+  - Verify mypy configuration in `pyproject.toml` è corretta
+
+- Task 4: Implement Pytest Coverage Job (AC: #5)
+  - Create test job con setup Python 3.11 e UV
+  - Install dependencies con `uv sync`
+  - Run `pytest` con coverage flags: `--cov=core --cov=ingestion --cov=docling_mcp --cov=utils --cov-report=xml --cov-report=term-missing --cov-fail-under=70`
+  - Upload coverage report come artifact (`coverage.xml`)
+  - Configure fail-fast se coverage <70%
+  - Verify coverage configuration in `pyproject.toml` è corretta
+  - Integration test: Ridurre coverage <70%, verificare build failure
+  - Integration test: Verificare che coverage report XML sia generato correttamente
+
+- Task 5: Implement Docker Build Job (AC: #6, #7)
+  - Create build job con Docker Buildx setup
+  - Build Streamlit Docker image (`Dockerfile`) con cache optimization
+  - Build API Docker image (`Dockerfile.api`) con cache optimization
+  - Verify image sizes: entrambe <500MB (build failure se superano)
+  - Configure Docker cache: `cache-from: type=gha`, `cache-to: type=gha,mode=max`
+  - Integration test: Verificare che build completi senza errori
+  - Integration test: Verificare che size check funzioni correttamente
+
+- Task 6: Implement TruffleHog Secret Scanning Job (AC: #8)
+  - Create secret-scan job con checkout full history (`fetch-depth: 0`)
+  - Run TruffleHog OSS action: `trufflesecurity/trufflehog@main` con `extra_args: --results=verified,unknown --fail`
+  - Configure fail-fast se secrets rilevati
+  - Create `.trufflehogignore` se necessario per pattern noti (falsi positivi)
+  - Integration test: Aggiungere secret test (es. `sk-test-1234567890`), verificare build failure
+  - Integration test: Verificare che scan funzioni su git history completa
+
+- Task 7: Configure CodeRabbit Integration (AC: #10)
+  - Verify CodeRabbit GitHub App è installato sul repository
+  - Verify `coderabbit.yaml` configuration è presente e corretta
+  - Manual test: Creare PR, verificare che CodeRabbit review automatica funzioni
+  - Documentazione: Aggiungere nota in README.md su CodeRabbit integration
+
+- Task 8: Add Workflow Documentation and Validation (AC: #1, #9, #10)
+  - Document workflow structure in `.github/workflows/README.md` (opzionale)
+  - Add workflow comments inline per spiegare ogni step
+  - Verify tutti i job hanno timeout appropriati
+  - Verify tutti i job usano caching dove possibile (UV cache, Docker cache)
+  - Manual test: Verificare che workflow esegua in <15 minuti (performance requirement)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. **AC4.1.1**: Dato un push a `main` o `develop`, quando GitHub Actions esegue, allora tutti i job (lint, type-check, test, build, secret-scan) vengono eseguiti in parallelo
+
+2. **AC4.1.2**: Dato il job lint, quando GitHub Actions esegue `ruff check`, allora passa con zero warnings (build failure se warnings presenti)
+
+3. **AC4.1.3**: Dato il job lint, quando GitHub Actions esegue `ruff format --check`, allora passa con zero errori di formattazione (build failure se errori presenti)
+
+4. **AC4.1.4**: Dato il job type-check, quando GitHub Actions esegue `mypy`, allora passa con zero errors (build failure se errors presenti)
+
+5. **AC4.1.5**: Dato il job test, quando GitHub Actions esegue `pytest` con coverage, allora passa con coverage >70% enforcement (build failure se coverage <70%)
+
+6. **AC4.1.6**: Dato il job build, quando GitHub Actions esegue Docker build, allora entrambe le immagini (Streamlit e API) compilano correttamente senza errori
+
+7. **AC4.1.7**: Dato il job build, quando GitHub Actions verifica le dimensioni delle immagini Docker, allora entrambe le immagini sono <500MB (build failure se superano limite)
+
+8. **AC4.1.8**: Dato il job secret-scan, quando GitHub Actions esegue TruffleHog OSS, allora passa senza rilevare secrets (build failure se secrets rilevati)
+
+9. **AC4.1.9**: Dato un pull request, quando viene creato o aggiornato, allora GitHub Actions esegue tutti i job automaticamente
+
+10. **AC4.1.10**: Dato il workflow CI/CD, quando tutti i job completano con successo, allora il PR può essere mergiato (status check verde)
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/4/tech-spec-epic-4.md" title="Epic Technical Specification: Production Infrastructure &amp; CI/CD" section="GitHub Actions CI/CD Pipeline">
+        Workflow strutturato con job paralleli (lint, type-check, test, build, secret-scan) per performance. Caching ottimizzato per velocità (UV cache, Docker cache). Coverage enforcement >70% con build failure se non raggiunto. TruffleHog OSS con `--fail` flag per bloccare PR con secrets rilevati.
+      </doc>
+      <doc path="docs/stories/4/tech-spec-epic-4.md" title="Epic Technical Specification: Production Infrastructure &amp; CI/CD" section="TruffleHog OSS Secret Scanning">
+        Configuration con `fetch-depth: 0` per scan completo della git history. `--results=verified,unknown` per includere solo secrets verificati o sconosciuti. `--fail` flag per bloccare build se secrets rilevati.
+      </doc>
+      <doc path="docs/stories/4/tech-spec-epic-4.md" title="Epic Technical Specification: Production Infrastructure &amp; CI/CD" section="CodeRabbit Integration">
+        GitHub App installation process, configuration file `coderabbit.yaml` con auto_review enabled, high_level_summary, profile chill. Permissions required: Read-only Actions/Checks, Read-write Contents/Commit statuses/Issues/Pull requests.
+      </doc>
+      <doc path="docs/stories/4/tech-spec-epic-4.md" title="Epic Technical Specification: Production Infrastructure &amp; CI/CD" section="Docker Multi-Stage Optimization">
+        Multi-stage build pattern con separazione build-time e runtime dependencies. Slim base image `python:3.11-slim`. Layer caching con `--mount=type=cache` per UV cache. Expected size reduction: ~30-40% (target <500MB).
+      </doc>
+      <doc path="docs/stories/4/tech-spec-epic-4.md" title="Epic Technical Specification: Production Infrastructure &amp; CI/CD" section="Coverage Threshold Configuration">
+        pyproject.toml configuration per coverage con `fail_under = 70`. CI/CD enforcement con `--cov-fail-under=70` flag. Coverage reporting: XML per CI/CD integration, terminal per developer feedback, HTML per local development.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="ADR-004: Git Workflow &amp; CI/CD">
+        Git Flow semplificato + Conventional Commits. GitHub Actions: lint, type-check, test, secret scan. Quality gates automatici, security scanning. TruffleHog OSS su ogni PR. CodeRabbit AI su ogni PR. Semantic Versioning + CHANGELOG.md.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="CI/CD Pipeline">
+        Pipeline components: lint (ruff check zero warnings, ruff format check), type-check (mypy zero errors), test (pytest coverage >70%, fail build se coverage <70%, upload coverage report artifacts), build (Docker build test Streamlit + API, verify image sizes <500MB), secret-scan (TruffleHog OSS scan full git history, fail build se secrets rilevati).
+      </doc>
+      <doc path="docs/testing-strategy.md" title="Testing Strategy - docling-rag-agent" section="CI/CD Integration">
+        GitHub Actions workflow con test pipeline. Run unit tests con coverage, run integration tests, check coverage con `--cov-fail-under=70`, upload coverage report come artifact.
+      </doc>
+      <doc path="docs/coding-standards.md" title="Coding Standards - docling-rag-agent" section="Python Style Guide">
+        Ruff linting e Mypy type checking seguono standard definiti. Ruff configuration in pyproject.toml: line-length 100, select E/F/I/N/W, ignore E501. Mypy configuration: python_version 3.10, warn_return_any true, ignore_missing_imports true.
+      </doc>
+      <doc path="docs/unified-project-structure.md" title="Unified Project Structure - docling-rag-agent" section="CI/CD Configuration (.github/)">
+        All CI/CD workflows in `.github/workflows/`. Workflow files: `*.yml` or `*.yaml`. No CI/CD configuration files in root. Authorized files: `ci.yml` (lint, type-check, test, build), `release.yml` (release automation).
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Epic 4: Production Infrastructure &amp; CI/CD">
+        Epic 4 prepara il sistema per deployment production-ready su GitHub con CI/CD automatizzato, quality gates rigorosi, security scanning, e Docker optimization. Story 4.1: Setup GitHub Actions CI/CD con lint, type-check, test, build validation.
+      </doc>
+    </docs>
+    <code>
+      <artifact path="pyproject.toml" kind="configuration" symbol="tool.ruff" lines="37-40" reason="Ruff linting configuration: line-length 100, select E/F/I/N/W, ignore E501. Used by lint job in CI/CD." />
+      <artifact path="pyproject.toml" kind="configuration" symbol="tool.mypy" lines="47-51" reason="Mypy type checking configuration: python_version 3.10, warn_return_any true, ignore_missing_imports true. Used by type-check job in CI/CD." />
+      <artifact path="pyproject.toml" kind="configuration" symbol="tool.pytest.ini_options" lines="42-45" reason="Pytest configuration: asyncio_mode auto, testpaths tests. Used by test job in CI/CD." />
+      <artifact path="Dockerfile" kind="dockerfile" symbol="Dockerfile" lines="1-57" reason="Streamlit Docker image build configuration. Multi-stage optimization pattern with UV cache. Used by build job in CI/CD to verify image compiles and size <500MB." />
+      <artifact path="Dockerfile.api" kind="dockerfile" symbol="Dockerfile.api" lines="1-48" reason="API Docker image build configuration. Used by build job in CI/CD to verify image compiles and size <500MB." />
+      <artifact path="coderabbit.yaml" kind="configuration" symbol="coderabbit.yaml" lines="1-1" reason="CodeRabbit configuration file (currently empty). Should contain auto_review enabled, high_level_summary, profile chill. Used by CodeRabbit GitHub App for code review." />
+    </code>
+    <dependencies>
+      <python>
+        <package name="ruff" version="latest" purpose="Linting and formatting. Used in lint job: `ruff check --output-format=github .` and `ruff format --check .`" />
+        <package name="mypy" version="latest" purpose="Type checking. Used in type-check job: `mypy core ingestion docling_mcp utils --ignore-missing-imports`" />
+        <package name="pytest" version=">=8.0.0" purpose="Testing framework. Used in test job with coverage: `pytest --cov=core --cov=ingestion --cov=docling_mcp --cov=utils --cov-report=xml --cov-report=term-missing --cov-fail-under=70`" />
+        <package name="pytest-cov" version=">=4.1.0" purpose="Coverage plugin for pytest. Required for coverage reporting in CI/CD." />
+      </python>
+      <github-actions>
+        <action name="actions/checkout@v5" purpose="Checkout repository code. Used in all jobs." />
+        <action name="actions/setup-python@v5" purpose="Setup Python 3.11 environment. Used in lint, type-check, test jobs." />
+        <action name="astral-sh/setup-uv@v4" purpose="Install UV package manager. Used in lint, type-check, test jobs for dependency installation." />
+        <action name="docker/setup-buildx-action@v3" purpose="Setup Docker Buildx for multi-platform builds. Used in build job." />
+        <action name="docker/build-push-action@v5" purpose="Build Docker images with cache optimization. Used in build job for Streamlit and API images." />
+        <action name="trufflesecurity/trufflehog@main" purpose="Secret scanning with TruffleHog OSS. Used in secret-scan job with `extra_args: --results=verified,unknown --fail`." />
+        <action name="actions/upload-artifact@v4" purpose="Upload coverage report XML as artifact. Used in test job." />
+      </github-actions>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint name="GitHub Actions Workflow Pattern">
+      Workflow strutturato con job paralleli per performance, caching ottimizzato per velocità. Reference: docs/stories/4/tech-spec-epic-4.md#GitHub-Actions-CI/CD-Pipeline, docs/architecture.md#ADR-004
+    </constraint>
+    <constraint name="Quality Gates Automation">
+      Build failure automatico se linting, type checking, coverage, o secret scanning falliscono. Reference: docs/stories/4/tech-spec-epic-4.md#Detailed-Design, docs/architecture.md#ADR-004
+    </constraint>
+    <constraint name="Docker Multi-Stage Optimization">
+      Docker builds usano cache GitHub Actions per layer optimization. Reference: docs/stories/4/tech-spec-epic-4.md#Docker-Multi-Stage-Optimization
+    </constraint>
+    <constraint name="Secret Scanning Pattern">
+      TruffleHog OSS con `--fail` flag per bloccare PR con secrets rilevati. Reference: docs/stories/4/tech-spec-epic-4.md#TruffleHog-OSS-Secret-Scanning, docs/architecture.md#ADR-004
+    </constraint>
+    <constraint name="Coverage Enforcement">
+      Coverage threshold >70% enforced con `--cov-fail-under=70` flag. Reference: docs/stories/4/tech-spec-epic-4.md#Coverage-Threshold-Configuration
+    </constraint>
+    <constraint name="Workflow File Location">
+      Workflow file `.github/workflows/ci.yml` segue struttura standard GitHub Actions. Reference: docs/unified-project-structure.md#Root-Directory-Structure
+    </constraint>
+    <constraint name="Configuration Reuse">
+      Riutilizza configurazione esistente in `pyproject.toml` per ruff, mypy, coverage. Reference: docs/stories/4/tech-spec-epic-4.md#Dependencies-and-Integrations
+    </constraint>
+    <constraint name="Docker Image Size Limit">
+      Entrambe le immagini Docker (Streamlit e API) devono essere <500MB. Build failure se superano limite. Reference: docs/stories/4/tech-spec-epic-4.md#Docker-Multi-Stage-Optimization
+    </constraint>
+    <constraint name="Performance Requirement">
+      Workflow deve eseguire in <15 minuti totale. Reference: docs/stories/4/tech-spec-epic-4.md#Performance
+    </constraint>
+    <constraint name="Code Quality Standards">
+      Ruff linting e Mypy type checking seguono standard definiti in coding-standards.md. Reference: docs/coding-standards.md#Python-Style-Guide
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="GitHub Actions Workflow API" kind="workflow" signature="on: pull_request/push events, jobs: lint/type-check/test/build/secret-scan" path=".github/workflows/ci.yml" />
+    <interface name="Ruff CLI" kind="command-line" signature="ruff check --output-format=github ." path="lint job" />
+    <interface name="Ruff Format CLI" kind="command-line" signature="ruff format --check ." path="lint job" />
+    <interface name="Mypy CLI" kind="command-line" signature="mypy core ingestion docling_mcp utils --ignore-missing-imports" path="type-check job" />
+    <interface name="Pytest CLI" kind="command-line" signature="pytest --cov=core --cov=ingestion --cov=docling_mcp --cov=utils --cov-report=xml --cov-report=term-missing --cov-fail-under=70 tests/" path="test job" />
+    <interface name="Docker Buildx API" kind="docker" signature="docker build with cache-from/cache-to type=gha" path="build job" />
+    <interface name="TruffleHog OSS Action" kind="github-action" signature="trufflesecurity/trufflehog@main with extra_args: --results=verified,unknown --fail" path="secret-scan job" />
+    <interface name="CodeRabbit GitHub App" kind="github-app" signature="Automatic code review on PR creation/update" path="coderabbit.yaml" />
+  </interfaces>
+
+  <tests>
+    <standards>
+      CI/CD Integration Tests: Validazione workflow execution, job success, artifact upload. Docker Build Tests: Validazione build success, image size, health check functionality. Manual Tests: Validazione CodeRabbit review, workflow trigger su PR/push. Coverage Target: Coverage threshold >70% enforced in CI/CD. Test Pattern: TDD pattern già stabilito, Story 4.1 esegue test esistenti in CI/CD. Code Quality Standards: Ruff linting e Mypy type checking seguono standard definiti in coding-standards.md.
+    </standards>
+    <locations>
+      tests/unit/, tests/integration/, tests/e2e/
+    </locations>
+    <ideas>
+      <test ac="AC4.1.1" idea="Manual test: Creare PR, verificare che tutti i job (lint, type-check, test, build, secret-scan) eseguano in parallelo e completino con successo" />
+      <test ac="AC4.1.2" idea="Integration test: Aggiungere warning intenzionale nel codice, verificare che lint job fallisca con build failure" />
+      <test ac="AC4.1.3" idea="Integration test: Modificare formattazione codice, verificare che ruff format check fallisca con build failure" />
+      <test ac="AC4.1.4" idea="Integration test: Aggiungere type error intenzionale, verificare che type-check job fallisca con build failure" />
+      <test ac="AC4.1.5" idea="Integration test: Ridurre coverage <70% temporaneamente, verificare che test job fallisca con build failure" />
+      <test ac="AC4.1.6" idea="CI/CD test: Verificare che Docker build completi senza errori per entrambe le immagini (Streamlit e API)" />
+      <test ac="AC4.1.7" idea="CI/CD test: Verificare che size check funzioni correttamente e fallisca se immagini superano 500MB" />
+      <test ac="AC4.1.8" idea="Integration test: Aggiungere secret test (es. `sk-test-1234567890`), verificare che secret-scan job fallisca con build failure" />
+      <test ac="AC4.1.9" idea="Manual test: Creare PR, verificare che workflow esegua automaticamente su PR creation/update" />
+      <test ac="AC4.1.10" idea="Manual test: Verificare che status check appaia su PR e che PR possa essere mergiato solo se tutti i job passano" />
+    </ideas>
+  </tests>
+</story-context>
+

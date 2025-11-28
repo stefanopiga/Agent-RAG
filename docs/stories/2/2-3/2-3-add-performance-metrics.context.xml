@@ -1,0 +1,207 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>3</storyId>
+    <title>Add Performance Metrics</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-11-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/2/2-3/2-3-add-performance-metrics.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>detailed timing breakdown for each query</iWant>
+    <soThat>I can identify performance bottlenecks</soThat>
+    <tasks>
+      <task id="1" acs="1,2">
+        <title>Add Timing Breakdown to LangFuse Spans</title>
+        <subtasks>
+          <subtask>Update docling_mcp/server.py to add timing measurements in nested spans</subtask>
+          <subtask>Add embedding_time measurement in embedding-generation span using time.time() or asyncio timing</subtask>
+          <subtask>Add db_search_time measurement in vector-search span</subtask>
+          <subtask>Add llm_generation_time measurement in llm-generation span (if LLM calls exist)</subtask>
+          <subtask>Update span metadata with duration in milliseconds for each component</subtask>
+          <subtask>Verify: Test query and verify timing breakdown visible in LangFuse trace spans</subtask>
+          <subtask>Unit test: Mock LangFuse spans, verify timing data recorded correctly</subtask>
+        </subtasks>
+      </task>
+      <task id="2" acs="3,4">
+        <title>Implement Prometheus Metrics Endpoint</title>
+        <subtasks>
+          <subtask>Install prometheus_client package if not already present</subtask>
+          <subtask>Create docling_mcp/metrics.py module with Prometheus metric definitions</subtask>
+          <subtask>Add FastAPI /metrics endpoint to MCP server</subtask>
+          <subtask>Configure endpoint to return Prometheus format with Content-Type: application/openmetrics-text</subtask>
+          <subtask>Verify: Test /metrics endpoint returns valid Prometheus format</subtask>
+          <subtask>Integration test: Verify histogram buckets configuration matches requirements</subtask>
+          <subtask>Documentation: Add Prometheus scraping configuration example (15s scrape_interval)</subtask>
+        </subtasks>
+      </task>
+      <task id="3" acs="3">
+        <title>Integrate Prometheus Metrics in MCP Tools</title>
+        <subtasks>
+          <subtask>Update query_knowledge_base tool to record Prometheus metrics</subtask>
+          <subtask>Update ask_knowledge_base tool similarly (if LLM generation exists)</subtask>
+          <subtask>Update other MCP tools to record request metrics</subtask>
+          <subtask>Wrap metrics recording in try/except to prevent metrics errors from breaking tool execution</subtask>
+          <subtask>Verify: Execute query and verify metrics appear in /metrics endpoint</subtask>
+          <subtask>Integration test: Test metrics collection with real MCP server</subtask>
+        </subtasks>
+      </task>
+      <task id="4" acs="6,7,8">
+        <title>Implement Health Check Endpoint</title>
+        <subtasks>
+          <subtask>Create docling_mcp/health.py module with health check logic</subtask>
+          <subtask>Implement check_database() function: Test PostgreSQL connection via utils.db_utils.get_db_pool()</subtask>
+          <subtask>Implement check_langfuse() function: Verify LangFuse client initialized</subtask>
+          <subtask>Implement check_embedder() function: Verify embedder singleton initialized</subtask>
+          <subtask>Create GET /health endpoint returning JSON with status (ok/degraded/down)</subtask>
+          <subtask>Handle errors gracefully: Database unavailable → status "down", LangFuse unavailable → status "degraded"</subtask>
+          <subtask>Verify: Test /health endpoint with all services available</subtask>
+          <subtask>Integration test: Test /health with database unavailable</subtask>
+          <subtask>Integration test: Test /health with LangFuse unavailable</subtask>
+          <subtask>Unit test: Mock service checks, verify status logic (ok/degraded/down)</subtask>
+        </subtasks>
+      </task>
+      <task id="5" acs="5">
+        <title>Update Documentation</title>
+        <subtasks>
+          <subtask>Update README.md with Prometheus metrics section</subtask>
+          <subtask>Update docs/architecture.md with Prometheus metrics implementation details</subtask>
+          <subtask>Document health check endpoint in README or architecture docs</subtask>
+          <subtask>Add note about health check status meanings (ok/degraded/down)</subtask>
+          <subtask>Verify: Documentation accurately reflects implementation</subtask>
+        </subtasks>
+      </task>
+      <task id="6" acs="1,2,3,4,6,7,8">
+        <title>Testing</title>
+        <subtasks>
+          <subtask>Unit test: Mock LangFuse spans, verify timing data recorded in span metadata</subtask>
+          <subtask>Unit test: Mock Prometheus metrics, verify counter/histogram updates</subtask>
+          <subtask>Unit test: Mock health check services, verify status logic</subtask>
+          <subtask>Integration test: Test /metrics endpoint format validation</subtask>
+          <subtask>Integration test: Test /metrics endpoint histogram buckets configuration</subtask>
+          <subtask>Integration test: Test /health endpoint with all services available</subtask>
+          <subtask>Integration test: Test /health endpoint with database unavailable</subtask>
+          <subtask>Integration test: Test /health endpoint with LangFuse unavailable</subtask>
+          <subtask>Integration test: Execute MCP query and verify Prometheus metrics updated</subtask>
+          <subtask>E2E test: Execute full query workflow, verify timing breakdown in LangFuse dashboard</subtask>
+          <subtask>E2E test: Scrape /metrics endpoint with Prometheus, verify metrics collection</subtask>
+          <subtask>Coverage target: Metrics and health check code &gt;70% coverage</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">Given a query, When it completes, Then I see timing breakdown in LangFuse spans: embedding_time, db_search_time, llm_generation_time</ac>
+    <ac id="2">Given LangFuse trace, When I view spans, Then each component (embedder, DB, LLM) has separate span with duration in milliseconds</ac>
+    <ac id="3">Given metrics endpoint, When I query GET /metrics, Then I see Prometheus-format metrics with latency histograms (mcp_request_duration_seconds, rag_embedding_time_seconds, rag_db_search_time_seconds, rag_llm_generation_time_seconds) and request counters (mcp_requests_total)</ac>
+    <ac id="4">Given Prometheus metrics, When I scrape them, Then histogram buckets are configured appropriately (0.1s, 0.5s, 1.0s, 1.5s, 2.0s, 3.0s, 5.0s for request duration)</ac>
+    <ac id="5">Given Prometheus configuration, When I set scrape_interval, Then recommended value is 15s (default) for real-time monitoring, or 60s for cost-sensitive deployments</ac>
+    <ac id="6">Given MCP server, When I query GET /health, Then I get JSON response with status (ok/degraded/down), timestamp, and services status (database, langfuse, embedder)</ac>
+    <ac id="7">Given health check endpoint, When database is unavailable, Then status is "down" with service details</ac>
+    <ac id="8">Given health check endpoint, When LangFuse is unavailable, Then status is "degraded" (MCP server continues to function)</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/2/tech-spec-epic-2.md" title="Epic Technical Specification: MCP Server Observability (LangFuse)" section="Story 2.3: Add Performance Metrics">
+        Comprehensive technical specification for Story 2.3 with detailed acceptance criteria (AC9-AC16), Prometheus metrics endpoint design, health check endpoint specification, and MCP query workflow with metrics integration.
+      </doc>
+      <doc path="docs/epics.md" title="docling-rag-agent - Epic Breakdown" section="Story 2.3: Add Performance Metrics">
+        Epic-level story definition with high-level acceptance criteria and technical notes for performance metrics implementation.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="LangFuse Integration">
+        Architecture decision record ADR-001 for LangFuse integration pattern using @observe() decorator, nested spans, and langfuse.openai wrapper for automatic cost tracking. Includes implementation guide with code examples.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="Implementation Patterns">
+        Naming patterns, structure patterns, format patterns, and lifecycle patterns for consistent implementation. Includes testing organization (tests/unit/, tests/integration/, tests/e2e/) and component organization guidelines.
+      </doc>
+      <doc path="docs/stories/2/2-2/2-2-implement-cost-tracking.md" title="Story 2.2: Implement Cost Tracking" section="Learnings from Previous Story">
+        Previous story completion notes showing LangFuse nested spans implementation using langfuse_span() context manager in docling_mcp/server.py, langfuse.openai wrapper integration, and test infrastructure location.
+      </doc>
+    </docs>
+    <code>
+      <artifact path="docling_mcp/server.py" kind="service" symbol="langfuse_span" lines="40-76" reason="Async context manager for creating nested LangFuse spans. Extend to add timing measurements in span metadata."/>
+      <artifact path="docling_mcp/server.py" kind="service" symbol="_update_langfuse_metadata" lines="78-91" reason="Helper function to update LangFuse span metadata. Can extend to include timing metadata."/>
+      <artifact path="docling_mcp/server.py" kind="service" symbol="query_knowledge_base" lines="111-168" reason="MCP tool with @observe() decorator and nested span for embedding-generation. Add timing measurements and Prometheus metrics recording."/>
+      <artifact path="docling_mcp/server.py" kind="service" symbol="ask_knowledge_base" lines="171-232" reason="MCP tool with @observe() decorator and nested span. Add timing measurements and Prometheus metrics recording."/>
+      <artifact path="docling_mcp/server.py" kind="service" symbol="list_knowledge_base_documents" lines="235-280" reason="MCP tool with @observe() decorator. Add Prometheus metrics recording for request count and duration."/>
+      <artifact path="docling_mcp/server.py" kind="service" symbol="get_knowledge_base_document" lines="283-320" reason="MCP tool with @observe() decorator. Add Prometheus metrics recording for request count and duration."/>
+      <artifact path="docling_mcp/server.py" kind="service" symbol="get_knowledge_base_overview" lines="338-400" reason="MCP tool with @observe() decorator. Add Prometheus metrics recording for request count and duration."/>
+      <artifact path="utils/db_utils.py" kind="utility" symbol="get_db_pool" lines="1-229" reason="Database connection pool accessor. Use for health check database connectivity test."/>
+      <artifact path="ingestion/embedder.py" kind="service" symbol="get_embedder" lines="1-242" reason="Embedder singleton accessor. Use for health check embedder readiness test."/>
+      <artifact path="core/rag_service.py" kind="service" symbol="search_knowledge_base_structured" lines="1-200" reason="Core RAG search function called by MCP tools. Timing measurements should wrap calls to this function."/>
+      <artifact path="tests/unit/test_langfuse_integration.py" kind="test" symbol="TestLangfuseNestedSpans" lines="423-580" reason="Existing test file with 34 tests for LangFuse integration. Add performance metrics tests to this file."/>
+    </code>
+    <dependencies>
+      <python>
+        <package name="langfuse" version=">=3.0.0" purpose="Observability tracing and cost tracking via @observe() decorator and langfuse.openai wrapper"/>
+        <package name="prometheus_client" version="latest" purpose="Prometheus metrics collection with Counter, Histogram, Gauge types and /metrics endpoint"/>
+        <package name="fastmcp" version=">=0.1.1" purpose="MCP server framework with lifespan pattern and tool registration"/>
+        <package name="fastapi" version=">=0.109.0" purpose="HTTP framework for /metrics and /health endpoints (if MCP server doesn't support HTTP natively)"/>
+        <package name="asyncpg" version=">=0.30.0" purpose="PostgreSQL async driver for database connection pool used in health checks"/>
+        <package name="pytest" version=">=8.0.0" purpose="Testing framework for unit, integration, and E2E tests"/>
+        <package name="pytest-asyncio" version=">=0.23.0" purpose="Async test support for pytest"/>
+        <package name="pytest-cov" version=">=4.1.0" purpose="Coverage reporting with threshold enforcement"/>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="pattern" name="Prometheus Metrics Pattern">
+      Use prometheus_client library with Counter, Histogram, Gauge types. Metrics exposed via /metrics endpoint in Prometheus format. Histogram buckets configured appropriately: request duration (0.1s-5.0s), embedding (0.1s-1.0s), DB search (0.01s-1.0s), LLM (0.5s-5.0s).
+    </constraint>
+    <constraint type="pattern" name="Health Check Pattern">
+      FastAPI endpoint returning JSON with status (ok/degraded/down) and service details. Database unavailable → "down", LangFuse unavailable → "degraded". Services checked: database (PostgreSQL + PGVector), langfuse (client initialized), embedder (singleton initialized).
+    </constraint>
+    <constraint type="pattern" name="Timing Measurement Pattern">
+      Use time.time() or asyncio timing for duration measurement. Record in both LangFuse spans (metadata) and Prometheus histograms. Update span metadata with duration in milliseconds for each component.
+    </constraint>
+    <constraint type="requirement" name="Graceful Degradation">
+      Prometheus metrics and health checks must not break MCP server if metrics collection fails. Wrap metrics recording in try/except to prevent errors from breaking tool execution.
+    </constraint>
+    <constraint type="requirement" name="Testing Coverage">
+      Metrics and health check code must achieve &gt;70% coverage. Tests organized in tests/unit/ for unit tests, tests/integration/ for integration tests, tests/e2e/ for E2E tests.
+    </constraint>
+    <constraint type="requirement" name="File Organization">
+      Create docling_mcp/metrics.py for Prometheus metric definitions. Create docling_mcp/health.py for health check logic. Update docling_mcp/server.py for timing integration in existing nested spans.
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="GET /metrics" kind="REST endpoint" signature="GET /metrics → Prometheus-format metrics (text/plain), Content-Type: application/openmetrics-text; version=1.0.0; charset=utf-8" path="docling_mcp/metrics.py"/>
+    <interface name="GET /health" kind="REST endpoint" signature="GET /health → JSON: {status: 'ok'|'degraded'|'down', timestamp: float, services: {database: {...}, langfuse: {...}, embedder: {...}}}" path="docling_mcp/health.py"/>
+    <interface name="langfuse_span" kind="async context manager" signature="async def langfuse_span(name: str, span_type: str = 'span', metadata: dict = None) → AsyncGenerator[Any, None]" path="docling_mcp/server.py:40-76"/>
+    <interface name="get_db_pool" kind="function" signature="def get_db_pool() → Optional[Pool]" path="utils/db_utils.py"/>
+    <interface name="get_embedder" kind="function" signature="def get_embedder() → Optional[EmbeddingGenerator]" path="ingestion/embedder.py"/>
+    <interface name="search_knowledge_base_structured" kind="function" signature="async def search_knowledge_base_structured(query: str, limit: int = 5, source_filter: Optional[str] = None) → Dict[str, Any]" path="core/rag_service.py"/>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Unit tests use pytest with pytest-asyncio for async support. Mock Prometheus metrics, LangFuse spans, and service checks. Integration tests validate /metrics endpoint format, histogram buckets configuration, and /health endpoint with various service states. E2E tests execute full query workflow and verify timing breakdown in LangFuse dashboard. Coverage target: Metrics and health check code &gt;70% coverage. Tests organized in tests/unit/ (unit tests), tests/integration/ (integration tests), tests/e2e/ (E2E tests). Add performance metrics tests to existing tests/unit/test_langfuse_integration.py file.
+    </standards>
+    <locations>
+      <location>tests/unit/</location>
+      <location>tests/integration/</location>
+      <location>tests/e2e/</location>
+      <location>tests/unit/test_langfuse_integration.py</location>
+    </locations>
+    <ideas>
+      <test ac="1">Unit test: Mock LangFuse span, measure embedding_time using time.time(), verify span metadata updated with duration_ms</test>
+      <test ac="1">Unit test: Mock LangFuse span, measure db_search_time, verify span metadata updated with duration_ms</test>
+      <test ac="2">Unit test: Verify each component (embedder, DB, LLM) has separate span with duration in milliseconds</test>
+      <test ac="3">Integration test: Test GET /metrics endpoint returns Prometheus-format metrics with all required histograms and counters</test>
+      <test ac="4">Integration test: Verify histogram buckets configuration matches requirements (0.1s, 0.5s, 1.0s, 1.5s, 2.0s, 3.0s, 5.0s for request duration)</test>
+      <test ac="6">Integration test: Test GET /health endpoint returns JSON with status, timestamp, and services status</test>
+      <test ac="7">Integration test: Mock database connection failure, verify /health returns status "down" with service details</test>
+      <test ac="8">Integration test: Mock LangFuse client failure, verify /health returns status "degraded" (MCP server continues to function)</test>
+      <test ac="3">E2E test: Execute MCP query, verify Prometheus metrics updated in /metrics endpoint</test>
+      <test ac="1">E2E test: Execute full query workflow, verify timing breakdown visible in LangFuse dashboard spans</test>
+    </ideas>
+  </tests>
+</story-context>
+

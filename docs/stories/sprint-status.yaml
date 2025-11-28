@@ -1,0 +1,75 @@
+# generated: 2025-11-26
+# project: docling-rag-agent
+# project_key: docling-rag-agent
+# tracking_system: file-system
+# story_location: docs/stories
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic exists in epic file but not contexted
+#   - contexted: Epic tech context created (required before drafting stories)
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - drafted: Story file created in stories folder
+#   - ready-for-dev: Draft approved and story context created
+#   - in-progress: Developer actively working on implementation
+#   - review: Under SM review (via code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - completed: Retrospective has been done
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epics should be 'contexted' before stories can be 'drafted'
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically drafts next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
+
+generated: 2025-11-26
+project: docling-rag-agent
+project_key: docling-rag-agent
+tracking_system: file-system
+story_location: docs/stories
+
+development_status:
+  epic-1: contexted
+  1-1-document-current-architecture: done
+  1-2-generate-api-reference-documentation: done
+  1-3-create-production-ready-readme: done
+  1-4-centralize-documentation-and-add-troubleshooting-guide: done
+  epic-1-retrospective: completed
+
+  epic-2: contexted
+  2-1-integrate-langfuse-sdk: done
+  2-2-implement-cost-tracking: done
+  2-3-add-performance-metrics: done
+  2-4-create-langfuse-dashboard: done
+  2-5-refactor-mcp-server-architecture-standalone: done
+  epic-2-retrospective: completed
+
+  epic-3: contexted
+  3-1-implement-session-tracking: done
+  3-2-add-langfuse-tracing-to-streamlit: done
+  epic-3-retrospective: completed
+
+  epic-4: backlog
+  4-1-setup-github-actions-ci-cd: review
+  4-2-add-health-check-endpoints: backlog
+  4-3-optimize-docker-images: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-setup-testing-infrastructure-with-tdd-structure: backlog
+  5-2-implement-unit-tests-with-tdd: backlog
+  5-3-implement-ragas-evaluation-suite: backlog
+  5-4-implement-playwright-e2e-tests: backlog
+  epic-5-retrospective: optional
+
+  epic-6: backlog
+  6-1-reorganize-project-structure: backlog
+  6-2-clean-up-and-validate-structure: backlog
+  epic-6-retrospective: optional

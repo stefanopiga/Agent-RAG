@@ -1,0 +1,47 @@
+# Use a lightweight Python base image
+FROM python:3.11-slim
+
+# Set working directory
+WORKDIR /app
+
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    # Add project root to PYTHONPATH so imports work correctly
+    PYTHONPATH=/app
+
+# Install system dependencies (if any needed for pgvector/asyncpg)
+# libpq-dev might be needed for some postgres drivers, but asyncpg usually has wheels
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install uv for fast dependency management
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
+
+# Copy project definition
+COPY pyproject.toml .
+
+# Install dependencies
+# We use --system to install into the system python environment since this is a container
+RUN uv pip install --system --no-cache -r pyproject.toml
+
+# Copy application code
+COPY api/ ./api/
+COPY core/ ./core/
+COPY ingestion/ ./ingestion/
+COPY utils/ ./utils/
+
+# Expose the API port
+EXPOSE 8000
+
+# Create a non-root user for security
+RUN useradd -m appuser && chown -R appuser /app
+USER appuser
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
+  CMD curl -f http://localhost:8000/health || exit 1
+
+# Start the API service
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
