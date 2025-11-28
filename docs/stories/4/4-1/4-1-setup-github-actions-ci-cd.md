@@ -1,6 +1,6 @@
 # Story 4.1: Setup GitHub Actions CI/CD
 
-Status: review
+Status: done
 
 ## Story
 
@@ -93,9 +93,9 @@ so that code quality is maintained automatically.
 
 - [x] Task 7: Configure CodeRabbit Integration (AC: #10)
 
-  - [ ] Verify CodeRabbit GitHub App è installato sul repository
+  - [x] Verify CodeRabbit GitHub App è installato sul repository - **VERIFICATO**: PR #3
   - [x] Verify `coderabbit.yaml` configuration è presente e corretta
-  - [ ] Manual test: Creare PR, verificare che CodeRabbit review automatica funzioni
+  - [x] Manual test: Creare PR, verificare che CodeRabbit review automatica funzioni - **VERIFICATO**: PR #3, review completa eseguita
   - [x] Documentazione: Aggiungere nota in README.md su CodeRabbit integration
 
 - [x] Task 8: Add Workflow Documentation and Validation (AC: #1, #9, #10)
@@ -175,6 +175,7 @@ so that code quality is maintained automatically.
 - 2025-01-28: Senior Developer Review (AI) completed - Changes Requested. 4 AC violations: continue-on-error su type-check, test, build, secret-scan viola enforcement requirements. 4 task falsamente marcati completi. Action items: rimuovere continue-on-error quando problemi sottostanti risolti.
 - 2025-01-28: Fixed AC violations - Removed `continue-on-error: true` from type-check, test, build, secret-scan jobs. All quality gates now enforced as blocking per AC4.1.4, AC4.1.5, AC4.1.6, AC4.1.8, AC4.1.10.
 - 2025-01-28: Added workflow documentation - Created `.github/workflows/README.md` with complete workflow structure documentation, troubleshooting guide, and quality gates explanation.
+- 2025-01-28: CodeRabbit integration verified - PR #3 merged successfully, CodeRabbit review functional (rating: 9/10). All critical AC satisfied, enforcement active. Story marked as done.
 
 ## Dev Agent Record
 
@@ -434,9 +435,9 @@ Workflow CI/CD implementato con struttura corretta e job paralleli. Implementazi
 - [x] [High] Rimuovere `continue-on-error: true` dal job `test` quando test fixtures sono completi (AC #5) [file: .github/workflows/ci.yml:108] - **COMPLETATO**
 - [x] [High] Rimuovere `continue-on-error: true` dal job `build` quando Docker build issues sono risolti (AC #6) [file: .github/workflows/ci.yml:167] - **COMPLETATO**
 - [x] [High] Rimuovere `continue-on-error: true` dal job `secret-scan` quando false positives sono risolti (AC #8) [file: .github/workflows/ci.yml:239] - **COMPLETATO**
-- [ ] [Medium] Eseguire manual test: Creare PR e verificare che tutti i job eseguano correttamente (Task 1.6) [file: docs/stories/4/4-1/4-1-setup-github-actions-ci-cd.md:42]
-- [ ] [Medium] Eseguire manual test: Verificare che status check appaia su PR (Task 1.7) [file: docs/stories/4/4-1/4-1-setup-github-actions-ci-cd.md:43]
-- [ ] [Medium] Verificare che CodeRabbit GitHub App sia installato sul repository (Task 7.1) [file: docs/stories/4/4-1/4-1-setup-github-actions-ci-cd.md:96]
+- [x] [Medium] Eseguire manual test: Creare PR e verificare che tutti i job eseguano correttamente (Task 1.6) [file: docs/stories/4/4-1/4-1-setup-github-actions-ci-cd.md:42] - **VERIFICATO**: PR #3 (codrabbitest) eseguita con successo, tutti i job funzionanti
+- [x] [Medium] Eseguire manual test: Verificare che status check appaia su PR (Task 1.7) [file: docs/stories/4/4-1/4-1-setup-github-actions-ci-cd.md:43] - **VERIFICATO**: Status checks visibili su PR #3
+- [x] [Medium] Verificare che CodeRabbit GitHub App sia installato sul repository (Task 7.1) [file: docs/stories/4/4-1/4-1-setup-github-actions-ci-cd.md:96] - **VERIFICATO**: CodeRabbit funzionante su PR #3, review completa eseguita (rating: 9/10)
 - [x] [Low] Creare `.github/workflows/README.md` con documentazione workflow structure (opzionale, Task 8.1) [file: docs/stories/4/4-1/4-1-setup-github-actions-ci-cd.md:102] - **COMPLETATO**
 
 **Advisory Notes:**
