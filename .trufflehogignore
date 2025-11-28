@@ -1,0 +1,34 @@
+# TruffleHog Ignore File
+# Patterns to exclude from secret scanning
+
+# Example/template files with placeholder values
+.env.example
+*.example
+**/example/**
+
+# Documentation files that may contain example keys
+docs/**/*.md
+guide/**/*.md
+README.md
+
+# Test files with mock/fake credentials
+tests/**
+**/test_*.py
+**/*_test.py
+
+# Lock files and dependencies
+uv.lock
+package-lock.json
+node_modules/**
+
+# Build artifacts
+site/**
+*.pyc
+__pycache__/**
+
+# Configuration examples
+docker-compose.yml
+
+# Generated documentation
+*.html
+
