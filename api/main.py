@@ -67,8 +67,50 @@ app.add_middleware(
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint."""
-    return {"status": "ok", "timestamp": time.time()}
+    """
+    Health check endpoint.
+
+    Returns JSON response with:
+    - status: "ok" | "down"
+    - timestamp: Unix timestamp of the check
+    - services: Status of database
+
+    HTTP Status Codes:
+    - 200: Service healthy
+    - 503: Service unavailable (database down)
+    """
+    from fastapi.responses import JSONResponse
+
+    timestamp = time.time()
+    db_status = "up"
+    db_message = "PostgreSQL connection successful"
+
+    try:
+        from utils.db_utils import test_connection
+
+        is_connected = await test_connection()
+        if not is_connected:
+            db_status = "down"
+            db_message = "PostgreSQL connection test failed"
+    except Exception as e:
+        db_status = "down"
+        db_message = f"Database connection error: {str(e)}"
+
+    overall_status = "ok" if db_status == "up" else "down"
+    http_status = 200 if overall_status == "ok" else 503
+
+    response = {
+        "status": overall_status,
+        "timestamp": timestamp,
+        "services": {
+            "database": {
+                "status": db_status,
+                "message": db_message,
+            }
+        },
+    }
+
+    return JSONResponse(content=response, status_code=http_status)
 
 
 @app.post("/v1/search", response_model=SearchResponse)

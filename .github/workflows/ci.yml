@@ -243,3 +243,110 @@ jobs:
         with:
           extra_args: --results=verified,unknown --fail
 
+  # ============================================================================
+  # HEALTH-CHECK JOB
+  # Validates health check endpoints for all services
+  # AC4.2.9: Health check validation tests all /health endpoints
+  # ============================================================================
+  health-check:
+    name: Health Check Validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build] # Ensure images build successfully first
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker images
+        run: |
+          docker compose build
+
+      - name: Start services
+        run: |
+          docker compose up -d
+          echo "Waiting for services to start..."
+
+      - name: Wait for database to be ready
+        run: |
+          echo "Waiting for PostgreSQL to be ready..."
+          timeout 60 bash -c 'until docker compose exec -T db pg_isready -U postgres; do sleep 2; done'
+          echo "PostgreSQL is ready"
+
+      - name: Wait for API server to be ready
+        run: |
+          echo "Waiting for API server to be ready..."
+          timeout 60 bash -c 'until curl -sf http://localhost:8000/health > /dev/null 2>&1; do sleep 2; done'
+          echo "API server is ready"
+
+      - name: Test API server health endpoint
+        run: |
+          echo "=== Testing API Server /health endpoint ==="
+          RESPONSE=$(curl -sf http://localhost:8000/health)
+          echo "Response: $RESPONSE"
+
+          # Validate response contains required fields
+          echo "$RESPONSE" | jq -e '.status' > /dev/null || (echo "ERROR: Missing 'status' field" && exit 1)
+          echo "$RESPONSE" | jq -e '.timestamp' > /dev/null || (echo "ERROR: Missing 'timestamp' field" && exit 1)
+          echo "$RESPONSE" | jq -e '.services.database' > /dev/null || (echo "ERROR: Missing 'services.database' field" && exit 1)
+
+          # Validate status is "ok"
+          STATUS=$(echo "$RESPONSE" | jq -r '.status')
+          if [ "$STATUS" != "ok" ]; then
+            echo "ERROR: Health check status is '$STATUS', expected 'ok'"
+            exit 1
+          fi
+
+          echo "SUCCESS: API server health check passed"
+
+      - name: Wait for MCP server to be ready
+        run: |
+          echo "Waiting for MCP server to be ready..."
+          timeout 60 bash -c 'until curl -sf http://localhost:8080/health > /dev/null 2>&1; do sleep 2; done'
+          echo "MCP server is ready"
+
+      - name: Test MCP server health endpoint
+        run: |
+          echo "=== Testing MCP Server /health endpoint ==="
+          RESPONSE=$(curl -sf http://localhost:8080/health)
+          echo "Response: $RESPONSE"
+
+          # Validate response contains required fields
+          echo "$RESPONSE" | jq -e '.status' > /dev/null || (echo "ERROR: Missing 'status' field" && exit 1)
+          echo "$RESPONSE" | jq -e '.timestamp' > /dev/null || (echo "ERROR: Missing 'timestamp' field" && exit 1)
+          echo "$RESPONSE" | jq -e '.services.database' > /dev/null || (echo "ERROR: Missing 'services.database' field" && exit 1)
+          echo "$RESPONSE" | jq -e '.services.langfuse' > /dev/null || (echo "ERROR: Missing 'services.langfuse' field" && exit 1)
+          echo "$RESPONSE" | jq -e '.services.embedder' > /dev/null || (echo "ERROR: Missing 'services.embedder' field" && exit 1)
+
+          # Validate status is "ok" or "degraded" (not "down")
+          STATUS=$(echo "$RESPONSE" | jq -r '.status')
+          if [ "$STATUS" = "down" ]; then
+            echo "ERROR: Health check status is 'down', expected 'ok' or 'degraded'"
+            exit 1
+          fi
+
+          echo "SUCCESS: MCP server health check passed"
+
+      - name: Wait for Streamlit to be ready
+        run: |
+          echo "Waiting for Streamlit to be ready..."
+          timeout 60 bash -c 'until curl -sf http://localhost:8501/_stcore/health > /dev/null 2>&1; do sleep 2; done'
+          echo "Streamlit is ready"
+
+      - name: Test Streamlit health endpoint
+        run: |
+          echo "=== Testing Streamlit /_stcore/health endpoint ==="
+          HTTP_CODE=$(curl -sf -o /dev/null -w "%{http_code}" http://localhost:8501/_stcore/health)
+          if [ "$HTTP_CODE" = "200" ]; then
+            echo "SUCCESS: Streamlit health check passed (HTTP $HTTP_CODE)"
+          else
+            echo "ERROR: Streamlit health check returned HTTP $HTTP_CODE, expected 200"
+            exit 1
+          fi
+
+      - name: Cleanup
+        if: always()
+        run: |
+          docker compose down -v

@@ -12,8 +12,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 # Install system dependencies (if any needed for pgvector/asyncpg)
 # libpq-dev might be needed for some postgres drivers, but asyncpg usually has wheels
+# curl is required for HEALTHCHECK
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    curl \
     && rm -rf /var/lib/apt/lists/*
 
 # Install uv for fast dependency management

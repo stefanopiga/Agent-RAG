@@ -1,0 +1,150 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>2</storyId>
+    <title>Add Health Check Endpoints</title>
+    <status>drafted</status>
+    <generatedAt>2025-01-28</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4/4-2/4-2-add-health-check-endpoints.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>DevOps engineer</asA>
+    <iWant>health check endpoints for all services</iWant>
+    <soThat>I can monitor system status in production</soThat>
+    <tasks>
+      <task id="1" ac="1,2,3,4,5">Verify MCP Server Health Check Implementation</task>
+      <task id="2" ac="6,7">Enhance API Server Health Check</task>
+      <task id="3" ac="8">Verify Streamlit Health Check</task>
+      <task id="4" ac="9">Add CI/CD Health Check Validation</task>
+      <task id="5" ac="10">Verify Docker HEALTHCHECK Configuration</task>
+      <task id="6" ac="1,6,8">Add Health Check Documentation</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="4.2.1">Dato il MCP server, quando viene interrogato `/health`, allora restituisce risposta JSON con status: "ok" | "degraded" | "down", timestamp Unix, e status di ogni servizio (database, langfuse, embedder)</ac>
+    <ac id="4.2.2">Dato il MCP server, quando il database è disponibile, allora il health check restituisce status "ok" o "degraded" (non "down")</ac>
+    <ac id="4.2.3">Dato il MCP server, quando il database è non disponibile, allora il health check restituisce status "down" con HTTP status code 503</ac>
+    <ac id="4.2.4">Dato il MCP server, quando LangFuse è non disponibile ma database e embedder sono UP, allora il health check restituisce status "degraded" con HTTP status code 200</ac>
+    <ac id="4.2.5">Dato il MCP server, quando l'embedder è non disponibile, allora il health check restituisce status "down" con HTTP status code 503</ac>
+    <ac id="4.2.6">Dato l'API server, quando viene interrogato `/health`, allora restituisce risposta JSON con status "ok" e timestamp Unix</ac>
+    <ac id="4.2.7">Dato l'API server, quando viene interrogato `/health`, allora verifica la connessione al database e include lo status nel response</ac>
+    <ac id="4.2.8">Dato Streamlit app, quando viene interrogato `/_stcore/health`, allora restituisce HTTP 200 OK (endpoint built-in)</ac>
+    <ac id="4.2.9">Dato il workflow CI/CD, quando esegue health check validation, allora testa tutti gli endpoint `/health` e fallisce se non rispondono correttamente</ac>
+    <ac id="4.2.10">Dato il Dockerfile, quando viene costruita l'immagine Streamlit, allora include HEALTHCHECK che usa `/_stcore/health` endpoint</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/4/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Health Check Endpoints">
+        Health check endpoints specification for MCP server, API server, and Streamlit. Includes status logic (ok/degraded/down), HTTP status codes, and CI/CD validation requirements.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Documentation" section="ADR-005">
+        ADR-005 defines Prometheus metrics and health check endpoints pattern. Health check status "degraded" returns HTTP 200, "down" returns HTTP 503. Endpoints enable Kubernetes liveness/readiness probes.
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 4.2">
+        Story 4.2 acceptance criteria: MCP server `/health` endpoint with JSON response, Streamlit `/_stcore/health` endpoint, PostgreSQL connection verification.
+      </doc>
+      <doc path="docs/testing-strategy.md" title="Testing Strategy" section="Integration Tests">
+        Integration tests validate health endpoint response, status logic, HTTP status codes. CI/CD tests validate health check job execution and endpoint availability.
+      </doc>
+      <doc path="docs/coding-standards.md" title="Coding Standards" section="Health Checks">
+        Health check implementation patterns and best practices for FastAPI endpoints.
+      </doc>
+      <doc path="docs/unified-project-structure.md" title="Unified Project Structure" section="Epic 4 Mapping">
+        Health check logic already implemented in `docling_mcp/health.py` and `docling_mcp/http_server.py`. Story 4.2 must verify and complete implementation.
+      </doc>
+      <doc path="docs/stories/4/4-1/4-1-setup-github-actions-ci-cd.md" title="Story 4.1" section="Dev Agent Record">
+        CI/CD workflow already configured with parallel jobs. Health check validation job must be added to existing workflow. Quality gates enforced as blocking.
+      </doc>
+    </docs>
+    <code>
+      <artifact path="docling_mcp/http_server.py" kind="service" symbol="health_endpoint" lines="54-78" reason="MCP server health check endpoint implementation. Returns JSON with status (ok/degraded/down), timestamp, and services status. HTTP status codes: 200 for ok/degraded, 503 for down."/>
+      <artifact path="docling_mcp/health.py" kind="service" symbol="get_health_status" lines="159-199" reason="Health check logic implementation. Checks database, LangFuse, and embedder status. Determines overall status: database/embedder DOWN → down, LangFuse DOWN → degraded, all UP → ok."/>
+      <artifact path="docling_mcp/health.py" kind="service" symbol="check_database" lines="45-74" reason="Database connectivity check. Uses utils.db_utils.test_connection() to verify PostgreSQL connection. Returns ServiceStatus with latency measurement."/>
+      <artifact path="docling_mcp/health.py" kind="service" symbol="check_langfuse" lines="77-115" reason="LangFuse client status check. Verifies LangFuse client initialization and availability. Non-critical dependency, returns down if unavailable."/>
+      <artifact path="docling_mcp/health.py" kind="service" symbol="check_embedder" lines="118-156" reason="Embedder readiness check. Verifies embedder initialization using _embedder_ready event and get_global_embedder(). Critical dependency, returns down if unavailable."/>
+      <artifact path="api/main.py" kind="service" symbol="health_check" lines="68-71" reason="API server health check endpoint. Currently returns basic status and timestamp. Must be enhanced to verify database connection and include detailed status."/>
+      <artifact path="Dockerfile" kind="config" symbol="HEALTHCHECK" lines="52-53" reason="Streamlit Dockerfile HEALTHCHECK configuration. Uses `/_stcore/health` endpoint with intervals: 30s interval, 10s timeout, 5s start-period, 3 retries."/>
+      <artifact path="Dockerfile.api" kind="config" symbol="HEALTHCHECK" lines="43-44" reason="API Dockerfile HEALTHCHECK configuration. Uses `/health` endpoint with intervals: 30s interval, 5s timeout, 10s start-period, 3 retries."/>
+      <artifact path=".github/workflows/ci.yml" kind="workflow" symbol="jobs" lines="19-246" reason="GitHub Actions CI/CD workflow. Currently includes lint, type-check, test, build, secret-scan jobs. Health check validation job must be added to test all health endpoints."/>
+    </code>
+    <dependencies>
+      <python>
+        <package name="fastapi" version=">=0.109.0" reason="FastAPI framework for HTTP endpoints including /health"/>
+        <package name="uvicorn" version=">=0.27.0" reason="ASGI server for FastAPI applications"/>
+        <package name="prometheus_client" version=">=0.19.0" reason="Prometheus metrics library (already used for /metrics endpoint)"/>
+        <package name="asyncpg" version=">=0.30.0" reason="PostgreSQL async driver for database connection checks"/>
+        <package name="pytest" version=">=8.0.0" reason="Testing framework for integration tests"/>
+        <package name="pytest-asyncio" version=">=0.23.0" reason="Async test support for health check endpoint tests"/>
+        <package name="pytest-cov" version=">=4.1.0" reason="Coverage reporting for test validation"/>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Health endpoints follow ADR-005 pattern: status "ok" | "degraded" | "down" with appropriate HTTP status codes (200 for ok/degraded, 503 for down)</constraint>
+    <constraint type="architecture">Graceful degradation: LangFuse unavailable → status "degraded" (not "down") because it's non-critical dependency</constraint>
+    <constraint type="architecture">Critical dependencies: Database and embedder are critical → if unavailable, status "down" with HTTP 503</constraint>
+    <constraint type="architecture">MCP server uses FastAPI for /health endpoint on port 8080 (configurable via METRICS_PORT)</constraint>
+    <constraint type="architecture">Streamlit provides built-in endpoint /_stcore/health, no custom implementation required</constraint>
+    <constraint type="testing">Integration tests required: validate health endpoint response, status logic, HTTP status codes</constraint>
+    <constraint type="testing">CI/CD tests required: validate health check job execution, endpoint availability, failure handling</constraint>
+    <constraint type="testing">Manual tests required: validate health endpoints with curl/httpie, Docker HEALTHCHECK functionality</constraint>
+    <constraint type="testing">TDD pattern established: Story 4.2 must include tests for health check logic</constraint>
+    <constraint type="integration">Health check validation job must be added to existing CI/CD workflow (not create separate workflow)</constraint>
+    <constraint type="integration">Health check validation must be blocking (no continue-on-error) per Story 4.1 learnings</constraint>
+    <constraint type="reuse">Reuse docling_mcp/health.py for MCP server health check logic (already implemented)</constraint>
+    <constraint type="reuse">Health check logic already partially implemented in Epic 2 - Story 4.2 must verify and complete</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="GET /health" kind="REST endpoint" signature="GET /health → JSONResponse(status, timestamp, services)" path="docling_mcp/http_server.py">
+      MCP server health check endpoint. Returns JSON with status (ok/degraded/down), Unix timestamp, and services status (database, langfuse, embedder). HTTP status: 200 for ok/degraded, 503 for down.
+    </interface>
+    <interface name="GET /health" kind="REST endpoint" signature="GET /health → dict(status, timestamp)" path="api/main.py">
+      API server health check endpoint. Currently returns basic status and timestamp. Must be enhanced to verify database connection and include detailed status.
+    </interface>
+    <interface name="GET /_stcore/health" kind="REST endpoint" signature="GET /_stcore/health → HTTP 200 OK" path="Streamlit built-in">
+      Streamlit built-in health check endpoint. No custom implementation required. Returns HTTP 200 OK when app is running.
+    </interface>
+    <interface name="get_health_status()" kind="function" signature="async def get_health_status() → HealthResponse" path="docling_mcp/health.py">
+      Health check logic function. Checks database, LangFuse, and embedder status. Returns HealthResponse with overall status and service details.
+    </interface>
+    <interface name="check_database()" kind="function" signature="async def check_database() → ServiceStatus" path="docling_mcp/health.py">
+      Database connectivity check function. Uses utils.db_utils.test_connection() to verify PostgreSQL connection.
+    </interface>
+    <interface name="check_langfuse()" kind="function" signature="def check_langfuse() → ServiceStatus" path="docling_mcp/health.py">
+      LangFuse client status check function. Verifies LangFuse client initialization and availability.
+    </interface>
+    <interface name="check_embedder()" kind="function" signature="async def check_embedder() → ServiceStatus" path="docling_mcp/health.py">
+      Embedder readiness check function. Verifies embedder initialization using _embedder_ready event and get_global_embedder().
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Integration tests validate health endpoint response, status logic, HTTP status codes. CI/CD tests validate health check job execution, endpoint availability, failure handling. Manual tests validate health endpoints with curl/httpie, Docker HEALTHCHECK functionality. TDD pattern established: Story 4.2 must include tests for health check logic following Red-Green-Refactor workflow.
+    </standards>
+    <locations>
+      <location>tests/integration/test_observability_endpoints.py</location>
+      <location>tests/integration/</location>
+      <location>.github/workflows/ci.yml</location>
+    </locations>
+    <ideas>
+      <test ac="4.2.1">Integration test: Verify MCP server /health endpoint returns JSON with status (ok/degraded/down), timestamp, and services (database, langfuse, embedder)</test>
+      <test ac="4.2.2">Integration test: Verify MCP server health check returns status "ok" or "degraded" (not "down") when database is available</test>
+      <test ac="4.2.3">Integration test: Verify MCP server health check returns status "down" with HTTP 503 when database is unavailable</test>
+      <test ac="4.2.4">Integration test: Verify MCP server health check returns status "degraded" with HTTP 200 when LangFuse is unavailable but database and embedder are UP</test>
+      <test ac="4.2.5">Integration test: Verify MCP server health check returns status "down" with HTTP 503 when embedder is unavailable</test>
+      <test ac="4.2.6">Integration test: Verify API server /health endpoint returns JSON with status "ok" and timestamp</test>
+      <test ac="4.2.7">Integration test: Verify API server /health endpoint verifies database connection and includes status in response</test>
+      <test ac="4.2.8">Integration test: Verify Streamlit /_stcore/health endpoint returns HTTP 200 OK when app is running</test>
+      <test ac="4.2.9">CI/CD test: Verify health check validation job tests all /health endpoints and fails if they don't respond correctly</test>
+      <test ac="4.2.10">Integration test: Verify Dockerfile HEALTHCHECK configuration uses /_stcore/health endpoint with appropriate intervals</test>
+    </ideas>
+  </tests>
+</story-context>
+
