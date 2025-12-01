@@ -206,6 +206,29 @@ class TestHealthEndpoint:
             assert data["status"] == "degraded"
             assert data["services"]["langfuse"]["status"] == "down"
 
+    def test_health_endpoint_embedder_initializing(self, test_client):
+        """Test /health returns 'degraded' when embedder is initializing."""
+        with (
+            patch("docling_mcp.health.check_database") as mock_db,
+            patch("docling_mcp.health.check_langfuse") as mock_langfuse,
+            patch("docling_mcp.health.check_embedder") as mock_embedder,
+        ):
+            from docling_mcp.health import ServiceStatus
+
+            mock_db.return_value = ServiceStatus(status="up", message="OK")
+            mock_langfuse.return_value = ServiceStatus(status="up", message="OK")
+            mock_embedder.return_value = ServiceStatus(
+                status="initializing", message="Embedder initialization in progress"
+            )
+
+            response = test_client.get("/health")
+            data = response.json()
+
+            assert response.status_code == 200  # Still operational (degraded, not down)
+            assert data["status"] == "degraded"
+            assert data["services"]["embedder"]["status"] == "initializing"
+            assert "initialization in progress" in data["services"]["embedder"]["message"].lower()
+
     def test_health_endpoint_embedder_unavailable(self, test_client):
         """Test /health returns 'down' when embedder unavailable."""
         with (

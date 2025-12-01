@@ -1,0 +1,417 @@
+{
+  "version": "1.0",
+  "description": "Golden dataset for RAGAS evaluation - 25 query-answer pairs covering RAG system capabilities",
+  "thresholds": {
+    "faithfulness": 0.85,
+    "answer_relevancy": 0.80,
+    "context_precision": 0.75,
+    "context_recall": 0.75
+  },
+  "queries": [
+    {
+      "id": "q001",
+      "query": "What is the main purpose of the docling-rag-agent system?",
+      "expected_answer": "The docling-rag-agent is a Retrieval-Augmented Generation (RAG) system that enables semantic search over ingested documents using PGVector for vector storage and OpenAI embeddings. It provides a Streamlit UI for user queries and an MCP server for programmatic access.",
+      "context": [
+        "The docling-rag-agent provides RAG capabilities with semantic search using PostgreSQL with PGVector extension.",
+        "Users can interact via Streamlit web interface or through MCP protocol for programmatic access."
+      ],
+      "ground_truth": "RAG system for semantic search with Streamlit UI and MCP server",
+      "metadata": {
+        "category": "system_overview",
+        "source": "docs/prd.md",
+        "expected_faithfulness": 0.90,
+        "expected_relevancy": 0.88
+      }
+    },
+    {
+      "id": "q002",
+      "query": "How does the embedding generation work in this system?",
+      "expected_answer": "The system uses OpenAI's text-embedding-3-small model to generate 1536-dimensional embeddings. The EmbeddingGenerator class handles embedding generation with caching, batching (100 texts per batch), and automatic retry logic with exponential backoff.",
+      "context": [
+        "EmbeddingGenerator uses text-embedding-3-small model with 1536 dimensions.",
+        "Embeddings are cached in-memory with max 1000 entries to avoid redundant API calls.",
+        "Batch processing handles up to 100 texts per API call with retry logic."
+      ],
+      "ground_truth": "OpenAI text-embedding-3-small with caching and batching",
+      "metadata": {
+        "category": "technical_details",
+        "source": "ingestion/embedder.py",
+        "expected_faithfulness": 0.92,
+        "expected_relevancy": 0.85
+      }
+    },
+    {
+      "id": "q003",
+      "query": "What database is used for storing document embeddings?",
+      "expected_answer": "PostgreSQL with the PGVector extension is used to store document embeddings. The system uses asyncpg for async database operations with a connection pool (min 2, max 10 connections) and prepared statement caching.",
+      "context": [
+        "PostgreSQL with PGVector extension stores embeddings as vector type.",
+        "Database connection uses asyncpg with optimized pool settings for MCP workload."
+      ],
+      "ground_truth": "PostgreSQL with PGVector extension",
+      "metadata": {
+        "category": "infrastructure",
+        "source": "utils/db_utils.py",
+        "expected_faithfulness": 0.95,
+        "expected_relevancy": 0.90
+      }
+    },
+    {
+      "id": "q004",
+      "query": "How is LangFuse integrated for observability?",
+      "expected_answer": "LangFuse is integrated for cost tracking and observability. It wraps the OpenAI client for automatic cost tracking of embedding and LLM calls. The system supports graceful degradation - if LangFuse is unavailable, operations continue without tracing.",
+      "context": [
+        "LangFuse OpenAI wrapper provides automatic cost tracking for API calls.",
+        "Graceful degradation: system works without LangFuse if unavailable."
+      ],
+      "ground_truth": "LangFuse wraps OpenAI client for cost tracking with graceful degradation",
+      "metadata": {
+        "category": "observability",
+        "source": "ingestion/embedder.py",
+        "expected_faithfulness": 0.88,
+        "expected_relevancy": 0.85
+      }
+    },
+    {
+      "id": "q005",
+      "query": "What is the TDD workflow used in this project?",
+      "expected_answer": "The project follows Test-Driven Development with the Red-Green-Refactor pattern. Tests are written first (Red phase - test fails), then minimal code is implemented to pass the test (Green phase), and finally the code is refactored while keeping tests passing (Refactor phase).",
+      "context": [
+        "TDD follows Red-Green-Refactor pattern: write failing test, implement code, refactor.",
+        "Coverage enforcement >70% for core modules in CI/CD pipeline."
+      ],
+      "ground_truth": "Red-Green-Refactor TDD pattern with >70% coverage",
+      "metadata": {
+        "category": "testing",
+        "source": "docs/testing-strategy.md",
+        "expected_faithfulness": 0.90,
+        "expected_relevancy": 0.88
+      }
+    },
+    {
+      "id": "q006",
+      "query": "How are tests organized in the project structure?",
+      "expected_answer": "Tests are organized in a rigorous structure: tests/unit/ for isolated unit tests with mocked dependencies (<1s per test), tests/integration/ for integration tests with real logic but mocked DB/API (<5s per test), tests/e2e/ for end-to-end tests with real services (<30s per test), and tests/fixtures/ for test data including the RAGAS golden dataset.",
+      "context": [
+        "Test structure: tests/unit/, tests/integration/, tests/e2e/, tests/fixtures/.",
+        "Unit tests are fast (<1s), integration (<5s), E2E (<30s per test)."
+      ],
+      "ground_truth": "Hierarchical structure: unit, integration, e2e, fixtures directories",
+      "metadata": {
+        "category": "testing",
+        "source": "docs/unified-project-structure.md",
+        "expected_faithfulness": 0.95,
+        "expected_relevancy": 0.92
+      }
+    },
+    {
+      "id": "q007",
+      "query": "What is the MCP server and how does it work?",
+      "expected_answer": "The MCP (Model Context Protocol) server provides programmatic access to the RAG system. It exposes tools like query_knowledge_base, ask_knowledge_base, and list_knowledge_base_documents through FastMCP. The server runs on port 8080 and includes health check endpoints.",
+      "context": [
+        "MCP server uses FastMCP for exposing RAG tools programmatically.",
+        "Tools include query_knowledge_base for semantic search and list_documents."
+      ],
+      "ground_truth": "FastMCP server on port 8080 with RAG tools",
+      "metadata": {
+        "category": "api",
+        "source": "docling_mcp/server.py",
+        "expected_faithfulness": 0.88,
+        "expected_relevancy": 0.86
+      }
+    },
+    {
+      "id": "q008",
+      "query": "How does document chunking work?",
+      "expected_answer": "Documents are processed using the DoclingHybridChunker which uses Docling for PDF/DOCX parsing and splits content into semantically meaningful chunks. Each chunk includes content, metadata, and generates embeddings for vector storage.",
+      "context": [
+        "DoclingHybridChunker handles document parsing and chunking.",
+        "Chunks are stored with metadata and embeddings in PostgreSQL."
+      ],
+      "ground_truth": "DoclingHybridChunker processes documents into chunks with embeddings",
+      "metadata": {
+        "category": "ingestion",
+        "source": "ingestion/chunker.py",
+        "expected_faithfulness": 0.85,
+        "expected_relevancy": 0.82
+      }
+    },
+    {
+      "id": "q009",
+      "query": "What are the health check endpoints available?",
+      "expected_answer": "The system provides /health endpoints on both API server (port 8000) and MCP server (port 8080). These endpoints return JSON with status, timestamp, and service health (database, langfuse, embedder). Streamlit uses /_stcore/health for its health check.",
+      "context": [
+        "API server /health on port 8000 checks database connectivity.",
+        "MCP server /health on port 8080 checks database, langfuse, and embedder.",
+        "Streamlit uses built-in /_stcore/health endpoint."
+      ],
+      "ground_truth": "/health endpoints on ports 8000 and 8080 with service status",
+      "metadata": {
+        "category": "infrastructure",
+        "source": "docs/health-check-endpoints.md",
+        "expected_faithfulness": 0.92,
+        "expected_relevancy": 0.90
+      }
+    },
+    {
+      "id": "q010",
+      "query": "How does the search similarity calculation work?",
+      "expected_answer": "The system uses cosine distance for similarity calculation with PGVector's <=> operator. The similarity score is calculated as 1 - (embedding <=> query_embedding), where higher scores indicate more relevant results. Results are ordered by similarity descending.",
+      "context": [
+        "PGVector uses cosine distance operator <=> for similarity calculation.",
+        "Similarity = 1 - cosine_distance, ordered descending for relevance."
+      ],
+      "ground_truth": "Cosine distance with PGVector <=> operator",
+      "metadata": {
+        "category": "technical_details",
+        "source": "core/rag_service.py",
+        "expected_faithfulness": 0.90,
+        "expected_relevancy": 0.88
+      }
+    },
+    {
+      "id": "q011",
+      "query": "What coverage threshold is enforced in CI/CD?",
+      "expected_answer": "The CI/CD pipeline enforces a minimum coverage threshold of 70% for core modules (core, ingestion, docling_mcp, utils). The build fails if coverage falls below this threshold using pytest-cov with --cov-fail-under=70.",
+      "context": [
+        "Coverage threshold >70% enforced via pytest-cov --cov-fail-under=70.",
+        "Modules covered: core, ingestion, docling_mcp, utils."
+      ],
+      "ground_truth": "70% coverage threshold enforced in CI/CD",
+      "metadata": {
+        "category": "testing",
+        "source": "pyproject.toml",
+        "expected_faithfulness": 0.95,
+        "expected_relevancy": 0.92
+      }
+    },
+    {
+      "id": "q012",
+      "query": "How does PydanticAI TestModel work for LLM mocking?",
+      "expected_answer": "PydanticAI TestModel is used for unit testing without making real API calls. It generates valid structured data automatically based on tool schemas. Usage involves overriding the agent's model with TestModel() in a context manager.",
+      "context": [
+        "TestModel from pydantic_ai.models.test provides LLM mocking.",
+        "Use agent.override(model=TestModel()) for testing without API calls."
+      ],
+      "ground_truth": "TestModel generates mock responses without API calls",
+      "metadata": {
+        "category": "testing",
+        "source": "docs/stories/5/tech-spec-epic-5.md",
+        "expected_faithfulness": 0.88,
+        "expected_relevancy": 0.85
+      }
+    },
+    {
+      "id": "q013",
+      "query": "What Docker images are built for the system?",
+      "expected_answer": "Three Docker images are built: docling-rag-agent (Streamlit UI), docling-rag-agent-api (FastAPI server), and docling-rag-agent-mcp (MCP server). All images must be under 500MB per CI/CD requirements.",
+      "context": [
+        "Docker images: Dockerfile (Streamlit), Dockerfile.api (API), Dockerfile.mcp (MCP).",
+        "Image size limit: <500MB enforced in CI/CD pipeline."
+      ],
+      "ground_truth": "Three Docker images under 500MB each",
+      "metadata": {
+        "category": "infrastructure",
+        "source": ".github/workflows/ci.yml",
+        "expected_faithfulness": 0.92,
+        "expected_relevancy": 0.90
+      }
+    },
+    {
+      "id": "q014",
+      "query": "How does the global embedder initialization work?",
+      "expected_answer": "The global embedder is initialized once at server startup using initialize_global_embedder(). It runs in a background asyncio task to prevent blocking the MCP handshake timeout. The initialization includes loading heavy transformers/docling models which takes ~40s on cold start.",
+      "context": [
+        "Global embedder initialized at startup, persists across requests.",
+        "Background initialization prevents blocking MCP handshake (40s cold start)."
+      ],
+      "ground_truth": "Background async initialization at startup, ~40s cold start",
+      "metadata": {
+        "category": "performance",
+        "source": "core/rag_service.py",
+        "expected_faithfulness": 0.90,
+        "expected_relevancy": 0.88
+      }
+    },
+    {
+      "id": "q015",
+      "query": "What pytest markers are available for running tests?",
+      "expected_answer": "Available pytest markers are: unit (fast isolated tests), integration (mocked DB/API with real logic), e2e (real services), slow (tests >5s), and ragas (RAGAS evaluation tests with LLM calls). Run specific markers with pytest -m <marker>.",
+      "context": [
+        "Markers: unit, integration, e2e, slow, ragas defined in pyproject.toml.",
+        "Run with pytest -m unit for unit tests only."
+      ],
+      "ground_truth": "unit, integration, e2e, slow, ragas markers",
+      "metadata": {
+        "category": "testing",
+        "source": "pyproject.toml",
+        "expected_faithfulness": 0.95,
+        "expected_relevancy": 0.92
+      }
+    },
+    {
+      "id": "q016",
+      "query": "How is source filtering implemented in search?",
+      "expected_answer": "Source filtering allows searching within specific documentation sources. When source_filter is provided, the search query adds a WHERE clause with ILIKE pattern matching: AND d.source ILIKE '%source_filter%'. This enables filtering by documentation paths like 'langfuse-docs' or 'docling'.",
+      "context": [
+        "Source filter uses ILIKE for case-insensitive pattern matching.",
+        "Filter applied to d.source column with %pattern% wildcards."
+      ],
+      "ground_truth": "ILIKE pattern matching on document source column",
+      "metadata": {
+        "category": "features",
+        "source": "core/rag_service.py",
+        "expected_faithfulness": 0.88,
+        "expected_relevancy": 0.85
+      }
+    },
+    {
+      "id": "q017",
+      "query": "What is RAGAS and how is it used for evaluation?",
+      "expected_answer": "RAGAS (Retrieval-Augmented Generation Assessment) is used to evaluate RAG quality. It measures metrics like faithfulness (>0.85 threshold), answer_relevancy (>0.80), context_precision, and context_recall. The evaluation uses a golden dataset with 20+ query-answer pairs and results are tracked in LangFuse.",
+      "context": [
+        "RAGAS metrics: faithfulness, answer_relevancy, context_precision, context_recall.",
+        "Thresholds: faithfulness >0.85, relevancy >0.80.",
+        "Golden dataset: 20+ query-answer pairs for evaluation."
+      ],
+      "ground_truth": "RAGAS evaluates RAG quality with faithfulness and relevancy metrics",
+      "metadata": {
+        "category": "testing",
+        "source": "docs/stories/5/tech-spec-epic-5.md",
+        "expected_faithfulness": 0.90,
+        "expected_relevancy": 0.88
+      }
+    },
+    {
+      "id": "q018",
+      "query": "How does the retry logic work for embedding generation?",
+      "expected_answer": "Embedding generation uses tenacity for retry logic with exponential backoff. It retries up to 3 times with wait times between 4 and 10 seconds (wait_exponential multiplier=1, min=4, max=10). This handles transient API failures gracefully.",
+      "context": [
+        "Retry logic: @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=4, max=10)).",
+        "Applied to _generate_single_embedding and _generate_batch_embeddings."
+      ],
+      "ground_truth": "3 retries with exponential backoff (4-10s)",
+      "metadata": {
+        "category": "resilience",
+        "source": "ingestion/embedder.py",
+        "expected_faithfulness": 0.92,
+        "expected_relevancy": 0.88
+      }
+    },
+    {
+      "id": "q019",
+      "query": "What is the AAA pattern in testing?",
+      "expected_answer": "AAA (Arrange-Act-Assert) is the testing pattern used in this project. Arrange sets up test data and preconditions, Act executes the code being tested, and Assert verifies the expected outcomes. Test names follow the convention: test_<functionality>_<condition>_<expected_result>.",
+      "context": [
+        "AAA pattern: Arrange (setup), Act (execute), Assert (verify).",
+        "Naming convention: test_<functionality>_<condition>_<expected_result>."
+      ],
+      "ground_truth": "Arrange-Act-Assert pattern with descriptive test names",
+      "metadata": {
+        "category": "testing",
+        "source": "docs/coding-standards.md",
+        "expected_faithfulness": 0.88,
+        "expected_relevancy": 0.85
+      }
+    },
+    {
+      "id": "q020",
+      "query": "How does the database connection pool work?",
+      "expected_answer": "The DatabasePool class manages PostgreSQL connections using asyncpg. Pool settings are optimized for MCP workload: min_size=2 connections kept warm, max_size=10 for concurrent queries, statement_cache_size=100 for prepared statements, and max_queries=50000 for connection recycling.",
+      "context": [
+        "Pool settings: min=2, max=10, statement_cache=100, max_queries=50000.",
+        "Optimized for MCP bursty traffic patterns."
+      ],
+      "ground_truth": "asyncpg pool with 2-10 connections and statement caching",
+      "metadata": {
+        "category": "infrastructure",
+        "source": "utils/db_utils.py",
+        "expected_faithfulness": 0.95,
+        "expected_relevancy": 0.90
+      }
+    },
+    {
+      "id": "q021",
+      "query": "What linting tools are used in the project?",
+      "expected_answer": "The project uses Ruff for both linting and formatting. Ruff checks for E (errors), F (pyflakes), I (isort), N (naming), W (warnings) rules with line length 100. Certain rules are ignored like E501 (line length) and E402 (module import order for Streamlit).",
+      "context": [
+        "Ruff for linting: select = ['E', 'F', 'I', 'N', 'W'].",
+        "Ignored: E501, E402, W291, W293, F841 for practical reasons."
+      ],
+      "ground_truth": "Ruff for linting with E/F/I/N/W rules",
+      "metadata": {
+        "category": "code_quality",
+        "source": "pyproject.toml",
+        "expected_faithfulness": 0.92,
+        "expected_relevancy": 0.88
+      }
+    },
+    {
+      "id": "q022",
+      "query": "How are embeddings cached to improve performance?",
+      "expected_answer": "The EmbeddingCache class provides in-memory caching with max 1000 entries (configurable). Cache lookup happens before API calls, and new embeddings are stored after generation. When full, FIFO eviction removes the oldest entry. This eliminates redundant OpenAI API calls.",
+      "context": [
+        "EmbeddingCache: in-memory with max_size=1000 entries.",
+        "FIFO eviction when cache is full.",
+        "Eliminates 300-500ms overhead per repeated query."
+      ],
+      "ground_truth": "In-memory FIFO cache with 1000 entries",
+      "metadata": {
+        "category": "performance",
+        "source": "ingestion/embedder.py",
+        "expected_faithfulness": 0.90,
+        "expected_relevancy": 0.88
+      }
+    },
+    {
+      "id": "q023",
+      "query": "What is the structure of a RAGAS golden dataset entry?",
+      "expected_answer": "Each golden dataset entry contains: query (user question), expected_answer (expected RAG response), context (array of context documents), ground_truth (short reference answer), and metadata (source, expected_faithfulness, expected_relevancy scores). The dataset requires 20+ entries.",
+      "context": [
+        "Entry structure: query, expected_answer, context[], ground_truth, metadata{}.",
+        "Metadata includes source and expected metric scores."
+      ],
+      "ground_truth": "query, expected_answer, context, ground_truth, metadata",
+      "metadata": {
+        "category": "testing",
+        "source": "tests/fixtures/golden_dataset.json",
+        "expected_faithfulness": 0.95,
+        "expected_relevancy": 0.92
+      }
+    },
+    {
+      "id": "q024",
+      "query": "How does TruffleHog secret scanning work in CI/CD?",
+      "expected_answer": "TruffleHog OSS scans the repository for secrets in CI/CD pipeline. It runs with --results=verified,unknown to reduce false positives and --fail flag to fail the build if secrets are detected. Full git history is fetched for complete scanning.",
+      "context": [
+        "TruffleHog with --results=verified,unknown --fail flags.",
+        "Full history checkout (fetch-depth: 0) for complete scanning."
+      ],
+      "ground_truth": "TruffleHog with verified/unknown results and fail on detection",
+      "metadata": {
+        "category": "security",
+        "source": ".github/workflows/ci.yml",
+        "expected_faithfulness": 0.90,
+        "expected_relevancy": 0.88
+      }
+    },
+    {
+      "id": "q025",
+      "query": "What async test support is configured?",
+      "expected_answer": "pytest-asyncio is configured with asyncio_mode='auto' for automatic async test detection. The event_loop fixture creates a session-scoped event loop. Async tests use the @pytest.mark.asyncio decorator implicitly due to auto mode.",
+      "context": [
+        "pytest-asyncio with asyncio_mode='auto' in pyproject.toml.",
+        "Session-scoped event_loop fixture in conftest.py."
+      ],
+      "ground_truth": "pytest-asyncio with auto mode and session event loop",
+      "metadata": {
+        "category": "testing",
+        "source": "tests/conftest.py",
+        "expected_faithfulness": 0.92,
+        "expected_relevancy": 0.90
+      }
+    }
+  ]
+}
+

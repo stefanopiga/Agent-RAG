@@ -1,0 +1,174 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>5.3</storyId>
+    <title>Implement RAGAS Evaluation Suite</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-01-30</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/5/5-3/5-3-implement-ragas-evaluation-suite.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>product owner</asA>
+    <iWant>RAGAS metrics to validate RAG quality</iWant>
+    <soThat>I can ensure high-quality responses</soThat>
+    <tasks>
+      <task id="1" ac="AC#10, AC#11">
+        Setup RAGAS evaluation infrastructure
+        - Install RAGAS dependencies: ragas>=0.1.0, langchain-openai>=0.1.0, datasets>=2.14.0
+        - Verify golden dataset exists: tests/fixtures/golden_dataset.json (25 query-answer pairs)
+        - Create tests/evaluation/ directory per RAGAS evaluation tests
+        - Create tests/evaluation/test_ragas_evaluation.py con struttura base
+        - Configure pytest marker @pytest.mark.ragas (già presente in pyproject.toml)
+        - Create helper function load_golden_dataset()
+        - Create helper function prepare_ragas_dataset() per convertire in HuggingFace Dataset format
+        - Verify golden dataset contiene almeno 20 query-answer pairs
+      </task>
+      <task id="2" ac="AC#10, AC#11">
+        Implement RAGAS evaluation execution
+        - Initialize RAGAS metrics: Faithfulness(), ResponseRelevancy(), LLMContextPrecisionWithoutReference(), ContextRecall()
+        - Configure LLM wrapper: LangchainLLMWrapper(ChatOpenAI())
+        - Configure embeddings wrapper: LangchainEmbeddingsWrapper(OpenAIEmbeddings())
+        - Initialize metrics con LLM/embeddings wrappers usando pattern MetricWithLLM e MetricWithEmbeddings
+        - Implement run_rag_query() helper per eseguire query RAG reali usando core/rag_service.py
+        - Implement generate_evaluation_batch() per generare batch evaluation data con chiavi: question, answer, contexts, ground_truth
+        - Implement execute_ragas_evaluation() che esegue evaluate(dataset, metrics)
+        - Test che RAGAS evaluation calcola tutti i scores
+        - Implement threshold verification: assert faithfulness > 0.85, answer_relevancy > 0.80
+        - Test che evaluation fallisce se thresholds non raggiunti
+      </task>
+      <task id="3" ac="AC#12">
+        Integrate RAGAS evaluation with LangFuse
+        - Create LangFuse trace per ogni evaluation run
+        - Upload RAGAS scores a LangFuse usando langfuse.create_score() per ogni metrica
+        - Tag trace con metadata: source: ragas_evaluation, evaluation_type: ragas
+        - Implement track_ragas_results() helper per upload scores a LangFuse
+        - Test che scores sono visibili in LangFuse dashboard
+        - Test che scores sono tracked nel tempo (multiple evaluation runs)
+        - Implement graceful degradation se LangFuse non disponibile (test continua senza tracking)
+      </task>
+      <task id="4" ac="AC#10, AC#11, AC#12">
+        Create RAGAS evaluation test suite
+        - Create tests/evaluation/test_ragas_evaluation.py con test completo
+        - Test test_ragas_evaluation_calculates_all_metrics() verifica che tutti i scores siano calcolati
+        - Test test_ragas_evaluation_meets_thresholds() verifica faithfulness > 0.85, relevancy > 0.80
+        - Test test_ragas_evaluation_tracks_in_langfuse() verifica upload scores a LangFuse
+        - Test test_ragas_evaluation_graceful_degradation() verifica che test continua se LangFuse non disponibile
+        - Verify tutti i test usano @pytest.mark.ragas marker
+        - Verify tutti i test usano @pytest.mark.asyncio per async operations
+        - Verify test naming segue pattern: test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;
+        - Verify test seguono pattern AAA (Arrange-Act-Assert)
+      </task>
+      <task id="5" ac="AC#10, AC#11, AC#12">
+        Testing subtasks
+        - Run RAGAS evaluation test: pytest tests/evaluation/ -m ragas -v
+        - Verify tutti i test passano
+        - Verify RAGAS scores sono calcolati correttamente
+        - Verify thresholds sono verificati (faithfulness > 0.85, relevancy > 0.80)
+        - Verify LangFuse integration funziona
+        - Verify scores sono visibili in LangFuse dashboard
+        - Verify graceful degradation se LangFuse non disponibile
+        - Document RAGAS evaluation results in Dev Notes
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1" epic_ac="AC#10">
+      Given golden dataset (20+ query-answer pairs), When I run RAGAS eval, Then I see faithfulness, relevancy, precision, recall scores
+    </ac>
+    <ac id="2" epic_ac="AC#11">
+      Given RAGAS results, When I check thresholds, Then faithfulness > 0.85 and relevancy > 0.80
+    </ac>
+    <ac id="3" epic_ac="AC#12">
+      Given LangFuse, When I view eval results, Then I see RAGAS metrics tracked over time
+    </ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/5/tech-spec-epic-5.md" title="Epic Technical Specification: Testing &amp; Quality Assurance (TDD)" section="RAGAS Evaluation Workflow">
+        Complete technical specification for Epic 5, Story 5.3 acceptance criteria (AC#10, AC#11, AC#12), RAGAS evaluation workflow, LangFuse integration. RAGAS evaluation workflow: Load golden dataset, prepare Dataset format, initialize metrics with LLM/embeddings wrappers, execute RAG queries, run evaluation, verify thresholds, upload to LangFuse.
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="ADR-003: TDD Structure Rigorosa">
+        TDD Structure Rigorosa decision. RAGAS evaluation tests in tests/evaluation/ directory. Use golden dataset tests/fixtures/golden_dataset.json (25 query-answer pairs già disponibili da Story 5-1). RAGAS evaluation richiede LLM calls reali (non mocked) per calcolare faithfulness e relevancy. Use langchain-openai wrappers per RAGAS metrics: LangchainLLMWrapper, LangchainEmbeddingsWrapper.
+      </doc>
+      <doc path="docs/testing-strategy.md" title="Testing Strategy" section="RAGAS Evaluation">
+        Complete RAGAS evaluation strategy, metrics (faithfulness, relevancy, precision, recall), thresholds, implementation patterns. RAGAS metrics: Faithfulness (0-1), Answer Relevancy (0-1), Context Precision (0-1), Context Recall (0-1). Thresholds: Faithfulness > 0.85, Answer Relevancy > 0.80, Context Precision > 0.75, Context Recall > 0.70.
+      </doc>
+      <doc path="docs/epics.md" title="docling-rag-agent - Epic Breakdown" section="Epic 5: Testing &amp; Quality Assurance (TDD)">
+        Story breakdown and acceptance criteria. Story 5.3: Implement RAGAS Evaluation Suite. AC#10: Given golden dataset (20+ query-answer pairs), When I run RAGAS eval, Then I see faithfulness, relevancy, precision, recall scores. AC#11: Given RAGAS results, When I check thresholds, Then faithfulness > 0.85 and relevancy > 0.80. AC#12: Given LangFuse, When I view eval results, Then I see RAGAS metrics tracked over time.
+      </doc>
+      <doc path="docs/unified-project-structure.md" title="Unified Project Structure" section="tests-directory">
+        Test directory structure requirements. tests/evaluation/ directory da creare per RAGAS evaluation tests. File test seguono convenzione: test_*.py o *_test.py. tests/fixtures/golden_dataset.json già presente (Story 5-1) - utilizzare per RAGAS evaluation.
+      </doc>
+    </docs>
+    <code>
+      <artifact path="tests/fixtures/golden_dataset.json" kind="test-data" symbol="golden_dataset" reason="Golden dataset con 25 query-answer pairs già disponibile (creato in Story 5-1, utilizzare per RAGAS evaluation). Struttura: query, expected_answer, context[], ground_truth, metadata{}." />
+      <artifact path="core/rag_service.py" kind="service" symbol="search_knowledge_base_structured" lines="324-358" reason="RAG service functions da utilizzare per eseguire query RAG reali in RAGAS evaluation. Funzioni già testate (Story 5-2): search_knowledge_base_structured, search_knowledge_base." />
+      <artifact path="tests/conftest.py" kind="test-config" symbol="golden_dataset fixture" lines="358-386" reason="Fixture disponibile per caricare golden dataset. RAGAS evaluation usa real LangFuse client (non mock_langfuse fixture) per verificare che scores siano effettivamente tracked." />
+      <artifact path="tests/unit/test_rag_service.py" kind="test" symbol="test_rag_service" reason="27 unit test per core/rag_service.py già creati in Story 5-2. Riutilizzare funzioni RAG (search_knowledge_base_structured, search_knowledge_base) per eseguire query RAG reali in RAGAS evaluation." />
+    </code>
+    <dependencies>
+      <python>
+        <package name="ragas" version=">=0.1.0" purpose="RAG quality evaluation framework" />
+        <package name="langchain-openai" version=">=0.1.0" purpose="LLM/embeddings wrappers per RAGAS metrics (LangchainLLMWrapper, LangchainEmbeddingsWrapper)" />
+        <package name="datasets" version=">=2.14.0" purpose="HuggingFace Dataset format per RAGAS evaluation" />
+        <package name="pytest" version=">=8.0.0" purpose="Test framework (già presente in dev dependencies)" />
+        <package name="pytest-asyncio" version=">=0.23.0" purpose="Async test support (già presente in dev dependencies)" />
+        <package name="langfuse" version=">=3.0.0" purpose="LangFuse SDK per tracking RAGAS scores (già presente in dependencies)" />
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      RAGAS evaluation richiede LLM calls reali (non mocked) per calcolare faithfulness e relevancy. Questo significa che RAGAS evaluation ha costo API reale. Non può usare TestModel o mock perché richiede real LLM calls.
+    </constraint>
+    <constraint>
+      Golden dataset già disponibile: tests/fixtures/golden_dataset.json con 25 query-answer pairs (creato in Story 5-1, non utilizzato in Story 5-2). Utilizzare questo dataset invece di crearne uno nuovo.
+    </constraint>
+    <constraint>
+      RAGAS evaluation tests devono usare @pytest.mark.ragas marker (già configurato in pyproject.toml da Story 5-1). Tutti i test devono usare @pytest.mark.asyncio per async operations (RAG queries sono async).
+    </constraint>
+    <constraint>
+      Threshold enforcement: faithfulness > 0.85, answer_relevancy > 0.80 (fail test se non raggiunti). Test deve fallire se thresholds non raggiunti.
+    </constraint>
+    <constraint>
+      LangFuse integration: Graceful degradation - se LangFuse non disponibile, test continua senza tracking (non fallisce). RAGAS evaluation usa real LangFuse client (non mock) per verificare che scores siano effettivamente tracked.
+    </constraint>
+    <constraint>
+      Test naming pattern: test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;. Test seguono pattern AAA (Arrange-Act-Assert) documentato in tests/README.md.
+    </constraint>
+    <constraint>
+      Directory structure: tests/evaluation/ directory da creare per RAGAS evaluation tests (aligned with unified-project-structure.md#tests-directory). File test seguono convenzione: test_*.py o *_test.py.
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="RAGAS Evaluation API" kind="function signature" signature="evaluate(dataset: Dataset, metrics: List[Metric]) -&gt; Dict[str, float]" path="ragas" />
+    <interface name="RAG Service Function" kind="function signature" signature="async search_knowledge_base_structured(query: str, limit: int = 5) -&gt; List[Dict[str, Any]]" path="core/rag_service.py" />
+    <interface name="LangFuse Score API" kind="function signature" signature="langfuse.create_score(name: str, value: float, trace_id: str) -&gt; None" path="langfuse" />
+    <interface name="HuggingFace Dataset" kind="class interface" signature="Dataset.from_dict(data: Dict[str, List]) -&gt; Dataset" path="datasets" />
+    <interface name="RAGAS Metrics" kind="class interface" signature="Faithfulness(), ResponseRelevancy(), LLMContextPrecisionWithoutReference(), ContextRecall()" path="ragas.metrics" />
+    <interface name="Langchain Wrappers" kind="class interface" signature="LangchainLLMWrapper(ChatOpenAI()), LangchainEmbeddingsWrapper(OpenAIEmbeddings())" path="ragas.llms, ragas.embeddings" />
+  </interfaces>
+
+  <tests>
+    <standards>
+      RAGAS evaluation tests usano pytest framework con @pytest.mark.ragas marker (già configurato in pyproject.toml). Test sono async: usare @pytest.mark.asyncio decorator. Test naming pattern: test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;. Pattern AAA (Arrange, Act, Assert) per tutti i test. RAGAS evaluation richiede real LLM calls (non mocked) - considerare costo API. Eseguire RAGAS evaluation su golden dataset completo (25 pairs) per accurate metrics.
+    </standards>
+    <locations>
+      tests/evaluation/test_ragas_evaluation.py (nuovo file da creare)
+      tests/fixtures/golden_dataset.json (già presente, utilizzare per RAGAS evaluation)
+    </locations>
+    <ideas>
+      <test ac="AC#10" idea="test_ragas_evaluation_calculates_all_metrics: Verifica che RAGAS evaluation calcoli tutti i scores (faithfulness, answer_relevancy, llm_context_precision_without_reference, context_recall). Arrange: Load golden dataset, prepare Dataset format, initialize metrics. Act: Execute RAG queries per ogni query nel dataset, run evaluate(dataset, metrics). Assert: Verify tutti i scores sono presenti nel results dict." />
+      <test ac="AC#11" idea="test_ragas_evaluation_meets_thresholds: Verifica che RAGAS evaluation raggiunga thresholds (faithfulness > 0.85, answer_relevancy > 0.80). Arrange: Load golden dataset, prepare Dataset format, initialize metrics. Act: Execute RAG queries, run evaluate(dataset, metrics). Assert: assert results['faithfulness'] > 0.85, assert results['answer_relevancy'] > 0.80." />
+      <test ac="AC#12" idea="test_ragas_evaluation_tracks_in_langfuse: Verifica che RAGAS scores siano uploadati a LangFuse. Arrange: Load golden dataset, prepare Dataset format, initialize metrics, initialize LangFuse client. Act: Execute RAG queries, run evaluate(dataset, metrics), call track_ragas_results() helper. Assert: Verify trace creato in LangFuse con metadata source: ragas_evaluation, verify scores uploadati per ogni metrica." />
+      <test ac="AC#12" idea="test_ragas_evaluation_graceful_degradation: Verifica che test continua se LangFuse non disponibile. Arrange: Load golden dataset, prepare Dataset format, initialize metrics, simulate LangFuse unavailable (mock get_client() to raise exception). Act: Execute RAG queries, run evaluate(dataset, metrics), call track_ragas_results() helper. Assert: Test non fallisce, evaluation continua senza tracking." />
+    </ideas>
+  </tests>
+</story-context>
+

@@ -17,17 +17,19 @@ from fastapi import FastAPI, Response
 from fastapi.responses import JSONResponse
 
 from docling_mcp.health import get_health_status
+from docling_mcp.lifespan import lifespan
 from docling_mcp.metrics import generate_metrics_output, get_metrics_content_type
 
 logger = logging.getLogger(__name__)
 
-# Create FastAPI app for observability endpoints
+# Create FastAPI app for observability endpoints with lifespan for resource initialization
 app = FastAPI(
     title="Docling RAG Agent - Observability",
     description="Prometheus metrics and health check endpoints for the MCP server",
     version="1.0.0",
     docs_url="/docs",
     redoc_url=None,
+    lifespan=lifespan,
 )
 
 

@@ -153,7 +153,7 @@ docling-rag-agent/
 | **Document Processing** | Docling            | 2.55+   | 2025-11-26 | Multi-format          | PDF, DOCX, PPTX, XLSX, HTML, MD, TXT                                      |
 | **Observability**       | LangFuse           | 3.0.0+  | 2025-11-26 | Tracing & Monitoring  | Python SDK v3 (OTel-based)                                                |
 | **Testing Framework**   | pytest             | 8.x+    | 2025-11-26 | Testing               | With pytest-asyncio, pytest-cov                                           |
-| **E2E Testing**         | Playwright         | 1.40.0+ | 2025-11-26 | E2E Tests             | Streamlit workflow testing                                                |
+| **E2E Testing**         | pytest-playwright  | 0.4.0+  | 2025-12-01 | E2E Tests             | Streamlit workflow testing, fixtures automatiche (page, context, browser) |
 | **RAG Evaluation**      | RAGAS              | 0.1.0+  | 2025-11-26 | Quality Metrics       | Faithfulness, relevancy scores                                            |
 | **Logging**             | python-json-logger | 4.0.0+  | 2025-11-26 | Structured Logging    | JSON format for production                                                |
 | **Retry Logic**         | tenacity           | 9.1.2+  | 2025-11-26 | Resilience            | Exponential backoff                                                       |
@@ -716,25 +716,76 @@ These patterns ensure consistent implementation across all AI agents:
 
 ### Docker Configuration
 
+**Multi-Stage Build Pattern (Story 4.3):**
+
+Tutti i Dockerfile utilizzano multi-stage builds per separare build-time e runtime dependencies:
+
+```dockerfile
+# BUILDER STAGE - dipendenze build-time
+FROM python:3.11-slim AS builder
+RUN apt-get install build-essential  # Solo qui
+RUN uv sync --extra <gruppo>
+
+# RUNTIME STAGE - solo runtime
+FROM python:3.11-slim AS runtime
+COPY --from=builder /app/.venv /app/.venv  # Solo venv compilato
+# NO build-essential nello stage finale
+```
+
+**Dependency Groups (`pyproject.toml`):**
+
+```toml
+[project.optional-dependencies]
+streamlit = ["streamlit", "pydantic-ai", ...]  # Leggero (~1GB)
+api = ["fastapi", "docling[vlm]", ...]         # Con ML (~16GB)
+mcp = ["fastmcp", "docling[vlm]", ...]         # Con ML (~16GB)
+```
+
 **Streamlit Container (`Dockerfile`):**
 
-- Base: `python:3.11-slim-bookworm`
+- Base: `python:3.11-slim-bookworm` (builder + runtime)
 - UV: Copied from official image
-- Multi-stage: Dependency installation → code copy → final image
-- Size: < 500MB target
+- Multi-stage: Builder → Runtime (solo app.py, client/, utils/)
+- Dependencies: `--extra streamlit` (no docling[vlm])
+- **Size: 1.1GB** (ottimizzato da 17.4GB, -94%)
 - Health check: `/_stcore/health` endpoint
 
 **API Container (`Dockerfile.api`):**
 
-- Base: `python:3.11-slim-bookworm`
-- FastAPI + Uvicorn
+- Base: `python:3.11-slim`
+- Multi-stage: Builder → Runtime
+- Dependencies: `--extra api` (include docling[vlm])
+- Non-root user: `COPY --chown=appuser:appuser` pattern
+- **Size: 16.1GB** (docling[vlm] + PyTorch richiesti)
 - Health check: `/health` endpoint
+- Port: 8000
+
+**MCP Server Container (`Dockerfile.mcp`):**
+
+- Base: `python:3.11-slim`
+- Multi-stage: Builder → Runtime
+- Dependencies: `--extra mcp` (include docling[vlm])
+- **Size: 16.2GB** (docling[vlm] + PyTorch richiesti)
+- Health check: `/health` endpoint
+- Port: 8080
+- Environment: `METRICS_PORT=8080`
+
+**Note su dimensioni immagini:**
+
+- Target <500MB non raggiunto per API/MCP: `docling[vlm]` richiede PyTorch (~2GB) + modelli VLM (~10GB)
+- Streamlit ottimizzato a 1.1GB rimuovendo dipendenze ML non necessarie
+- Fix critico: `chown -R` sostituito con `COPY --chown` per evitare layer duplication
 
 **Docker Compose:**
 
-- Services: Streamlit app, PostgreSQL (optional), LangFuse (optional)
-- Networks: Internal network for service communication
-- Volumes: Document storage, database persistence
+- **Services:**
+  - `rag-api`: FastAPI REST API service (porta 8000)
+  - `mcp-server`: MCP HTTP Server per observability (porta 8080)
+  - `streamlit`: Streamlit web UI (porta 8501)
+  - `db`: PostgreSQL database con PGVector extension (porta 5432)
+- **Networks:** Internal network (`rag-network`) per comunicazione tra servizi
+- **Volumes:** Document storage (`./documents`), database persistence (`postgres_data`)
+- **Health Checks:** Tutti i servizi includono health check endpoints configurati
 
 ### Environment Configuration
 
@@ -765,6 +816,7 @@ These patterns ensure consistent implementation across all AI agents:
 **GitHub Actions Workflow (`.github/workflows/ci.yml`):**
 
 Il CI/CD pipeline completo è documentato in dettaglio in:
+
 - **Technical Specification**: `docs/stories/4/tech-spec-epic-4.md`
 - **Setup Guide**: `docs/stories/4/epic-4-setup-guide.md`
 
@@ -790,8 +842,14 @@ jobs:
     - Fail build if coverage <70%
     - Upload coverage report artifacts
   build:
-    - Docker build test (Streamlit + API)
+    - Docker build test (Streamlit + API + MCP Server)
     - Verify image sizes <500MB
+  health-check:
+    - Start all services (docker compose up -d)
+    - Test API Server health endpoint (porta 8000)
+    - Test MCP Server health endpoint (porta 8080)
+    - Test Streamlit health endpoint (porta 8501)
+    - Fail build if health checks fail
   secret-scan:
     - TruffleHog OSS scan (full git history)
     - Fail build if secrets detected
@@ -807,7 +865,7 @@ jobs:
 
 - **TruffleHog OSS**: Automatic secret scanning su ogni PR/push
 - **CodeRabbit**: AI-powered code review automatica
-- **References**: 
+- **References**:
   - TruffleHog: https://github.com/marketplace/actions/trufflehog-oss
   - CodeRabbit: https://docs.coderabbit.ai/platforms/github-com
 
@@ -1029,6 +1087,7 @@ async def query_knowledge_base(query: str, limit: int = 5):
 
 **Status**: Accepted  
 **Date**: 2025-11-26  
+**Updated**: 2025-12-01  
 **Context**: Need comprehensive testing infrastructure for production-ready system.
 
 **Decision**: Implement TDD structure with `tests/unit/`, `tests/integration/`, `tests/e2e/`, coverage >70% enforcement.
@@ -1040,11 +1099,108 @@ async def query_knowledge_base(query: str, limit: int = 5):
 - RAGAS evaluation for RAG quality
 - Playwright E2E tests for user workflows
 
+**Implementation Details**:
+
+**1. PydanticAI TestModel (Unit Tests)**
+
+```python
+# Pattern corretto: Agent.override() invece di assegnazione diretta
+from pydantic_ai import Agent
+from pydantic_ai.models.test import TestModel
+
+agent = Agent('openai:gpt-4o-mini', system_prompt='...')
+
+# TestModel genera risposte strutturate valide automaticamente
+# basandosi sugli schemi dei tool definiti nell'agent
+async def test_rag_query():
+    with agent.override(model=TestModel()):
+        result = await agent.run('test query')
+        # TestModel produce output valido senza chiamate API reali
+        assert result.data is not None
+```
+
+**2. pytest-playwright (E2E Tests)**
+
+```bash
+# Installazione
+uv add pytest-playwright --dev
+playwright install  # Scarica browser binaries (Chromium, Firefox, WebKit)
+```
+
+```python
+# Fixtures automatiche: page, context, browser
+# Nessun setup manuale richiesto
+def test_streamlit_workflow(page):
+    page.goto("http://localhost:8501")
+    page.fill('[data-testid="query-input"]', 'What is RAG?')
+    page.click('[data-testid="submit-button"]')
+    expect(page.locator('[data-testid="response"]')).to_be_visible()
+```
+
+```bash
+# CLI options disponibili
+pytest tests/e2e/ --headed          # Browser visibile
+pytest tests/e2e/ --browser=firefox # Browser specifico
+pytest tests/e2e/ --tracing=on      # Genera trace per debug
+pytest tests/e2e/ --video=on        # Registra video
+pytest tests/e2e/ --screenshot=on   # Screenshot su fallimento
+```
+
+**3. RAGAS Evaluation**
+
+```python
+from ragas import evaluate
+from ragas.metrics import faithfulness, answer_relevancy, context_precision, context_recall
+from datasets import Dataset
+
+# Preparazione dataset
+data = {
+    "question": ["What is RAG?", ...],
+    "answer": ["RAG is...", ...],
+    "contexts": [["Context 1...", "Context 2..."], ...],
+    "ground_truth": ["Expected answer...", ...]
+}
+dataset = Dataset.from_dict(data)
+
+# Evaluation
+results = evaluate(
+    dataset=dataset,
+    metrics=[faithfulness, answer_relevancy, context_precision, context_recall]
+)
+
+# Thresholds enforcement
+assert results['faithfulness'] > 0.85
+assert results['answer_relevancy'] > 0.80
+```
+
+**4. pytest Markers**
+
+```python
+# pyproject.toml
+[tool.pytest.ini_options]
+markers = [
+    "unit: Unit tests (fast, isolated)",
+    "integration: Integration tests (mocked external services)",
+    "e2e: End-to-end tests (real services, slow)",
+    "ragas: RAGAS evaluation tests (LLM calls)",
+    "slow: Slow tests (>5s execution time)"
+]
+```
+
+```bash
+# Esecuzione selettiva
+pytest -m unit              # Solo unit tests
+pytest -m "not slow"        # Esclude test lenti
+pytest -m "unit or ragas"   # Unit + RAGAS
+```
+
 **Consequences**:
 
 - All new code must have tests first (Red-Green-Refactor)
 - CI/CD fails if coverage <70%
 - Golden dataset required for RAGAS evaluation (20+ pairs)
+- Use `Agent.override(model=TestModel())` per unit tests PydanticAI
+- Use pytest-playwright fixtures (`page`, `context`, `browser`) per E2E tests
 
 ---
 
@@ -1180,8 +1336,17 @@ async def get_health_status() -> HealthResponse:
 ### External References
 
 - **LangFuse Documentation**: https://langfuse.com/docs
+- **LangFuse RAGAS Integration**: https://langfuse.com/integrations/frameworks/ragas
+- **LangFuse RAGAS Cookbook**: https://langfuse.com/guides/cookbook/evaluation_of_rag_with_ragas
 - **FastMCP Documentation**: https://github.com/jlowin/fastmcp
 - **PydanticAI Documentation**: https://ai.pydantic.dev
+- **PydanticAI Testing Guide**: https://ai.pydantic.dev/testing/
+- **pytest Documentation**: https://docs.pytest.org/en/stable/
+- **pytest Markers**: https://docs.pytest.org/en/stable/how-to/mark.html
+- **Playwright Python**: https://playwright.dev/python/docs/intro
+- **pytest-playwright Plugin**: https://playwright.dev/python/docs/test-runners
+- **RAGAS Documentation**: https://docs.ragas.io/en/stable/
+- **RAGAS Metrics**: https://docs.ragas.io/en/stable/concepts/metrics/available_metrics/index.html
 - **Prometheus Best Practices**: https://prometheus.io/docs/practices/histograms/
 - **PostgreSQL PGVector**: https://github.com/pgvector/pgvector
 
@@ -1189,5 +1354,5 @@ async def get_health_status() -> HealthResponse:
 
 _Generated by BMAD Decision Architecture Workflow v1.0_  
 _Date: 2025-11-26_  
-_Updated: 2025-11-27_  
+_Updated: 2025-12-01_  
 _For: Stefano_

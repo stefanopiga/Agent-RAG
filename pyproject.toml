@@ -4,32 +4,77 @@ version = "0.1.0"
 description = "Streamlit-based RAG agent with PostgreSQL/PGVector"
 readme = "README.md"
 requires-python = ">=3.10"
+# Base dependencies (shared by all services)
 dependencies = [
     "python-dotenv>=1.0.0",
-    "aiohttp>=3.9.0",
-    "pydantic-ai>=0.7.4",
     "asyncpg>=0.30.0",
     "numpy>=2.0.2",
     "openai>=1.0.0",
-    "docling[vlm]>=2.55.0",
+    "httpx>=0.27.0",
+    "langfuse>=3.0.0",
+]
+
+[project.optional-dependencies]
+# Streamlit UI - lightweight, no ML models
+streamlit = [
     "streamlit>=1.31.0",
     "nest-asyncio>=1.6.0",
     "watchdog>=4.0.0",
-    "fastmcp>=0.1.1",
+    "pydantic-ai>=0.7.4",
+    "aiohttp>=3.9.0",
+    "tenacity>=8.2.0",  # used by client/api_client.py
+    "pydantic>=2.0.0",  # used by utils/models.py
+]
+
+# API service - includes docling for document processing
+api = [
     "fastapi>=0.109.0",
     "uvicorn>=0.27.0",
-    "httpx>=0.27.0",
+    "pydantic-ai>=0.7.4",
+    "aiohttp>=3.9.0",
+    "docling[vlm]>=2.55.0",  # includes transformers
     "aiofiles>=24.1.0",
+    "tenacity>=8.2.0",  # used by ingestion/embedder.py
+    "pydantic>=2.0.0",  # used by api/models.py
+]
+
+# MCP server - includes docling for document processing
+mcp = [
+    "fastmcp>=0.1.1",
+    "fastapi>=0.109.0",  # used by docling_mcp/http_server.py
+    "pydantic-ai>=0.7.4",
+    "aiohttp>=3.9.0",
+    "docling[vlm]>=2.55.0",  # includes transformers
+    "aiofiles>=24.1.0",
+    "prometheus_client>=0.19.0",
+    "tenacity>=8.2.0",  # used by client/api_client.py
+    "pydantic>=2.0.0",  # used by utils/models.py
+]
+
+# Development dependencies
+dev = [
     "pytest>=8.0.0",
     "pytest-asyncio>=0.23.0",
     "pytest-cov>=4.1.0",
+    "pytest-mock>=3.12.0",
+    "ruff>=0.8.0",
+    "mypy>=1.13.0",
+    # RAGAS evaluation dependencies (Story 5-3)
+    "ragas>=0.1.0",
+    "langchain-openai>=0.1.0",
+    "datasets>=2.14.0",
+]
+
+# Documentation
+docs = [
     "mkdocs>=1.6.1",
     "mkdocs-material>=9.7.0",
     "mkdocstrings[python]>=0.30.1",
-    "langfuse>=3.0.0",
-    "prometheus_client>=0.19.0",
-    "ruff>=0.8.0",
-    "mypy>=1.13.0",
+]
+
+# All dependencies (for local development)
+all = [
+    "docling-rag-agent[streamlit,api,mcp,dev,docs]",
 ]
 
 [tool.black]
@@ -51,6 +96,19 @@ ignore = ["E501", "E402", "W291", "W293", "F841"]
 asyncio_mode = "auto"
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "unit: Unit tests (fast, isolated, mocked dependencies)",
+    "integration: Integration tests (mocked DB/API, real logic, <5s per test)",
+    "e2e: End-to-end tests (real services, slow, <30s per test)",
+    "slow: Slow tests (>5s execution time)",
+    "ragas: RAGAS evaluation tests (LLM calls, golden dataset)",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore::PendingDeprecationWarning",
+]
 
 [tool.mypy]
 python_version = "3.10"

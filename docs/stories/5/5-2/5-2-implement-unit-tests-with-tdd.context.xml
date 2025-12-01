@@ -1,0 +1,376 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>2</storyId>
+    <title>Implement Unit Tests with TDD</title>
+    <status>drafted</status>
+    <generatedAt>2025-01-30</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/5/5-2/5-2-implement-unit-tests-with-tdd.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>comprehensive unit tests for core modules with mocked LLM and dependencies</iWant>
+    <soThat>I can ensure code quality, prevent regressions, and achieve >70% coverage for core modules</soThat>
+    <tasks>
+      <task id="1">
+        <title>Create unit tests for core/rag_service.py</title>
+        <acceptanceCriteria>AC#1/AC#7, AC#3/AC#9</acceptanceCriteria>
+        <subtasks>
+          <subtask>Create tests/unit/test_rag_service.py</subtask>
+          <subtask>Add fixture autouse=True per cleanup _global_embedder state tra test</subtask>
+          <subtask>Test initialize_global_embedder() with mocked embedder creation</subtask>
+          <subtask>Test initialize_global_embedder() idempotency</subtask>
+          <subtask>Test close_global_embedder() cleanup logic</subtask>
+          <subtask>Test is_embedder_initializing() state checking</subtask>
+          <subtask>Test get_global_embedder() with initialization wait logic</subtask>
+          <subtask>Test get_global_embedder() timeout scenario (60s timeout)</subtask>
+          <subtask>Test generate_query_embedding() with mocked embedder</subtask>
+          <subtask>Test search_with_embedding() with mocked database pool</subtask>
+          <subtask>Test search_with_embedding() with source_filter parameter</subtask>
+          <subtask>Test search_knowledge_base_structured() integration flow</subtask>
+          <subtask>Test search_knowledge_base() formatting logic</subtask>
+          <subtask>Test search_knowledge_base() empty results handling</subtask>
+          <subtask>Test error handling for all functions</subtask>
+          <subtask>Test source_filter parameter functionality (ILIKE pattern matching)</subtask>
+          <subtask>Verify all tests use @pytest.mark.unit marker</subtask>
+          <subtask>Verify all tests use fixtures from conftest.py</subtask>
+          <subtask>Verify global state cleanup between tests</subtask>
+        </subtasks>
+      </task>
+      <task id="2">
+        <title>Create unit tests for ingestion/embedder.py</title>
+        <acceptanceCriteria>AC#2/AC#8, AC#3/AC#9</acceptanceCriteria>
+        <subtasks>
+          <subtask>Create tests/unit/test_embedder.py</subtask>
+          <subtask>Test EmbeddingCache class (get, set, eviction logic)</subtask>
+          <subtask>Test EmbeddingGenerator.__init__() with various configurations</subtask>
+          <subtask>Test embed_query() with cache hit/miss scenarios</subtask>
+          <subtask>Test embed_query() with mocked OpenAI client</subtask>
+          <subtask>Test embed_documents() batch processing logic</subtask>
+          <subtask>Test embed_documents() with partial cache hits</subtask>
+          <subtask>Test embed_chunks() backward compatibility</subtask>
+          <subtask>Test _generate_single_embedding() retry logic</subtask>
+          <subtask>Test _generate_batch_embeddings() retry logic</subtask>
+          <subtask>Test create_embedder() factory function</subtask>
+          <subtask>Test LangFuse OpenAI wrapper graceful degradation</subtask>
+          <subtask>Test error handling for API failures</subtask>
+          <subtask>Test retry logic with tenacity decorators</subtask>
+          <subtask>Verify all tests use @pytest.mark.unit marker</subtask>
+          <subtask>Verify all tests mock OpenAI client directly (not TestModel)</subtask>
+          <subtask>Use pytest-mock mocker fixture for patching OpenAI client</subtask>
+        </subtasks>
+      </task>
+      <task id="3">
+        <title>Verify coverage requirements</title>
+        <acceptanceCriteria>AC#3/AC#9</acceptanceCriteria>
+        <subtasks>
+          <subtask>Run coverage report: pytest --cov=core --cov=ingestion --cov-report=term-missing</subtask>
+          <subtask>Verify core/rag_service.py coverage > 70%</subtask>
+          <subtask>Verify ingestion/embedder.py coverage > 70%</subtask>
+          <subtask>Identify uncovered lines and add tests if critical paths</subtask>
+          <subtask>Generate HTML coverage report</subtask>
+          <subtask>Review coverage report for gaps</subtask>
+          <subtask>Document coverage results in Dev Notes</subtask>
+        </subtasks>
+      </task>
+      <task id="4">
+        <title>Testing subtasks</title>
+        <acceptanceCriteria>AC#1, AC#2, AC#3</acceptanceCriteria>
+        <subtasks>
+          <subtask>Run all unit tests: pytest tests/unit/ -v</subtask>
+          <subtask>Verify all tests pass</subtask>
+          <subtask>Verify test isolation</subtask>
+          <subtask>Verify async tests use @pytest.mark.asyncio</subtask>
+          <subtask>Verify test naming follows pattern: test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;</subtask>
+          <subtask>Verify tests follow AAA pattern (Arrange-Act-Assert)</subtask>
+          <subtask>Verify all mocks are properly configured and verified</subtask>
+          <subtask>Run coverage report and verify coverage > 70%</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="1">
+      <given>core/rag_service.py</given>
+      <when>I run unit tests</when>
+      <then>all functions are tested with mocked LLM (AC#7)</then>
+      <note>Se core/rag_service.py contiene PydanticAI Agent, usare TestModel con agent.override(model=TestModel()). Per altre funzioni, usare mock appropriati.</note>
+    </criterion>
+    <criterion id="2">
+      <given>ingestion/embedder.py</given>
+      <when>I run tests</when>
+      <then>embedding logic is validated with mocked OpenAI client (AC#8)</then>
+      <note>TestModel è solo per PydanticAI Agent, non per EmbeddingGenerator che usa OpenAI client direttamente. Per EmbeddingGenerator usare pytest-mock mocker fixture per mockare LangfuseAsyncOpenAI client.</note>
+    </criterion>
+    <criterion id="3">
+      <given>coverage report</given>
+      <when>I check it</when>
+      <then>core modules have > 70% coverage (AC#9)</then>
+    </criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/stories/5/tech-spec-epic-5.md</path>
+        <title>Epic Technical Specification: Testing &amp; Quality Assurance (TDD)</title>
+        <section>Acceptance Criteria (Authoritative)</section>
+        <snippet>Story 5.2: Implement Unit Tests with TDD - AC#7: Given core/rag_service.py, When I run unit tests, Then all functions are tested with mocked LLM. AC#8: Given ingestion/embedder.py, When I run tests, Then embedding logic is validated with mocked OpenAI client. AC#9: Given coverage report, When I check it, Then core modules have > 70% coverage.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>docling-rag-agent - Epic Breakdown</title>
+        <section>Epic 5: Testing &amp; Quality Assurance (TDD)</section>
+        <snippet>Story 5.2: Implement Unit Tests with TDD - As a developer, I want unit tests for all core modules using PydanticAI TestModel, So that I can validate logic without API costs. Acceptance Criteria: Given core/rag_service.py, When I run unit tests, Then all functions are tested with mocked LLM. Given ingestion/embedder.py, When I run tests, Then embedding logic is validated with mocked OpenAI client. Given coverage report, When I check it, Then core modules have > 70% coverage.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>Architecture - docling-rag-agent</title>
+        <section>ADR-003: TDD Structure Rigorosa</section>
+        <snippet>Decision: Implement TDD structure with tests/unit/, tests/integration/, tests/e2e/, coverage >70% enforcement. PydanticAI TestModel: Use Agent.override(model=TestModel()) for LLM mocking in unit tests. TestModel generates valid structured data automatically based on tool schemas without real API calls.</snippet>
+      </doc>
+      <doc>
+        <path>docs/testing-strategy.md</path>
+        <title>Testing Strategy - docling-rag-agent</title>
+        <section>3. Unit Testing</section>
+        <snippet>Unit Tests: Testano singole funzioni/moduli in isolamento. Mock di dipendenze esterne (DB, API, LangFuse). Coverage target: >70% per moduli core. Pattern AAA (Arrange-Act-Assert). Mocking Patterns: Database mocking con AsyncMock, OpenAI/LLM mocking con unittest.mock.patch o pytest-mock mocker fixture.</snippet>
+      </doc>
+      <doc>
+        <path>docs/coding-standards.md</path>
+        <title>Coding Standards - docling-rag-agent</title>
+        <section>7. Testing Standards</section>
+        <snippet>Testing Standards: Follow AAA pattern (Arrange, Act, Assert). Use descriptive test names: test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;. Async tests use pytest.mark.asyncio decorator. Mock external dependencies (DB, API, LLM) in unit tests. Use pytest-mock mocker fixture for patching (preferred over unittest.mock.patch). Verify mock calls when relevant.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/5/5-2/5-2-implement-unit-tests-with-tdd.md</path>
+        <title>Story 5.2: Implement Unit Tests with TDD</title>
+        <section>Dev Notes</section>
+        <snippet>Architecture Patterns: TDD Structure (ADR-003) - Follow rigorous TDD structure with unit tests in tests/unit/. Coverage enforcement >70% for core modules (core/, ingestion/). Use PydanticAI TestModel for LLM mocking in unit tests. Use pytest fixtures from conftest.py for shared test setup. Mocking Strategy: PydanticAI TestModel - Use only for PydanticAI Agent tests. EmbeddingGenerator - Mock LangfuseAsyncOpenAI client directly using pytest-mock mocker fixture.</snippet>
+      </doc>
+      <doc>
+        <path>docs/stories/5/5-1/5-1-setup-testing-infrastructure-with-tdd-structure.md</path>
+        <title>Story 5.1: Setup Testing Infrastructure with TDD Structure</title>
+        <section>Dev Agent Record</section>
+        <snippet>Infrastruttura Disponibile: Fixtures Disponibili in tests/conftest.py - mock_db_pool (Mock DatabasePool per unit tests), mock_embedder (Mock EmbeddingGenerator con embedding deterministici), test_model (PydanticAI TestModel per LLM mocking), mock_langfuse (Mock LangFuse client per observability testing). Pytest Config: Configurazione completa in pyproject.toml con markers (unit, integration, e2e, slow, ragas).</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>core/rag_service.py</path>
+        <kind>service</kind>
+        <symbol>initialize_global_embedder</symbol>
+        <lines>43-89</lines>
+        <reason>Funzione principale per inizializzazione global embedder, richiede test con mocked embedder creation e idempotency</reason>
+      </artifact>
+      <artifact>
+        <path>core/rag_service.py</path>
+        <kind>service</kind>
+        <symbol>close_global_embedder</symbol>
+        <lines>91-111</lines>
+        <reason>Funzione cleanup per global embedder, richiede test cleanup logic</reason>
+      </artifact>
+      <artifact>
+        <path>core/rag_service.py</path>
+        <kind>service</kind>
+        <symbol>is_embedder_initializing</symbol>
+        <lines>112-120</lines>
+        <reason>Funzione state checking per embedder initialization, richiede test state checking</reason>
+      </artifact>
+      <artifact>
+        <path>core/rag_service.py</path>
+        <kind>service</kind>
+        <symbol>get_global_embedder</symbol>
+        <lines>122-149</lines>
+        <reason>Funzione principale per ottenere global embedder con wait logic e timeout, richiede test initialization wait e timeout scenario</reason>
+      </artifact>
+      <artifact>
+        <path>core/rag_service.py</path>
+        <kind>service</kind>
+        <symbol>generate_query_embedding</symbol>
+        <lines>231-252</lines>
+        <reason>Funzione per generare query embedding, richiede test con mocked embedder</reason>
+      </artifact>
+      <artifact>
+        <path>core/rag_service.py</path>
+        <kind>service</kind>
+        <symbol>search_with_embedding</symbol>
+        <lines>254-309</lines>
+        <reason>Funzione per ricerca con embedding pre-computato, richiede test con mocked database pool e source_filter parameter</reason>
+      </artifact>
+      <artifact>
+        <path>core/rag_service.py</path>
+        <kind>service</kind>
+        <symbol>search_knowledge_base_structured</symbol>
+        <lines>151-229</lines>
+        <reason>Funzione principale per ricerca knowledge base strutturata, richiede test integration flow</reason>
+      </artifact>
+      <artifact>
+        <path>core/rag_service.py</path>
+        <kind>service</kind>
+        <symbol>search_knowledge_base</symbol>
+        <lines>151-229</lines>
+        <reason>Funzione wrapper per ricerca knowledge base con formatting, richiede test formatting logic e empty results handling</reason>
+      </artifact>
+      <artifact>
+        <path>ingestion/embedder.py</path>
+        <kind>service</kind>
+        <symbol>EmbeddingCache</symbol>
+        <lines>42-59</lines>
+        <reason>Classe cache per embeddings, richiede test get, set, eviction logic</reason>
+      </artifact>
+      <artifact>
+        <path>ingestion/embedder.py</path>
+        <kind>service</kind>
+        <symbol>EmbeddingGenerator</symbol>
+        <lines>63-215</lines>
+        <reason>Classe principale per generazione embeddings, richiede test __init__, embed_query, embed_documents, embed_chunks, retry logic, error handling</reason>
+      </artifact>
+      <artifact>
+        <path>ingestion/embedder.py</path>
+        <kind>service</kind>
+        <symbol>create_embedder</symbol>
+        <lines>217-224</lines>
+        <reason>Factory function per creare embedder, richiede test con varie configurazioni</reason>
+      </artifact>
+      <artifact>
+        <path>tests/conftest.py</path>
+        <kind>test</kind>
+        <symbol>mock_db_pool</symbol>
+        <lines>54-95</lines>
+        <reason>Fixture disponibile per mocking database pool, riutilizzare nei test</reason>
+      </artifact>
+      <artifact>
+        <path>tests/conftest.py</path>
+        <kind>test</kind>
+        <symbol>mock_embedder</symbol>
+        <lines>139-174</lines>
+        <reason>Fixture disponibile per mocking embedder, riutilizzare nei test</reason>
+      </artifact>
+      <artifact>
+        <path>tests/conftest.py</path>
+        <kind>test</kind>
+        <symbol>test_model</symbol>
+        <lines>180-205</lines>
+        <reason>Fixture PydanticAI TestModel per LLM mocking, riutilizzare per test PydanticAI Agent se presente</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <python>
+        <package name="pytest" version=">=8.0.0"/>
+        <package name="pytest-asyncio" version=">=0.23.0"/>
+        <package name="pytest-cov" version=">=4.1.0"/>
+        <package name="pytest-mock" version=">=3.12.0"/>
+        <package name="pydantic-ai" version=">=0.7.4"/>
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <type>Architecture Pattern</type>
+      <description>TDD Structure Rigorosa (ADR-003): Follow rigorous TDD structure with unit tests in tests/unit/. Coverage enforcement >70% for core modules (core/, ingestion/). Use PydanticAI TestModel for LLM mocking in unit tests. Use pytest fixtures from conftest.py for shared test setup.</description>
+      <source>docs/architecture.md#ADR-003</source>
+    </constraint>
+    <constraint>
+      <type>Testing Standard</type>
+      <description>Test Organization: Unit tests in tests/unit/ directory. Use @pytest.mark.unit marker for all unit tests. Follow AAA pattern (Arrange-Act-Assert). Use descriptive test names: test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;. Async tests use @pytest.mark.asyncio decorator.</description>
+      <source>docs/testing-strategy.md#Unit-Testing</source>
+    </constraint>
+    <constraint>
+      <type>Mocking Strategy</type>
+      <description>PydanticAI TestModel: Use only for PydanticAI Agent tests (se presente in core/rag_service.py o core/agent.py). TestModel NON si usa per EmbeddingGenerator. EmbeddingGenerator: Mock LangfuseAsyncOpenAI client direttamente usando pytest-mock mocker fixture (preferito) o unittest.mock.patch. Database: Use mock_db_pool fixture from conftest.py. Global State: Reset _global_embedder state between tests using pytest.fixture(autouse=True) for cleanup.</description>
+      <source>docs/stories/5/5-2/5-2-implement-unit-tests-with-tdd.md#Mocking-Strategy</source>
+    </constraint>
+    <constraint>
+      <type>Coverage Requirement</type>
+      <description>Coverage Target: >70% for core/rag_service.py and ingestion/embedder.py. Focus on testing all public functions and error paths. Mock external dependencies (DB, OpenAI API, LangFuse). Test both success and failure scenarios.</description>
+      <source>docs/stories/5/5-2/5-2-implement-unit-tests-with-tdd.md#Coverage-Strategy</source>
+    </constraint>
+    <constraint>
+      <type>Test Isolation</type>
+      <description>Test Isolation: Every test must be independent. Do not depend on execution order. Cleanup after each test. Test global state functions (_global_embedder) with proper cleanup between tests using autouse=True fixture.</description>
+      <source>docs/testing-strategy.md#Test-Isolation</source>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>pytest fixtures</name>
+      <kind>test framework</kind>
+      <signature>mock_db_pool: Mock DatabasePool fixture, mock_embedder: Mock EmbeddingGenerator fixture, test_model: PydanticAI TestModel fixture</signature>
+      <path>tests/conftest.py</path>
+    </interface>
+    <interface>
+      <name>PydanticAI TestModel</name>
+      <kind>LLM mocking</kind>
+      <signature>from pydantic_ai.models.test import TestModel; agent.override(model=TestModel())</signature>
+      <path>pydantic_ai.models.test</path>
+    </interface>
+    <interface>
+      <name>pytest-mock mocker</name>
+      <kind>mocking utility</kind>
+      <signature>def test_function(mocker): mocker.patch('module.Class')</signature>
+      <path>pytest_mock</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing Standards: Follow AAA pattern (Arrange, Act, Assert). Use descriptive test names: test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;. Async tests use @pytest.mark.asyncio decorator (asyncio_mode="auto" in pyproject.toml). Mock external dependencies (DB, API, LLM) in unit tests. Use pytest-mock mocker fixture for patching (preferred over unittest.mock.patch). Verify mock calls when relevant. Test global state functions (_global_embedder) with proper cleanup between tests. All unit tests must use @pytest.mark.unit marker. Coverage enforcement >70% for core modules.
+    </standards>
+    <locations>
+      <location>tests/unit/</location>
+      <location>tests/conftest.py</location>
+    </locations>
+    <ideas>
+      <idea criterionId="1">
+        <title>Test initialize_global_embedder with mocked embedder creation</title>
+        <description>Test that initialize_global_embedder() creates embedder using mocked create_embedder function, verifies background initialization task started, and embedder_ready event is set after completion.</description>
+      </idea>
+      <idea criterionId="1">
+        <title>Test initialize_global_embedder idempotency</title>
+        <description>Test that calling initialize_global_embedder() multiple times does not create multiple embedders or initialization tasks.</description>
+      </idea>
+      <idea criterionId="1">
+        <title>Test get_global_embedder timeout scenario</title>
+        <description>Test that get_global_embedder() raises RuntimeError with timeout message if embedder initialization takes longer than 60 seconds.</description>
+      </idea>
+      <idea criterionId="1">
+        <title>Test search_with_embedding with source_filter</title>
+        <description>Test that search_with_embedding() correctly applies source_filter parameter using ILIKE pattern matching in SQL query.</description>
+      </idea>
+      <idea criterionId="2">
+        <title>Test EmbeddingCache eviction logic</title>
+        <description>Test that EmbeddingCache correctly evicts oldest entries when cache exceeds max_size (default 2000).</description>
+      </idea>
+      <idea criterionId="2">
+        <title>Test embed_query with cache hit/miss</title>
+        <description>Test that embed_query() returns cached embedding on cache hit and calls OpenAI API on cache miss, then stores result in cache.</description>
+      </idea>
+      <idea criterionId="2">
+        <title>Test embed_documents batch processing</title>
+        <description>Test that embed_documents() processes texts in batches of batch_size (default 100) and handles partial batches correctly.</description>
+      </idea>
+      <idea criterionId="2">
+        <title>Test _generate_single_embedding retry logic</title>
+        <description>Test that _generate_single_embedding() retries up to 3 times with exponential backoff on transient errors using tenacity decorator.</description>
+      </idea>
+      <idea criterionId="2">
+        <title>Test LangFuse OpenAI wrapper graceful degradation</title>
+        <description>Test that EmbeddingGenerator falls back to direct OpenAI client if LangFuse wrapper unavailable (ImportError handling).</description>
+      </idea>
+      <idea criterionId="3">
+        <title>Verify coverage >70% for core/rag_service.py</title>
+        <description>Run pytest --cov=core/rag_service.py --cov-report=term-missing and verify coverage percentage >70%. Identify uncovered lines and add tests for critical paths.</description>
+      </idea>
+      <idea criterionId="3">
+        <title>Verify coverage >70% for ingestion/embedder.py</title>
+        <description>Run pytest --cov=ingestion/embedder.py --cov-report=term-missing and verify coverage percentage >70%. Identify uncovered lines and add tests for critical paths.</description>
+      </idea>
+    </ideas>
+  </tests>
+</story-context>
+

@@ -124,7 +124,7 @@ uv run streamlit run app.py
 **Option B: MCP Server (Cursor/Claude Desktop)**
 
 ```bash
-# Run MCP server
+# Run MCP server (stdio mode for Cursor/Claude Desktop)
 uv run python mcp_server.py
 
 # Configure in Cursor/Claude Desktop:
@@ -134,6 +134,24 @@ uv run python mcp_server.py
 # Working Directory: /path/to/docling-rag-agent
 ```
 
+**Option C: MCP HTTP Server (Observability Endpoints)**
+
+```bash
+# Start MCP HTTP server for metrics and health checks (porta 8080)
+uv run python -m docling_mcp.http_server
+
+# Server disponibile su http://localhost:8080
+# Endpoints disponibili:
+# - GET /health - Health check endpoint
+# - GET /metrics - Prometheus metrics endpoint
+# - GET /docs - API documentation (Swagger UI)
+
+# Con porta personalizzata
+METRICS_PORT=9090 uv run python -m docling_mcp.http_server
+```
+
+**Note:** Il MCP HTTP Server è separato dal MCP Server stdio. L'HTTP server espone endpoint di osservabilità (health check, metrics) e può essere utilizzato per monitoring e Kubernetes probes.
+
 ## Development Workflow
 
 ### Project Structure
@@ -142,11 +160,18 @@ uv run python mcp_server.py
 docling-rag-agent/
 ├── core/           # Business logic (agent + RAG service)
 ├── ingestion/      # Document processing pipeline
+├── docling_mcp/    # MCP server implementation
+│   ├── http_server.py  # HTTP server for observability (porta 8080)
+│   ├── health.py       # Health check logic
+│   ├── metrics.py      # Prometheus metrics
+│   └── server.py       # MCP server stdio implementation
+├── api/            # FastAPI REST API service
 ├── utils/          # Database & configuration utilities
+├── client/         # API client utilities
 ├── sql/            # Database schema
 ├── documents/      # Documents to ingest
 ├── app.py          # Streamlit entry point
-└── mcp_server.py   # MCP server entry point
+└── mcp_server.py   # MCP server entry point (stdio)
 ```
 
 ### Running Tests
@@ -253,20 +278,54 @@ WHERE embedding IS NOT NULL;
 
 ### Docker Deployment
 
+Il progetto supporta deployment completo con Docker Compose, includendo tutti i servizi necessari per sviluppo e produzione.
+
+**Servizi Disponibili:**
+
+- **`rag-api`**: FastAPI REST API service (porta 8000)
+- **`mcp-server`**: MCP HTTP Server per observability (porta 8080)
+- **`streamlit`**: Streamlit web UI (porta 8501)
+- **`db`**: PostgreSQL database con PGVector extension (porta 5432)
+
 **Build & Run:**
 
 ```bash
-# Build image
-docker-compose build
+# Build tutte le immagini
+docker compose build
 
-# Start Streamlit UI service
-docker-compose up -d rag-agent
+# Avvia tutti i servizi
+docker compose up -d
 
-# Check logs
-docker-compose logs -f rag-agent
+# Avvia solo servizi specifici
+docker compose up -d db rag-api
+docker compose up -d db mcp-server streamlit
 
-# Stop services
-docker-compose down
+# Verifica stato servizi
+docker compose ps
+
+# Visualizza logs
+docker compose logs -f rag-api
+docker compose logs -f mcp-server
+docker compose logs -f streamlit
+
+# Stop tutti i servizi
+docker compose down
+
+# Stop e rimuovi volumi (ATTENZIONE: cancella dati database)
+docker compose down -v
+```
+
+**Verifica Health Checks:**
+
+```bash
+# API Server health check
+curl http://localhost:8000/health
+
+# MCP Server health check
+curl http://localhost:8080/health
+
+# Streamlit health check
+curl http://localhost:8501/_stcore/health
 ```
 
 **Run Ingestion:**
@@ -276,32 +335,83 @@ docker-compose down
 docker-compose --profile ingestion up ingestion
 
 # Keep existing data
-docker-compose run --rm ingestion uv run python -m ingestion.ingest \
+docker compose run --rm ingestion uv run python -m ingestion.ingest \
   --documents /app/documents \
   --no-clean
 ```
 
 **Docker Configuration:**
 
-- **Base Image:** `python:3.11-slim`
-- **System Dependencies:** ffmpeg, gcc, postgresql-client, libpq-dev
+**Streamlit (`Dockerfile`):**
+
+- **Base Image:** `python:3.11-slim-bookworm`
+- **System Dependencies:** ffmpeg, build-essential, postgresql-client, libpq-dev, curl
 - **Package Manager:** UV
-- **Port:** 8501 (Streamlit)
+- **Port:** 8501
 - **Health Check:** `/_stcore/health` endpoint
 - **Volumes:** `./documents:/app/documents`
+
+**API Server (`Dockerfile.api`):**
+
+- **Base Image:** `python:3.11-slim`
+- **System Dependencies:** build-essential, curl
+- **Package Manager:** UV
+- **Port:** 8000
+- **Health Check:** `/health` endpoint
+
+**MCP Server (`Dockerfile.mcp`):**
+
+- **Base Image:** `python:3.11-slim`
+- **System Dependencies:** build-essential, curl
+- **Package Manager:** UV
+- **Port:** 8080
+- **Health Check:** `/health` endpoint
+- **Environment:** `METRICS_PORT=8080`
+
+**Database (`docker-compose.yml`):**
+
+- **Image:** `pgvector/pgvector:pg16`
+- **Port:** 5432
+- **Health Check:** `pg_isready -U postgres`
+- **Volumes:** `postgres_data` (persistenza dati)
 
 ### Environment Variables in Docker
 
 ```yaml
 # docker-compose.yml
 environment:
-  DATABASE_URL: ${DATABASE_URL}
+  DATABASE_URL: postgresql://postgres:postgres@db:5432/ragdb
   OPENAI_API_KEY: ${OPENAI_API_KEY}
-  LLM_CHOICE: ${LLM_CHOICE:-gpt-4o-mini}
-  LOG_LEVEL: INFO
+  OPENAI_BASE_URL: ${OPENAI_BASE_URL}
+  EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-3-small}
+  LLM_CHOICE: ${LLM_CHOICE:-gpt-4.1-mini}
+  METRICS_PORT: 8080 # Solo per mcp-server
 ```
 
-Uses `.env` file in project root.
+Le variabili vengono caricate dal file `.env` nella root del progetto.
+
+### Local Development vs Docker
+
+**Sviluppo Locale:**
+
+- Servizi avviati manualmente in terminali separati
+- Hot-reload automatico durante sviluppo
+- Debug più semplice con breakpoints
+- Accesso diretto ai log nel terminale
+- Nessuna build Docker necessaria
+
+**Docker Compose:**
+
+- Tutti i servizi orchestati automaticamente
+- Ambiente isolato e riproducibile
+- Simula ambiente produzione
+- Health checks automatici
+- Networking tra servizi gestito automaticamente
+
+**Quando Usare:**
+
+- **Locale**: Sviluppo attivo, debugging, testing rapido
+- **Docker**: Testing integrazione, CI/CD, deployment, ambiente production-like
 
 ### Production Considerations
 
@@ -404,6 +514,82 @@ netstat -ano | findstr :8501  # Windows
 streamlit run app.py --server.port 8502
 ```
 
+**6. MCP HTTP Server Port Already in Use**
+
+```
+Address already in use: 8080
+```
+
+**Solution:**
+
+```bash
+# Find process using port 8080
+lsof -i :8080  # Unix
+netstat -ano | findstr :8080  # Windows
+
+# Kill process or use different port
+METRICS_PORT=9090 uv run python -m docling_mcp.http_server
+```
+
+**7. Docker Services Not Starting**
+
+```
+Error: service "mcp-server" failed to start
+```
+
+**Solution:**
+
+```bash
+# Verifica logs del servizio
+docker compose logs mcp-server
+
+# Verifica che database sia healthy
+docker compose ps db
+
+# Riavvia servizi
+docker compose restart mcp-server
+
+# Rebuild se necessario
+docker compose build mcp-server
+docker compose up -d mcp-server
+```
+
+**8. MCP Server Health Check Fails in Docker**
+
+```
+ERROR: Health check status is 'down'
+```
+
+**Solution:**
+
+```bash
+# Verifica che database sia raggiungibile dal container
+docker compose exec mcp-server psql $DATABASE_URL -c "SELECT 1"
+
+# Verifica variabili ambiente
+docker compose exec mcp-server env | grep DATABASE_URL
+
+# Verifica che API server sia raggiungibile (se necessario)
+docker compose exec mcp-server curl -f http://rag-api:8000/health
+```
+
+**9. Docker Compose Network Issues**
+
+```
+Error: network "docling-rag-agent_rag-network" not found
+```
+
+**Solution:**
+
+```bash
+# Ricrea network
+docker compose down
+docker compose up -d
+
+# Verifica network
+docker network ls | grep rag-network
+```
+
 ### Debug Mode
 
 Enable verbose logging:
@@ -447,3 +633,5 @@ print(f"Query took: {time.time() - start:.2f}s")
 - **Streamlit Documentation:** https://docs.streamlit.io
 - **FastMCP Documentation:** https://github.com/jlowin/fastmcp
 - **UV Documentation:** https://github.com/astral-sh/uv
+- **Docker Compose Documentation:** https://docs.docker.com/compose/
+- **Health Check Endpoints:** Vedi `docs/health-check-endpoints.md` per documentazione completa degli endpoint

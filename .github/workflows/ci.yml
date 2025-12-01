@@ -188,8 +188,19 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Build MCP Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./Dockerfile.mcp
+          push: false
+          load: true
+          tags: docling-rag-agent-mcp:test
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
       - name: Verify image sizes
-        # Both images must be <500MB per AC4.1.7
+        # All images must be <500MB per AC4.1.7 and AC4.3.6
         run: |
           echo "=== Docker Image Sizes ==="
           docker images --format "table {{.Repository}}:{{.Tag}}\t{{.Size}}" | grep docling-rag-agent
@@ -197,13 +208,16 @@ jobs:
           # Get sizes in bytes for comparison
           STREAMLIT_SIZE_BYTES=$(docker image inspect docling-rag-agent:test --format='{{.Size}}')
           API_SIZE_BYTES=$(docker image inspect docling-rag-agent-api:test --format='{{.Size}}')
+          MCP_SIZE_BYTES=$(docker image inspect docling-rag-agent-mcp:test --format='{{.Size}}')
 
           # Convert to MB (divide by 1048576)
           STREAMLIT_SIZE_MB=$((STREAMLIT_SIZE_BYTES / 1048576))
           API_SIZE_MB=$((API_SIZE_BYTES / 1048576))
+          MCP_SIZE_MB=$((MCP_SIZE_BYTES / 1048576))
 
           echo "Streamlit image size: ${STREAMLIT_SIZE_MB}MB"
           echo "API image size: ${API_SIZE_MB}MB"
+          echo "MCP image size: ${MCP_SIZE_MB}MB"
 
           # Check size limits (500MB = 500 * 1048576 bytes)
           MAX_SIZE_MB=500
@@ -218,7 +232,12 @@ jobs:
             exit 1
           fi
 
-          echo "SUCCESS: Both images are within size limits"
+          if [ $MCP_SIZE_MB -gt $MAX_SIZE_MB ]; then
+            echo "ERROR: MCP image size (${MCP_SIZE_MB}MB) exceeds ${MAX_SIZE_MB}MB limit"
+            exit 1
+          fi
+
+          echo "SUCCESS: All images are within size limits"
 
   # ============================================================================
   # SECRET-SCAN JOB

@@ -1,5 +1,100 @@
 # Changelog - docling-rag-agent
 
+## [2.1.0] - 2025-11-30
+
+### 🐳 Docker Image Optimization (Story 4.3)
+
+**Summary:** Ottimizzazione immagini Docker tramite multi-stage builds, separazione dipendenze, e fix layer duplications. Streamlit image ridotta del 94%.
+
+### Added
+
+- **Dependency Groups** (`pyproject.toml`)
+
+  - `[project.optional-dependencies]` con gruppi: `streamlit`, `api`, `mcp`, `dev`
+  - Installazione granulare: `uv sync --extra streamlit` vs `uv sync --extra api`
+  - Streamlit non installa più docling[vlm] e PyTorch
+
+- **CI/CD MCP Build** (`.github/workflows/ci.yml`)
+
+  - Build step per `Dockerfile.mcp`
+  - Size validation per tutte e tre le immagini
+  - Threshold 500MB configurato
+
+- **Docker Optimization Documentation**
+  - `miglioramenti-docker-storia4-3.md` - Guida completa ottimizzazioni
+
+### Changed
+
+- **Dockerfile (Streamlit)** - Multi-stage optimization
+
+  - Selective COPY: solo `app.py`, `client/`, `utils/`
+  - Rimosso `ffmpeg` (-470MB) - non utilizzato
+  - Rimosso `postgresql-client` - non necessario
+  - Aggiunto `--extra streamlit` per dipendenze leggere
+  - **Risultato: 17.4GB → 1.1GB (-94%)**
+
+- **Dockerfile.api** - Fix critical bug + optimization
+
+  - Fix: `chown -R` sostituito con `COPY --chown` (evita layer duplication)
+  - Aggiunto `--extra api` per dipendenze specifiche
+  - User creation prima del COPY
+  - **Risultato: 32GB → 16.1GB (-50%)**
+
+- **Dockerfile.mcp** - Converted to multi-stage
+
+  - Builder stage con `build-essential`
+  - Runtime stage con solo `curl`
+  - Aggiunto `--extra mcp` per dipendenze specifiche
+  - **Risultato: 16.5GB → 16.2GB (multi-stage)**
+
+- **.dockerignore** - Extended exclusions
+  - Aggiunti: `documents_copy_cooleman/`, `site/`, `tests/`, `docs/`, `scripts/`, `sql/`
+  - Build context ridotto significativamente
+
+### Technical Notes
+
+**Target <500MB non raggiunto per API/MCP:**
+
+- `docling[vlm]` richiede PyTorch (~2GB) + modelli VLM (~10GB)
+- Vincolo architetturale per funzionalità ML document processing
+- Streamlit non richiede ML → ottimizzabile a 1.1GB
+
+**Fix critico chown -R:**
+
+```dockerfile
+# PRIMA (32GB - layer duplicato!)
+RUN useradd -m appuser && chown -R appuser /app
+
+# DOPO (16.1GB - corretto)
+RUN useradd -m -u 1000 appuser
+COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
+```
+
+**Dependency Groups Pattern:**
+
+```toml
+[project.optional-dependencies]
+streamlit = ["streamlit>=1.41", "pydantic-ai", ...]  # Leggero
+api = ["fastapi", "docling[vlm]", ...]               # Con ML
+mcp = ["fastmcp", "docling[vlm]", ...]               # Con ML
+```
+
+### Optimization Results
+
+| Image         | Before | After      | Reduction   |
+| ------------- | ------ | ---------- | ----------- |
+| **Streamlit** | 17.4GB | **1.1GB**  | **-94%**    |
+| **API**       | 32GB   | **16.1GB** | **-50%**    |
+| **MCP**       | 16.5GB | **16.2GB** | Multi-stage |
+
+### Docker Compose Startup Time
+
+- **Target**: < 30 secondi
+- **Risultato**: **18.4s** ✓
+- Tutti i container (db, api, streamlit, mcp) avviati e healthy
+
+---
+
 ## [2.0.0] - 2025-11-24
 
 ### 🚀 Major Performance Optimizations
@@ -13,12 +108,11 @@
   - Global embedder instance with persistent caching
   - Lifecycle management with proper startup/shutdown
   - Detailed performance timing instrumentation
-  
 - **Optimization Tools**
   - `scripts/optimize_database.py` - Automated database index management
   - `scripts/test_mcp_performance.py` - Comprehensive performance test suite
-  
 - **Documentation**
+
   - `docs/performance-optimization-guide.md` - Complete technical guide
   - `docs/optimization-summary.md` - Performance analysis and results
   - `docs/optimization-deployment.md` - Deployment guide
@@ -31,25 +125,29 @@
 
 ### Changed
 
-- **Database Index: IVFFlat → HNSW** 
+- **Database Index: IVFFlat → HNSW**
+
   - Upgraded from `IVFFlat (lists=1)` to optimized HNSW index
   - 10-100x faster vector similarity searches
   - Performance impact: -50-80% query latency
   - Consistent performance regardless of dataset size
 
 - **Embedder Architecture**
+
   - Refactored to global singleton pattern
   - Persistent cache across requests (was per-request)
   - Eliminated 300-500ms overhead per query
   - Enhanced cache from 1000 to 2000 entries
 
 - **Connection Pool Configuration** (`utils/db_utils.py`)
+
   - `min_size`: 5 → 2 (reduced idle overhead)
   - `max_size`: 20 → 10 (right-sized for MCP workload)
   - `statement_cache_size`: 0 → 100 (enabled prepared statements)
   - Added connection recycling (`max_queries=50000`)
 
 - **Core RAG Service** (`core/rag_service.py`)
+
   - Added global embedder management functions
   - Implemented timing breakdown instrumentation
   - Enhanced error logging with performance metrics
@@ -72,13 +170,13 @@
 
 **Metrics (Dataset: 6,260 chunks, 410 documents):**
 
-| Metric | Before | After | Improvement |
-|--------|--------|-------|-------------|
-| Average Query Latency | 3563ms | **1395ms** | **-61%** |
-| Max Query Latency | 8613ms | **2097ms** | **-76%** |
-| Cached Query | 298ms | **237ms** | **-20%** |
-| DB Vector Search | 100-300ms | **20-60ms** | **-75%** |
-| Cache Hit Rate | 63.5% | **66.4%** | +3% |
+| Metric                | Before    | After       | Improvement |
+| --------------------- | --------- | ----------- | ----------- |
+| Average Query Latency | 3563ms    | **1395ms**  | **-61%**    |
+| Max Query Latency     | 8613ms    | **2097ms**  | **-76%**    |
+| Cached Query          | 298ms     | **237ms**   | **-20%**    |
+| DB Vector Search      | 100-300ms | **20-60ms** | **-75%**    |
+| Cache Hit Rate        | 63.5%     | **66.4%**   | +3%         |
 
 **Component Breakdown:**
 
@@ -92,8 +190,9 @@
 ### Technical Details
 
 **HNSW Index Configuration:**
+
 ```sql
-CREATE INDEX idx_chunks_embedding_hnsw ON chunks 
+CREATE INDEX idx_chunks_embedding_hnsw ON chunks
 USING hnsw (embedding vector_cosine_ops)
 WITH (m = 16, ef_construction = 64);
 ```
@@ -103,6 +202,7 @@ WITH (m = 16, ef_construction = 64);
 - Query-time `ef_search=40` (default, good balance)
 
 **Global Embedder:**
+
 ```python
 # Initialized once at server startup
 _global_embedder = create_embedder(use_cache=True, batch_size=100)
@@ -116,20 +216,23 @@ embedder = get_global_embedder()  # <1ms
 **For existing installations:**
 
 1. **Backup database** (recommended but optional)
+
    ```bash
    pg_dump $DATABASE_URL > backup.sql
    ```
 
 2. **Apply index optimization:**
+
    ```bash
    # Automated (recommended)
    python scripts/optimize_database.py --apply
-   
+
    # Manual
    psql $DATABASE_URL < sql/optimize_index.sql
    ```
 
 3. **Restart MCP server** (if using Cursor)
+
    - Close and reopen Cursor, or
    - `Cmd/Ctrl+Shift+P` → "MCP: Restart Servers"
 
@@ -140,6 +243,7 @@ embedder = get_global_embedder()  # <1ms
    ```
 
 **For fresh installations:**
+
 - Simply use `sql/optimize_index.sql` for complete setup
 - No migration needed
 
@@ -154,11 +258,13 @@ None. All changes are backward compatible.
 ### Known Issues & Limitations
 
 1. **Startup Time: 15-18s**
+
    - Global embedder initialization takes time
    - One-time cost, acceptable for MCP server
    - Not user-facing (happens at server start)
 
 2. **OpenAI API Latency: 500-800ms**
+
    - Geographic distance (EU → US)
    - External dependency, cannot be optimized
    - Mitigation: Local embedding model (future consideration)
@@ -171,11 +277,13 @@ None. All changes are backward compatible.
 ### Future Optimizations (Planned)
 
 1. **Local Embedding Model** (Optional)
+
    - Replace OpenAI with `sentence-transformers`
    - Expected: 10-30ms embedding (vs 500-800ms)
    - Trade-off: -3-5% quality for 20x speed
 
 2. **Redis Cache Layer**
+
    - Distributed cache for query embeddings
    - Expected: 50-70% cache hit rate improvement
 
@@ -186,6 +294,7 @@ None. All changes are backward compatible.
 ### Credits
 
 Performance optimization research and implementation based on:
+
 - [PGVector HNSW Documentation](https://github.com/pgvector/pgvector#hnsw)
 - [FastMCP Performance Patterns](https://github.com/jlowin/fastmcp)
 - MCP best practices analysis (Cursor community)
@@ -195,10 +304,10 @@ Performance optimization research and implementation based on:
 ## [1.0.0] - Previous Version
 
 Initial release with:
+
 - Streamlit UI
 - PydanticAI agent
 - PostgreSQL/PGVector integration
 - Docling document processing
 - Audio transcription (Whisper)
 - IVFFlat index (lists=1)
-

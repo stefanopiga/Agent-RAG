@@ -359,11 +359,37 @@ Il MCP tool cercherà nella knowledge base e risponderà con context
 - ✅ Connection pool ottimizzato: -20% overhead
 - ✅ Timing instrumentation per monitoring
 
+### MCP HTTP Server (Observability Endpoints)
+
+Il progetto include anche un **MCP HTTP Server** separato che espone endpoint di osservabilità per monitoring e health checks.
+
+**Avvio locale:**
+
+```bash
+# Avvia il server HTTP per metriche e health check (porta 8080)
+uv run python -m docling_mcp.http_server
+
+# Oppure con porta personalizzata
+METRICS_PORT=9090 uv run python -m docling_mcp.http_server
+```
+
+**Endpoints disponibili:**
+
+- `GET /health` - Health check endpoint con status dettagliato (database, LangFuse, embedder)
+- `GET /metrics` - Prometheus metrics endpoint
+- `GET /docs` - API documentation (Swagger UI)
+
+**Differenza tra MCP Server stdio e HTTP Server:**
+
+- **MCP Server stdio** (`docling_mcp.server`): Usato da Cursor/Claude Desktop per tool integration
+- **MCP HTTP Server** (`docling_mcp.http_server`): Usato per observability, monitoring, Kubernetes probes
+
 **Documentazione completa:**
 
 - `docs/performance-optimization-guide.md` - Guida tecnica dettagliata
 - `docs/optimization-summary.md` - Analisi risultati
 - `docs/optimization-deployment.md` - Deploy guide
+- `docs/health-check-endpoints.md` - Documentazione completa health checks
 
 ## 🤖 Code Quality & CI/CD
 
@@ -414,6 +440,7 @@ GitHub Actions esegue automaticamente su ogni PR e push a `main`/`develop`:
 | **type-check** | Type checking statico | Mypy |
 | **test** | Unit/integration tests con coverage >70% | Pytest |
 | **build** | Docker image build validation (<500MB) | Docker Buildx |
+| **health-check** | Health check validation per tutti i servizi | Docker Compose + curl |
 | **secret-scan** | Secret scanning preventivo | TruffleHog OSS |
 
 ## 📚 Developer Resources
@@ -730,14 +757,39 @@ ORDER BY c.embedding <=> query_embedding
 **Avviare l'applicazione completa:**
 
 ```bash
-# Avvia tutti i servizi
-docker-compose up --build -d
+# Build e avvia tutti i servizi
+docker compose build
+docker compose up -d
 
-# Visualizza i log
-docker-compose logs -f rag-agent
+# Visualizza i log dei servizi
+docker compose logs -f rag-api      # API Server (porta 8000)
+docker compose logs -f mcp-server  # MCP HTTP Server (porta 8080)
+docker compose logs -f streamlit    # Streamlit UI (porta 8501)
+docker compose logs -f db           # Database PostgreSQL
+
+# Verifica stato di tutti i servizi
+docker compose ps
 ```
 
-L'applicazione sarà disponibile su `http://localhost:8501`
+**Servizi disponibili:**
+
+- **Streamlit UI**: `http://localhost:8501`
+- **API Server**: `http://localhost:8000` (health: `/health`)
+- **MCP HTTP Server**: `http://localhost:8080` (health: `/health`, metrics: `/metrics`)
+- **Database**: `localhost:5432`
+
+**Verifica Health Checks:**
+
+```bash
+# API Server
+curl http://localhost:8000/health
+
+# MCP Server
+curl http://localhost:8080/health
+
+# Streamlit
+curl http://localhost:8501/_stcore/health
+```
 
 **Ingestione documenti con Docker:**
 
@@ -762,16 +814,25 @@ docker-compose run --rm ingestion uv run python -m ingestion.ingest \
 
 ```bash
 # Ferma tutti i servizi
-docker-compose down
+docker compose down
+
+# Ferma e rimuovi volumi (ATTENZIONE: cancella dati database)
+docker compose down -v
 
 # Ricostruisci le immagini dopo modifiche al codice
-docker-compose build
+docker compose build
+
+# Ricostruisci solo un servizio specifico
+docker compose build mcp-server
 
 # Visualizza i container attivi
-docker-compose ps
+docker compose ps
 
 # Accedi al container per debugging
-docker-compose exec rag-agent bash
+docker compose exec rag-api bash      # API Server
+docker compose exec mcp-server bash   # MCP Server
+docker compose exec streamlit bash    # Streamlit
+docker compose exec db psql -U postgres -d ragdb  # Database
 ```
 
 ## Troubleshooting

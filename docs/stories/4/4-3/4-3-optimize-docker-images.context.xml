@@ -1,0 +1,191 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>3</storyId>
+    <title>Optimize Docker Images</title>
+    <status>drafted</status>
+    <generatedAt>2025-01-29</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/4/4-3/4-3-optimize-docker-images.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>DevOps engineer</asA>
+    <iWant>Docker images &lt; 500MB</iWant>
+    <soThat>deployment is fast and cost-effective</soThat>
+    <tasks>
+      <task id="1" title="Optimize Dockerfile Streamlit with Multi-Stage Build">
+        <subtask>Create builder stage con python:3.11-slim-bookworm e build dependencies (build-essential, libpq-dev)</subtask>
+        <subtask>Install dependencies in builder stage usando UV cache mount</subtask>
+        <subtask>Create runtime stage con python:3.11-slim-bookworm (solo runtime dependencies)</subtask>
+        <subtask>Copy virtual environment da builder stage a runtime stage usando COPY --from=builder /app/.venv /app/.venv</subtask>
+        <subtask>Install solo runtime dependencies (postgresql-client, libpq5, curl) nello stage finale</subtask>
+        <subtask>Rimuovere build-essential e libpq-dev dallo stage finale</subtask>
+        <subtask>Verificare che HEALTHCHECK sia ancora configurato correttamente</subtask>
+        <subtask>Build test: Verificare che immagine compili correttamente</subtask>
+        <subtask>Size check: Verificare che immagine sia &lt; 500MB</subtask>
+      </task>
+      <task id="2" title="Optimize Dockerfile.api with Multi-Stage Build">
+        <subtask>Create builder stage con python:3.11-slim e build dependencies (build-essential)</subtask>
+        <subtask>Install dependencies in builder stage usando UV</subtask>
+        <subtask>Create runtime stage con python:3.11-slim (solo runtime dependencies)</subtask>
+        <subtask>Copy virtual environment da builder stage a runtime stage usando COPY --from=builder /app/.venv /app/.venv</subtask>
+        <subtask>Install solo runtime dependencies (curl) nello stage finale</subtask>
+        <subtask>Rimuovere build-essential dallo stage finale</subtask>
+        <subtask>Verificare che HEALTHCHECK sia ancora configurato correttamente</subtask>
+        <subtask>Verificare che non-root user (appuser) sia ancora configurato</subtask>
+        <subtask>Build test: Verificare che immagine compili correttamente</subtask>
+        <subtask>Size check: Verificare che immagine sia &lt; 500MB</subtask>
+      </task>
+      <task id="3" title="Update CI/CD Docker Build Validation">
+        <subtask>Review .github/workflows/ci.yml Docker build job esistente</subtask>
+        <subtask>Aggiungere step per verificare dimensione immagini dopo build</subtask>
+        <subtask>Aggiungere size check con threshold 500MB per Streamlit image</subtask>
+        <subtask>Aggiungere size check con threshold 500MB per API image</subtask>
+        <subtask>Configurare fail-fast se immagini superano limite</subtask>
+        <subtask>Verificare che Docker build cache sia ancora configurato correttamente</subtask>
+      </task>
+      <task id="4" title="Verify Docker Compose Startup Time">
+        <subtask>Review docker-compose.yml per configurazione servizi</subtask>
+        <subtask>Test startup time: Avviare tutti i servizi e misurare tempo fino a ready</subtask>
+        <subtask>Verificare che tutti i servizi siano pronti in &lt; 30 secondi</subtask>
+        <subtask>Documentare startup time nel changelog se necessario</subtask>
+      </task>
+      <task id="5" title="Verify Multi-Stage Build Layers">
+        <subtask>Inspect Dockerfile Streamlit layers: docker image history docling-rag-agent:test</subtask>
+        <subtask>Verificare che builder stage layers non siano presenti nell'immagine finale</subtask>
+        <subtask>Verificare che solo runtime dependencies siano presenti nello stage finale</subtask>
+        <subtask>Inspect Dockerfile.api layers: docker image history docling-rag-agent-api:test</subtask>
+        <subtask>Verificare che builder stage layers non siano presenti nell'immagine finale</subtask>
+        <subtask>Documentare layer optimization nel changelog con risultati docker image history</subtask>
+      </task>
+      <task id="6" title="Add Docker Optimization Documentation">
+        <subtask>Document multi-stage build pattern in docs/ (se necessario)</subtask>
+        <subtask>Document size optimization techniques utilizzate</subtask>
+        <subtask>Document layer caching strategy</subtask>
+        <subtask>Add esempi di docker build commands con size verification</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="AC4.3.1">Dato il Dockerfile Streamlit, quando viene costruita l'immagine, allora la dimensione finale è &lt; 500MB</ac>
+    <ac id="AC4.3.2">Dato il Dockerfile.api, quando viene costruita l'immagine, allora la dimensione finale è &lt; 500MB</ac>
+    <ac id="AC4.3.3">Dato docker-compose, quando vengono avviati tutti i servizi, allora tutti i servizi sono pronti in &lt; 30 secondi</ac>
+    <ac id="AC4.3.4">Dato il Dockerfile Streamlit ottimizzato, quando viene ispezionata l'immagine, allora mostra multi-stage build con separazione build-time e runtime dependencies</ac>
+    <ac id="AC4.3.5">Dato il Dockerfile.api ottimizzato, quando viene ispezionata l'immagine, allora mostra multi-stage build con separazione build-time e runtime dependencies</ac>
+    <ac id="AC4.3.6">Dato il workflow CI/CD, quando esegue Docker build test, allora verifica che le immagini siano &lt; 500MB e fallisce se superano il limite</ac>
+    <ac id="AC4.3.7">Dato il Dockerfile Streamlit ottimizzato, quando viene costruita l'immagine, allora non include build dependencies (build-essential, gcc) nello stage finale</ac>
+    <ac id="AC4.3.8">Dato il Dockerfile.api ottimizzato, quando viene costruita l'immagine, allora non include build dependencies (build-essential, gcc) nello stage finale</ac>
+    <ac id="AC4.3.9">Dato il Dockerfile Streamlit ottimizzato, quando viene costruita l'immagine, allora usa base image python:3.11-slim nello stage finale</ac>
+    <ac id="AC4.3.10">Dato il Dockerfile.api ottimizzato, quando viene costruita l'immagine, allora usa base image python:3.11-slim nello stage finale</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/4/tech-spec-epic-4.md" title="Epic 4 Technical Specification">
+        <section>Docker Multi-Stage Optimization</section>
+        <snippet>Epic 4 implementa Docker multi-stage optimization per immagini &lt;500MB. Pattern multi-stage separa build-time e runtime dependencies, utilizzando python:3.11-slim come base image e rimuovendo build tools dallo stage finale.</snippet>
+      </doc>
+      <doc path="docs/stories/4/epic-4-setup-guide.md" title="Epic 4 Setup Guide">
+        <section>Step 4: Optimize Docker Images</section>
+        <snippet>Guida step-by-step per implementare multi-stage builds con builder stage per dipendenze build-time e runtime stage con solo runtime dependencies. Include esempi Dockerfile completi per Streamlit e API.</snippet>
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document">
+        <section>Deployment Architecture - Docker Configuration</section>
+        <snippet>Architettura Docker documenta Streamlit Container e API Container con base python:3.11-slim-bookworm, multi-stage builds, e size target &lt; 500MB. Health checks configurati per tutti i servizi.</snippet>
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document">
+        <section>ADR-004: Git Workflow &amp; CI/CD</section>
+        <snippet>ADR-004 documenta CI/CD pipeline con GitHub Actions, quality gates automatici, e Docker build validation. Include decisioni su Docker optimization e size constraints.</snippet>
+      </doc>
+      <doc path="docs/stories/4/4-3/4-3-optimize-docker-images.md" title="Story 4.3: Optimize Docker Images">
+        <section>Dev Notes - Architecture Patterns and Constraints</section>
+        <snippet>Story documenta Docker Multi-Stage Build Pattern, Slim Base Image, Layer Caching, Minimal Runtime, e Size Constraint &lt; 500MB. Include riferimenti a tech spec Epic 4 e architecture ADR-004.</snippet>
+      </doc>
+      <doc path="docs/stories/4/4-3/4-3-optimize-docker-images.md" title="Story 4.3: Optimize Docker Images">
+        <section>Dev Notes - Implementation Notes</section>
+        <snippet>Note implementative includono Multi-Stage Pattern, Size Verification usando docker image inspect, Layer Inspection con docker image history, UV Virtual Environment Copying, e Build Dependencies removal.</snippet>
+      </doc>
+      <doc path="docs/stories/4/4-3/4-3-optimize-docker-images.md" title="Story 4.3: Optimize Docker Images">
+        <section>Dev Notes - Learnings from Previous Story</section>
+        <snippet>Story 4-2 ha aggiunto HEALTHCHECK a entrambi i Dockerfile. Story 4.3 deve preservare questa configurazione durante ottimizzazione. Docker build job già configurato in CI/CD con size check parziale.</snippet>
+      </doc>
+      <doc path="docs/testing-strategy.md" title="Testing Strategy">
+        <section>Build Tests</section>
+        <snippet>Testing strategy include Build Tests per validazione Docker build success e Size Tests per validazione dimensione immagini &lt; 500MB. CI/CD Integration include Docker build job con size check enforcement.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact path="Dockerfile" kind="dockerfile" symbol="Streamlit Dockerfile" lines="1-57" reason="Dockerfile principale per Streamlit che deve essere ottimizzato con multi-stage build. Attualmente usa python:3.11-slim-bookworm con build dependencies installate nello stesso stage."/>
+      <artifact path="Dockerfile.api" kind="dockerfile" symbol="API Dockerfile" lines="1-50" reason="Dockerfile per API service che deve essere ottimizzato con multi-stage build. Attualmente usa python:3.11-slim con build-essential installato nello stesso stage."/>
+      <artifact path="docker-compose.yml" kind="docker-compose" symbol="Docker Compose Configuration" lines="1-86" reason="Configurazione Docker Compose per orchestrazione servizi. Deve essere verificata per startup time &lt; 30 secondi dopo ottimizzazione immagini."/>
+      <artifact path=".github/workflows/ci.yml" kind="github-actions-workflow" symbol="CI/CD Pipeline" lines="158-222" reason="Workflow CI/CD con Docker build job che deve essere aggiornato per includere size check enforcement con threshold 500MB per entrambe le immagini."/>
+      <artifact path="pyproject.toml" kind="project-config" symbol="Project Configuration" lines="1-87" reason="File di configurazione progetto con dipendenze Python. Rilevante per verificare che tutte le dipendenze siano correttamente installate nei Dockerfile ottimizzati."/>
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="python" version="3.11"/>
+        <package name="uv" version="latest"/>
+        <package name="streamlit" version="&gt;=1.31.0"/>
+        <package name="fastapi" version="&gt;=0.109.0"/>
+        <package name="uvicorn" version="&gt;=0.27.0"/>
+      </ecosystem>
+      <ecosystem name="docker">
+        <package name="python" version="3.11-slim"/>
+        <package name="python" version="3.11-slim-bookworm"/>
+        <package name="ghcr.io/astral-sh/uv" version="latest"/>
+      </ecosystem>
+      <ecosystem name="system-packages">
+        <package name="build-essential" version="latest"/>
+        <package name="libpq-dev" version="latest"/>
+        <package name="postgresql-client" version="latest"/>
+        <package name="libpq5" version="latest"/>
+        <package name="curl" version="latest"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture-pattern">Docker Multi-Stage Build Pattern: Separazione build-time e runtime dependencies per ridurre dimensione immagini. Builder stage con build dependencies, runtime stage con solo runtime dependencies.</constraint>
+    <constraint type="base-image">Slim Base Image: Uso di python:3.11-slim invece di python:3.11 per ridurre dimensione base image.</constraint>
+    <constraint type="caching">Layer Caching: Uso di --mount=type=cache per UV cache per ottimizzare build time.</constraint>
+    <constraint type="runtime">Minimal Runtime: Solo runtime dependencies nello stage finale, rimozione build tools (build-essential, gcc).</constraint>
+    <constraint type="size">Size Constraint: Target &lt; 500MB per ogni immagine Docker.</constraint>
+    <constraint type="preservation">HEALTHCHECK Preservation: Preservare HEALTHCHECK configuration durante ottimizzazione (già configurato in Story 4-2).</constraint>
+    <constraint type="preservation">Non-root User Preservation: Preservare non-root user (appuser) in Dockerfile.api durante ottimizzazione.</constraint>
+    <constraint type="ci-cd">CI/CD Integration: Docker build validation già presente in CI/CD workflow - Story 4.3 aggiunge size check enforcement.</constraint>
+    <constraint type="startup-time">Startup Time: Tutti i servizi devono essere pronti in &lt; 30 secondi dopo docker-compose up.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="Docker Build API" kind="docker-command" signature="docker build -t docling-rag-agent:test -f Dockerfile ." path="Dockerfile"/>
+    <interface name="Docker Build API" kind="docker-command" signature="docker build -t docling-rag-agent-api:test -f Dockerfile.api ." path="Dockerfile.api"/>
+    <interface name="Docker Image Size Check" kind="docker-command" signature="docker image inspect &lt;image&gt; --format='{{.Size}}'" path=".github/workflows/ci.yml"/>
+    <interface name="Docker Image History" kind="docker-command" signature="docker image history &lt;image&gt;" path="docs/stories/4/4-3/4-3-optimize-docker-images.md"/>
+    <interface name="Docker Compose Startup" kind="docker-compose-command" signature="docker-compose up -d" path="docker-compose.yml"/>
+    <interface name="CI/CD Docker Build Job" kind="github-actions-workflow" signature="build job with docker/build-push-action@v5" path=".github/workflows/ci.yml"/>
+  </interfaces>
+
+  <tests>
+    <standards>Testing standards per Story 4.3 includono Build Tests per validazione Docker build success, Size Tests per validazione dimensione immagini &lt; 500MB, CI/CD Tests per validazione Docker build job con size check enforcement, Layer Inspection per validazione multi-stage build layers con docker image history, e Startup Tests per validazione startup time &lt; 30 secondi per tutti i servizi. Testing framework: Docker CLI per build tests, GitHub Actions per CI/CD integration tests, docker-compose per startup tests.</standards>
+    <locations>
+      <location>Manual testing: Docker build commands eseguiti localmente</location>
+      <location>CI/CD testing: .github/workflows/ci.yml build job</location>
+      <location>Integration testing: docker-compose.yml per startup time validation</location>
+    </locations>
+    <ideas>
+      <test ac="AC4.3.1" idea="Build Dockerfile Streamlit localmente, verificare dimensione con docker image inspect, verificare che sia &lt; 500MB"/>
+      <test ac="AC4.3.2" idea="Build Dockerfile.api localmente, verificare dimensione con docker image inspect, verificare che sia &lt; 500MB"/>
+      <test ac="AC4.3.3" idea="Eseguire docker-compose up -d, misurare tempo fino a tutti i servizi ready, verificare che sia &lt; 30 secondi"/>
+      <test ac="AC4.3.4" idea="Eseguire docker image history docling-rag-agent:test, verificare che output mostri solo runtime stage layers, verificare assenza builder stage layers"/>
+      <test ac="AC4.3.5" idea="Eseguire docker image history docling-rag-agent-api:test, verificare che output mostri solo runtime stage layers, verificare assenza builder stage layers"/>
+      <test ac="AC4.3.6" idea="Creare PR, verificare che CI/CD build job esegua size check, verificare che fallisca se immagini superano 500MB"/>
+      <test ac="AC4.3.7" idea="Eseguire docker image inspect docling-rag-agent:test, verificare che non contenga build-essential o gcc nello stage finale"/>
+      <test ac="AC4.3.8" idea="Eseguire docker image inspect docling-rag-agent-api:test, verificare che non contenga build-essential o gcc nello stage finale"/>
+      <test ac="AC4.3.9" idea="Eseguire docker image inspect docling-rag-agent:test, verificare che base image sia python:3.11-slim nello stage finale"/>
+      <test ac="AC4.3.10" idea="Eseguire docker image inspect docling-rag-agent-api:test, verificare che base image sia python:3.11-slim nello stage finale"/>
+    </ideas>
+  </tests>
+</story-context>
+

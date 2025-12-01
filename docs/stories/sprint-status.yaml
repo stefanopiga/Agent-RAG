@@ -59,14 +59,14 @@ development_status:
   epic-4: backlog
   4-1-setup-github-actions-ci-cd: review
   4-2-add-health-check-endpoints: ready-for-dev
-  4-3-optimize-docker-images: backlog
+  4-3-optimize-docker-images: review
   epic-4-retrospective: optional
 
-  epic-5: backlog
-  5-1-setup-testing-infrastructure-with-tdd-structure: backlog
-  5-2-implement-unit-tests-with-tdd: backlog
-  5-3-implement-ragas-evaluation-suite: backlog
-  5-4-implement-playwright-e2e-tests: backlog
+  epic-5: contexted
+  5-1-setup-testing-infrastructure-with-tdd-structure: done
+  5-2-implement-unit-tests-with-tdd: done
+  5-3-implement-ragas-evaluation-suite: done
+  5-4-implement-playwright-e2e-tests: ready-for-dev
   epic-5-retrospective: optional
 
   epic-6: backlog

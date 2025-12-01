@@ -493,7 +493,9 @@ So that I can validate logic without API costs.
 **Acceptance Criteria:**
 
 - **Given** `core/rag_service.py`, **When** I run unit tests, **Then** all functions are tested with mocked LLM
-- **Given** `ingestion/embedder.py`, **When** I run tests, **Then** embedding logic is validated with TestModel
+  - **Nota:** Se contiene PydanticAI Agent, usare TestModel con `agent.override(model=TestModel())`. Per altre funzioni, usare mock appropriati.
+- **Given** `ingestion/embedder.py`, **When** I run tests, **Then** embedding logic is validated with mocked OpenAI client
+  - **Nota:** TestModel è solo per PydanticAI Agent, non per EmbeddingGenerator. Per EmbeddingGenerator usare `pytest-mock` `mocker` fixture per mockare `LangfuseAsyncOpenAI` client.
 - **Given** coverage report, **When** I check it, **Then** core modules have > 70% coverage
 
 **Prerequisites:** Story 5.1 (testing infrastructure)

@@ -1,3 +1,4 @@
+# Python
 __pycache__
 *.pyc
 *.pyo
@@ -16,19 +17,64 @@ nosetests.xml
 coverage.xml
 *.cover
 *.log
-.git
 .mypy_cache
 .pytest_cache
-.hypothes
+.hypothesis
+
+# Git
+.git
+.gitignore
+
+# Documents (large files)
 documents/
 documents copy/
-docling_basics/output/
-docling-rag-agent/
-.env
-.DS_Store
-
 documents_copy_mia/
+documents_copy_cooleman/
+docling_basics/output/
+
+# Generated/Build artifacts
+site/
 node_modules/
-.bamad
-.claude
+*.egg-info/
+dist/
+build/
+
+# IDE/Editor
+.vscode
 .cursor
+.idea
+
+# Project-specific
+.env
+.env.*
+.DS_Store
+.bmad
+.claude
+.agent
+docling-rag-agent/
+
+# Docker
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Documentation (not needed in image)
+docs/
+guide/
+*.md
+!README.md
+
+# Tests (not needed in production image)
+tests/
+scripts/
+
+# SQL migrations (run separately)
+sql/
+
+# MkDocs
+mkdocs.yml
+
+# Misc
+metrics
+coderabbit.yaml
+package*.json

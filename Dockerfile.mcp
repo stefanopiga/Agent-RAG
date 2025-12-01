@@ -1,6 +1,6 @@
-# Dockerfile for Docling RAG Agent API Service
+# Dockerfile for MCP HTTP Server (porta 8080)
 # Multi-stage build for optimized image size < 500MB
-# AC4.3.2, AC4.3.5, AC4.3.8, AC4.3.10
+# AC4.3.11, AC4.3.12, AC4.3.13, AC4.3.14
 
 # ============================================================================
 # BUILDER STAGE
@@ -26,32 +26,30 @@ ENV UV_LINK_MODE=copy
 # Copy project definition
 COPY pyproject.toml uv.lock ./
 
-# Install API dependencies (includes docling for document processing)
+# Install MCP dependencies (includes docling for document processing)
 # --frozen: Uses exact versions from lockfile
 # --no-install-project: Installs only libraries, not your code yet
 # --no-editable: Remove dependency on source code for multi-stage builds
-# --extra api: Install api group with docling
+# --extra mcp: Install mcp group with docling
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-install-project --no-editable --extra api
+    uv sync --frozen --no-install-project --no-editable --extra mcp
 
-# Copy application code
-COPY api/ ./api/
+# Copy ONLY necessary application code
+COPY docling_mcp/ ./docling_mcp/
 COPY core/ ./core/
 COPY ingestion/ ./ingestion/
 COPY utils/ ./utils/
+COPY client/ ./client/
 
 # Install current project
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv sync --frozen --no-editable --extra api
+    uv sync --frozen --no-editable --extra mcp
 
 # ============================================================================
 # RUNTIME STAGE
 # Minimal image with only runtime dependencies
 # ============================================================================
 FROM python:3.11-slim AS runtime
-
-# Create non-root user FIRST (before copying files)
-RUN useradd -m -u 1000 appuser
 
 # Install ONLY runtime dependencies (no build tools)
 # - curl: for health checks
@@ -67,27 +65,25 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/app
 
-# Copy virtual environment with correct ownership (avoids chown -R layer)
-COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
+# Copy virtual environment from builder stage
+COPY --from=builder /app/.venv /app/.venv
 
-# Copy application code with correct ownership
-COPY --from=builder --chown=appuser:appuser /app/api ./api/
-COPY --from=builder --chown=appuser:appuser /app/core ./core/
-COPY --from=builder --chown=appuser:appuser /app/ingestion ./ingestion/
-COPY --from=builder --chown=appuser:appuser /app/utils ./utils/
+# Copy ONLY necessary application code from builder stage
+COPY --from=builder /app/docling_mcp ./docling_mcp/
+COPY --from=builder /app/core ./core/
+COPY --from=builder /app/ingestion ./ingestion/
+COPY --from=builder /app/utils ./utils/
+COPY --from=builder /app/client ./client/
 
 # Add virtual environment to PATH
 ENV PATH="/app/.venv/bin:$PATH"
 
-# Expose the API port
-EXPOSE 8000
+# Expose MCP HTTP server port
+EXPOSE 8080
 
-# Switch to non-root user
-USER appuser
+# Health check with extended start-period to allow embedder initialization (40+ seconds)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD curl -f http://localhost:8080/health || exit 1
 
-# Health check (preserved from Story 4-2)
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
-
-# Start the API service
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start the MCP HTTP server
+CMD ["python", "-m", "docling_mcp.http_server"]

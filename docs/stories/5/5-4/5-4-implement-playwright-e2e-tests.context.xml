@@ -1,0 +1,175 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>4</storyId>
+    <title>Implement Playwright E2E Tests</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-01-30</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/5/5-4/5-4-implement-playwright-e2e-tests.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>QA engineer</asA>
+    <iWant>E2E tests for critical Streamlit workflows</iWant>
+    <soThat>I can validate user experience</soThat>
+    <tasks>
+      <task id="1" name="Setup pytest-playwright infrastructure">
+        <subtasks>
+          <subtask>Install pytest-playwright dependencies: pytest-playwright>=0.4.0 (include playwright)</subtask>
+          <subtask>Verify playwright browsers installation: playwright install chromium (solo Chromium per CI/CD)</subtask>
+          <subtask>Create tests/e2e/ directory per E2E tests (se non esiste già)</subtask>
+          <subtask>Create tests/e2e/__init__.py per package init</subtask>
+          <subtask>Create tests/e2e/screenshots/ directory per screenshot storage</subtask>
+          <subtask>Configure pytest marker @pytest.mark.e2e per E2E tests (verificare in pyproject.toml)</subtask>
+          <subtask>Configure pytest marker @pytest.mark.slow per E2E tests (già presente in pyproject.toml da Story 5-1)</subtask>
+          <subtask>Create conftest.py fixture per pytest-playwright: streamlit_app_url fixture con configurazione base URL</subtask>
+          <subtask>Configure pytest-playwright browser context: browser_context_args fixture per viewport e altre impostazioni</subtask>
+        </subtasks>
+      </task>
+      <task id="2" name="Implement Streamlit query workflow E2E test">
+        <subtasks>
+          <subtask>Create tests/e2e/test_streamlit_workflow.py con test completo per Streamlit query workflow</subtask>
+          <subtask>Implement test_streamlit_query_workflow() che simula query utente completa</subtask>
+          <subtask>Implement screenshot capture: page.screenshot(path="tests/e2e/screenshots/query_workflow.png") dopo test completion</subtask>
+          <subtask>Implement video recording: configurare pytest-playwright per video recording automatico</subtask>
+          <subtask>Test che screenshot/video sono salvati correttamente (verifica AC#14)</subtask>
+          <subtask>Test che workflow completo funziona end-to-end (verifica AC#13)</subtask>
+        </subtasks>
+      </task>
+      <task id="3" name="Add data-testid selectors to Streamlit app">
+        <subtasks>
+          <subtask>Verificare che app.py ha data-testid attributes per elementi critici</subtask>
+          <subtask>Se data-testid non presenti, aggiungere a app.py per elementi critici del workflow</subtask>
+          <subtask>Verificare che selectors sono unici e non cambiano con UI updates</subtask>
+        </subtasks>
+      </task>
+      <task id="4" name="Configure CI/CD for E2E tests">
+        <subtasks>
+          <subtask>Verificare che .github/workflows/ci.yml esiste (già creato in Epic 4)</subtask>
+          <subtask>Aggiungere step per install playwright browsers: playwright install chromium (solo Chromium per CI/CD)</subtask>
+          <subtask>Aggiungere step per start Streamlit app in background: streamlit run app.py --server.headless=true con port 8501</subtask>
+          <subtask>Aggiungere step per run E2E tests: pytest tests/e2e/ --base-url=http://localhost:8501 (headless mode default)</subtask>
+          <subtask>Configurare pytest-playwright per headless mode in CI/CD (default behavior)</subtask>
+          <subtask>Aggiungere step per upload screenshots/videos come artifacts su test failure</subtask>
+          <subtask>Verificare che E2E tests sono eseguiti solo su PR/push a main (non su ogni commit per performance)</subtask>
+        </subtasks>
+      </task>
+      <task id="5" name="Testing subtasks">
+        <subtasks>
+          <subtask>Run E2E test localmente: pytest tests/e2e/ --base-url=http://localhost:8501 (verifica AC#13)</subtask>
+          <subtask>Verify screenshot/video sono generati correttamente (verifica AC#14)</subtask>
+          <subtask>Verify E2E test funziona in headless mode: pytest tests/e2e/ --base-url=http://localhost:8501 --headed=false (verifica AC#15)</subtask>
+          <subtask>Verify CI/CD pipeline esegue E2E tests correttamente (verifica AC#15)</subtask>
+          <subtask>Document E2E test results in Dev Notes</subtask>
+        </subtasks>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">Given Streamlit app running, When pytest-playwright test runs, Then it simulates user query and validates response (AC#13)</ac>
+    <ac id="2">Given E2E test, When it completes, Then I see screenshot/video recording for debugging (AC#14)</ac>
+    <ac id="3">Given CI/CD, When tests run, Then E2E tests execute in headless mode (AC#15)</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/5/tech-spec-epic-5.md" title="Epic Technical Specification: Testing & Quality Assurance (TDD)" section="Playwright E2E Interface">
+        Complete technical specification for Epic 5, Story 5.4 acceptance criteria (AC#13, AC#14, AC#15), pytest-playwright E2E testing workflow, CI/CD integration. Includes pytest-playwright fixtures configuration, browser context setup, and CLI options.
+      </doc>
+      <doc path="docs/architecture.md" title="System Architecture" section="ADR-003: TDD Structure Rigorosa">
+        Architecture decision record for TDD structure with pytest-playwright E2E testing. Documents E2E test directory structure, fixtures pattern, and testing standards.
+      </doc>
+      <doc path="docs/testing-strategy.md" title="Testing Strategy" section="End-to-End Testing">
+        Complete E2E testing strategy, pytest-playwright setup, screenshot/video recording, CI/CD integration. Includes test structure examples and best practices.
+      </doc>
+      <doc path="docs/stories/5/5-4/5-4-technical-debt-analysis.md" title="Technical Debt Analysis" section="Lacune Identificate">
+        Critical analysis identifying 10 gaps that could lead to technical debt. Highlights 3 CRITICAL gaps: Test Isolation, Retry Logic, Network Interception. Contains detailed recommendations with code examples for each gap.
+      </doc>
+      <doc path="docs/epics.md" title="Epics Breakdown" section="Epic 5: Testing & Quality Assurance">
+        Story breakdown and acceptance criteria for Epic 5, Story 5.4. Includes prerequisites and technical notes.
+      </doc>
+      <doc path="docs/stories/5/5-3/5-3-implement-ragas-evaluation-suite.md" title="Story 5-3: RAGAS Evaluation" section="Dev Notes">
+        Learnings from previous story including test directory structure, pytest markers configuration, and pattern reuse for fixtures pytest-playwright.
+      </doc>
+      <doc path="docs/stories/5/5-1/5-1-setup-testing-infrastructure-with-tdd-structure.md" title="Story 5-1: Setup Testing Infrastructure" section="Dev Notes">
+        Infrastructure available including test directory structure, pytest markers, Streamlit app, and CI/CD pipeline.
+      </doc>
+    </docs>
+    <code>
+      <artifact path="app.py" kind="entry_point" symbol="Streamlit App Entry Point" lines="1-294" reason="Target per E2E tests, contiene chat interface con st.chat_input e session state management. Necessita data-testid attributes per elementi critici (query-input, submit-button, response)."/>
+      <artifact path="tests/conftest.py" kind="fixture" symbol="Shared Test Fixtures" lines="1-45" reason="Fixtures complete per database, embedder, LLM, LangFuse. Estendere con fixtures pytest-playwright (streamlit_app_url, browser_context_args). Pattern da riutilizzare per E2E tests."/>
+      <artifact path="tests/e2e/__init__.py" kind="package" symbol="E2E Test Package" lines="1-5" reason="Package init già presente per E2E tests. Directory tests/e2e/ già creata in Story 5-1."/>
+      <artifact path="tests/e2e/test_streamlit_ui_observability.py" kind="test" symbol="Existing E2E Test" lines="1-104" reason="Test E2E esistente per UI observability. Pattern da seguire per nuovo test_streamlit_workflow.py. Mostra uso di browser e page fixtures."/>
+      <artifact path=".github/workflows/ci.yml" kind="workflow" symbol="CI/CD Pipeline" lines="1-372" reason="CI/CD pipeline già esistente (Epic 4). Estendere con E2E test steps: install playwright browsers, start Streamlit app, run E2E tests, upload artifacts."/>
+      <artifact path="pyproject.toml" kind="config" symbol="Project Configuration" lines="95-107" reason="Pytest markers già configurati (@pytest.mark.e2e, @pytest.mark.slow). Aggiungere pytest-playwright>=0.4.0 alle dev dependencies."/>
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="pytest-playwright" version=">=0.4.0" reason="E2E browser automation framework, includes playwright"/>
+        <package name="playwright" version="bundled" reason="Browser automation library bundled with pytest-playwright"/>
+        <package name="pytest" version=">=8.0.0" reason="Test framework already configured"/>
+        <package name="pytest-asyncio" version=">=0.23.0" reason="Async test support already configured"/>
+        <package name="pytest-cov" version=">=4.1.0" reason="Coverage tracking already configured"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>E2E tests in tests/e2e/ directory following ADR-003 (TDD Structure Rigorosa)</constraint>
+    <constraint>Use pytest-playwright fixtures: page, context, browser (automaticamente disponibili)</constraint>
+    <constraint>Use data-testid selectors per reliable element selection (non CSS selectors che cambiano con UI updates)</constraint>
+    <constraint>Base URL configurazione: Usa --base-url CLI option per evitare hardcoded URLs nei test</constraint>
+    <constraint>E2E tests richiedono Streamlit app running - considerare setup/teardown in CI/CD</constraint>
+    <constraint>E2E tests sono lenti (&lt;30s per test), eseguire solo su PR/push a main (non su ogni commit per performance)</constraint>
+    <constraint>Headless mode default in CI/CD, configurabile via --headed flag per debugging locale</constraint>
+    <constraint>Test naming pattern: test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;</constraint>
+    <constraint>Pattern AAA (Arrange, Act, Assert) per tutti i test</constraint>
+    <constraint>CRITICAL: Affrontare almeno le 3 lacune CRITICHE dal technical debt analysis: Test Isolation, Retry Logic, Network Interception</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="pytest-playwright page fixture" kind="fixture" signature="page: Page" path="tests/e2e/test_streamlit_workflow.py">
+      Automaticamente disponibile da pytest-playwright. Fornisce Page object per browser automation. Metodi principali: goto(), locator(), wait_for_selector(), screenshot().
+    </interface>
+    <interface name="pytest-playwright browser fixture" kind="fixture" signature="browser: Browser" path="tests/e2e/test_streamlit_workflow.py">
+      Automaticamente disponibile da pytest-playwright. Fornisce Browser object per browser management.
+    </interface>
+    <interface name="streamlit_app_url fixture" kind="fixture" signature="streamlit_app_url: str" path="tests/conftest.py">
+      Fixture da creare in conftest.py con base URL configurabile. Default: http://localhost:8501. Configurabile via environment variable STREAMLIT_E2E_URL.
+    </interface>
+    <interface name="browser_context_args fixture" kind="fixture" signature="browser_context_args: dict" path="tests/conftest.py">
+      Fixture da creare in conftest.py per configurare browser context (viewport, timeout, etc.). Override pytest-playwright default.
+    </interface>
+    <interface name="Streamlit Chat Input" kind="ui_element" signature="st.chat_input()" path="app.py">
+      Streamlit chat input component. Necessita data-testid="query-input" per reliable selection nei test.
+    </interface>
+    <interface name="Streamlit Chat Message" kind="ui_element" signature="st.chat_message()" path="app.py">
+      Streamlit chat message component per display response. Necessita data-testid="response" per reliable selection nei test.
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      E2E tests usano @pytest.mark.e2e marker (già configurato in pyproject.toml). E2E tests usano @pytest.mark.slow marker (già configurato in pyproject.toml). Test naming pattern: test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;. Pattern AAA (Arrange, Act, Assert) per tutti i test. E2E tests richiedono Streamlit app running - considerare setup/teardown in CI/CD. Use data-testid selectors per reliable element selection (non CSS selectors). Screenshots: Capture screenshots on test failure per debugging (automatico con --screenshot=on). Video: Optional video recording per debugging (--video=on). Tracing: Optional tracing per debugging (--tracing=on). CLI Options: --headed, --browser, --tracing, --video, --screenshot disponibili.
+    </standards>
+    <locations>
+      <location>tests/e2e/</location>
+      <location>tests/e2e/screenshots/</location>
+      <location>tests/conftest.py</location>
+    </locations>
+    <ideas>
+      <idea ac="1">test_streamlit_query_workflow: Navigate to Streamlit app, wait for query-input selector, fill query, click submit, wait for response, verify response contains expected content</idea>
+      <idea ac="2">test_screenshot_video_recording: Verify screenshot/video sono generati correttamente dopo test completion. Usare pytest-playwright automatic screenshot/video capture.</idea>
+      <idea ac="3">test_headless_mode: Verify E2E test funziona in headless mode. Run test con --headed=false flag e verificare che test passa.</idea>
+      <idea ac="1,2,3">test_ci_cd_integration: Verify CI/CD pipeline esegue E2E tests correttamente. Test che playwright browsers sono installati, Streamlit app è started, tests sono eseguiti in headless mode.</idea>
+      <idea ac="1">test_data_testid_selectors: Verify che app.py ha data-testid attributes per elementi critici (query-input, submit-button, response). Test che selectors sono unici e non cambiano con UI updates.</idea>
+      <idea ac="1,2">test_golden_dataset_integration: Test Streamlit workflow con golden dataset queries. Riutilizzare tests/fixtures/golden_dataset.json per test consistenti.</idea>
+      <idea ac="1,2,3">test_test_isolation: Verify test isolation e session state cleanup. Test che ogni test inizia con session state pulito, non dipende da altri test.</idea>
+      <idea ac="1,2,3">test_retry_logic: Verify retry logic per test flaky. Configurare retry logic in pyproject.toml e verificare che test flaky sono ritentati automaticamente.</idea>
+      <idea ac="1,2,3">test_network_interception: Verify network interception per test deterministici. Mock OpenAI e LangFuse API calls per test deterministici senza costi API.</idea>
+    </ideas>
+  </tests>
+</story-context>
+

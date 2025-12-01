@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 class ServiceStatus:
     """Status of an individual service."""
 
-    status: Literal["up", "down"]
+    status: Literal["up", "down", "initializing"]
     message: str = ""
     latency_ms: float = 0.0
 
@@ -120,12 +120,13 @@ async def check_embedder() -> ServiceStatus:
     Check embedder readiness.
 
     Returns:
-        ServiceStatus with embedder health information
+        ServiceStatus with embedder health information.
+        Distinguishes between "initializing" (normal startup) and "down" (failed).
     """
     start_time = time.time()
 
     try:
-        from core.rag_service import _embedder_ready, get_global_embedder
+        from core.rag_service import _embedder_ready, get_global_embedder, is_embedder_initializing
 
         # Check if embedder is ready (non-blocking check)
         if _embedder_ready.is_set():
@@ -143,10 +144,23 @@ async def check_embedder() -> ServiceStatus:
                     latency_ms=latency_ms,
                 )
         else:
+            # Embedder not ready - check if initialization is in progress or failed
             latency_ms = (time.time() - start_time) * 1000
-            return ServiceStatus(
-                status="down", message="Embedder initialization in progress", latency_ms=latency_ms
-            )
+            
+            # If initialization is in progress, return "initializing" status
+            if is_embedder_initializing():
+                return ServiceStatus(
+                    status="initializing",
+                    message="Embedder initialization in progress",
+                    latency_ms=latency_ms,
+                )
+            # Initialization not in progress but embedder not ready - failed or not started
+            else:
+                return ServiceStatus(
+                    status="down",
+                    message="Embedder initialization failed or not started",
+                    latency_ms=latency_ms,
+                )
 
     except Exception as e:
         latency_ms = (time.time() - start_time) * 1000
@@ -165,8 +179,8 @@ async def get_health_status() -> HealthResponse:
 
     Status Logic:
     - "ok": All services UP
-    - "degraded": LangFuse DOWN but database and embedder UP
-    - "down": Database DOWN (critical dependency)
+    - "degraded": LangFuse DOWN or embedder INITIALIZING (non-critical or normal startup)
+    - "down": Database DOWN or embedder DOWN (critical dependency failed)
     """
     timestamp = time.time()
 
@@ -186,9 +200,12 @@ async def get_health_status() -> HealthResponse:
     # Database DOWN → overall DOWN (critical dependency)
     if db_status.status == "down":
         overall_status = "down"
-    # Embedder DOWN → overall DOWN (critical dependency)
+    # Embedder DOWN (failed) → overall DOWN (critical dependency)
     elif embedder_status.status == "down":
         overall_status = "down"
+    # Embedder INITIALIZING → degraded (normal startup, allow time for initialization)
+    elif embedder_status.status == "initializing":
+        overall_status = "degraded"
     # LangFuse DOWN → degraded (non-critical, graceful degradation)
     elif langfuse_status.status == "down":
         overall_status = "degraded"

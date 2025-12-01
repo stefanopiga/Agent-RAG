@@ -109,6 +109,16 @@ async def close_global_embedder():
     logger.info("✓ Global embedder closed")
 
 
+def is_embedder_initializing() -> bool:
+    """
+    Check if embedder initialization is currently in progress.
+
+    Returns:
+        True if initialization task exists and is not done, False otherwise
+    """
+    return _initialization_task is not None and not _initialization_task.done()
+
+
 async def get_global_embedder():
     """
     Get the global embedder instance.

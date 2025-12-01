@@ -1,0 +1,138 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>1</storyId>
+    <title>Setup Testing Infrastructure with TDD Structure</title>
+    <status>drafted</status>
+    <generatedAt>2025-01-30</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/5/5-1/5-1-setup-testing-infrastructure-with-tdd-structure.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>a complete testing infrastructure with rigorous TDD structure and pytest fixtures</iWant>
+    <soThat>I can write and run tests efficiently following Red-Green-Refactor pattern</soThat>
+    <tasks>
+      <task id="1">Install testing dependencies (pytest, pytest-asyncio, pytest-cov, pytest-mock)</task>
+      <task id="2">Create tests directory structure (tests/unit/, tests/integration/, tests/e2e/, tests/fixtures/)</task>
+      <task id="3">Create conftest.py with shared fixtures (mock_db_pool, mock_embedder, test_model, test_db, LangFuse mocking)</task>
+      <task id="4">Configure pytest in pyproject.toml (async_mode, testpaths, markers, coverage threshold >70%)</task>
+      <task id="5">Create golden dataset for RAGAS evaluation (tests/fixtures/golden_dataset.json with 20+ query-answer pairs)</task>
+      <task id="6">Create tests/README.md documentation (TDD workflow, test organization, pytest markers, coverage reporting)</task>
+      <task id="7">Update CI/CD pipeline for coverage enforcement (.github/workflows/ci.yml with pytest --cov-fail-under=70)</task>
+      <task id="8">Create initial test discovery verification (tests/unit/test_example.py)</task>
+      <task id="9">Testing subtasks (verify pytest installation, directory structure, conftest.py, pytest config, golden dataset, CI/CD, TDD workflow)</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="1">Given the project, When I run `pytest`, Then all tests are discovered and executed</ac>
+    <ac id="2">Given `tests/` directory, When I inspect it, Then I see rigorous organization: `tests/unit/`, `tests/integration/`, `tests/e2e/`, `tests/fixtures/`</ac>
+    <ac id="3">Given `tests/fixtures/`, When I check it, Then I see golden dataset for RAGAS evaluation (20+ query-answer pairs)</ac>
+    <ac id="4">Given pytest config, When I check it, Then I see async support, coverage tracking with threshold > 70%, and markers configured</ac>
+    <ac id="5">Given CI/CD pipeline, When it runs, Then coverage report is generated automatically and build fails if coverage < 70%</ac>
+    <ac id="6">Given test workflow, When I follow TDD, Then I write test first (Red), implement code (Green), then refactor (Refactor)</ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/5/tech-spec-epic-5.md" title="Epic 5 Technical Specification" section="System Architecture Alignment">
+        Complete technical specification for Epic 5 including TDD structure requirements, test organization, coverage strategy, and testing standards. Defines pytest configuration, fixtures, golden dataset format, and CI/CD integration.
+      </doc>
+      <doc path="docs/architecture.md" title="System Architecture" section="ADR-003: TDD Structure Rigorosa">
+        Architecture decision record ADR-003 defines TDD structure with tests/unit/, tests/integration/, tests/e2e/, coverage >70% enforcement. Includes PydanticAI TestModel pattern for LLM mocking and pytest-playwright for E2E tests.
+      </doc>
+      <doc path="docs/testing-strategy.md" title="Testing Strategy" section="Test Organization">
+        Complete testing strategy document defining TDD workflow (Red-Green-Refactor), test organization structure (unit/integration/e2e), pytest configuration, coverage requirements (>70% for core modules), and test patterns (AAA pattern, async testing).
+      </doc>
+      <doc path="docs/unified-project-structure.md" title="Unified Project Structure" section="Testing Infrastructure (tests/)">
+        Defines rigorous test directory structure: tests/unit/, tests/integration/, tests/e2e/, tests/fixtures/. Specifies test file naming conventions (test_*.py or *_test.py), conftest.py location, and golden dataset location.
+      </doc>
+      <doc path="docs/coding-standards.md" title="Coding Standards" section="Testing Standards">
+        Testing standards including test organization structure, test naming conventions (test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;), AAA pattern (Arrange-Act-Assert), async testing with pytest.mark.asyncio, and coverage requirements.
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Epic 5: Testing &amp; Quality Assurance (TDD)">
+        Epic 5 story breakdown with acceptance criteria for Story 5.1. Defines TDD structure requirements, pytest fixtures, golden dataset, and CI/CD coverage enforcement.
+      </doc>
+      <doc path="docs/prd.md" title="Product Requirements Document" section="Testing &amp; Quality Assurance (TDD)">
+        Product requirements for testing infrastructure including FR31-FR44 covering unit tests, PydanticAI TestModel, RAGAS evaluation, pytest-playwright E2E tests, TDD structure, and coverage enforcement.
+      </doc>
+    </docs>
+    <code>
+      <file path="pyproject.toml" kind="configuration" symbol="[tool.pytest.ini_options]" lines="90-93" reason="Existing pytest configuration with asyncio_mode='auto' and testpaths=['tests']. Needs extension with markers and coverage settings."/>
+      <file path="pyproject.toml" kind="configuration" symbol="[tool.coverage.run]" lines="102-109" reason="Existing coverage configuration with source paths and omit patterns. Needs verification for threshold >70% enforcement."/>
+      <file path="pyproject.toml" kind="configuration" symbol="[tool.coverage.report]" lines="111-123" reason="Coverage report configuration with fail_under=70 already set. Needs verification for CI/CD integration."/>
+      <file path="tests/conftest.py" kind="test_fixture" symbol="event_loop" lines="11-16" reason="Existing event loop fixture for async tests. Needs extension with mock_db_pool, mock_embedder, test_model, test_db fixtures."/>
+      <file path="core/rag_service.py" kind="service" symbol="search_knowledge_base_structured" lines="1-92" reason="Core RAG service to be tested. Requires unit tests with mocked LLM (PydanticAI TestModel) and mocked DB."/>
+      <file path="ingestion/embedder.py" kind="service" symbol="EmbeddingGenerator" reason="Embedding generator to be tested. Requires unit tests with mocked OpenAI API."/>
+      <file path="ingestion/chunker.py" kind="service" symbol="DoclingHybridChunker" reason="Chunking logic to be tested. Requires unit tests for chunking strategies."/>
+      <file path="utils/db_utils.py" kind="utility" symbol="DatabasePool" reason="Database pool utilities. Requires fixtures for test database setup/teardown."/>
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="pytest" version=">=8.0.0" reason="Test framework"/>
+        <package name="pytest-asyncio" version=">=0.23.0" reason="Async test support"/>
+        <package name="pytest-cov" version=">=4.1.0" reason="Coverage tracking"/>
+        <package name="pytest-mock" version=">=3.12.0" reason="Mocking utilities (if not already included)"/>
+        <package name="pydantic-ai" version=">=0.7.4" reason="PydanticAI TestModel for LLM mocking (already in dependencies)"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">
+      Follow rigorous TDD structure with tests/unit/, tests/integration/, tests/e2e/, tests/fixtures/ as defined in ADR-003. Coverage enforcement >70% for core modules. Use PydanticAI TestModel for LLM mocking in unit tests.
+    </constraint>
+    <constraint type="test_organization">
+      Unit tests: Isolated, fast (&lt;1s per test), mocked dependencies. Integration tests: Mocked DB/API, real logic (&lt;5s per test). E2E tests: Real services, slow (&lt;30s per test). Fixtures: Shared test data, golden dataset for RAGAS.
+    </constraint>
+    <constraint type="coverage">
+      CI/CD fails build if coverage &lt;70%. HTML report generated for line-by-line coverage. Coverage tracked over time via CI/CD reports.
+    </constraint>
+    <constraint type="testing_standards">
+      Follow AAA pattern (Arrange, Act, Assert). Use descriptive test names: test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;. Async tests use pytest.mark.asyncio decorator. Mock external dependencies (DB, API, LLM) in unit tests.
+    </constraint>
+    <constraint type="project_structure">
+      tests/ directory in project root (aligned with unified-project-structure.md). Subdirectories: tests/unit/, tests/integration/, tests/e2e/, tests/fixtures/. All test files follow naming convention: test_*.py or *_test.py. conftest.py in tests/ root for shared fixtures.
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="pytest CLI" kind="command-line" signature="pytest [options] [file_or_dir]" path="pytest">
+      Test execution framework. Options: -m marker, --cov=path, --cov-report=format, --cov-fail-under=percentage, -v verbose, --collect-only.
+    </interface>
+    <interface name="pytest-asyncio" kind="configuration" signature="asyncio_mode = 'auto'" path="pyproject.toml">
+      Automatic async test detection and execution. Configured in [tool.pytest.ini_options] section.
+    </interface>
+    <interface name="pytest-cov" kind="command-line" signature="pytest --cov=core --cov=ingestion --cov-report=html --cov-fail-under=70" path="pytest-cov">
+      Coverage tracking with threshold enforcement. Generates HTML and terminal reports.
+    </interface>
+    <interface name="PydanticAI TestModel" kind="python_api" signature="from pydantic_ai.models.test import TestModel; agent.override(model=TestModel())" path="pydantic-ai">
+      LLM mocking for unit tests. TestModel generates valid structured data automatically based on tool schemas without real API calls.
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Testing follows Test-Driven Development (TDD) with Red-Green-Refactor pattern. Tests organized rigorously in tests/unit/ (isolated, mocked), tests/integration/ (mocked DB/API, real logic), tests/e2e/ (real services). Coverage enforcement >70% for core modules. Use pytest-asyncio for async tests, PydanticAI TestModel for LLM mocking, pytest-mock for other dependencies. Follow AAA pattern (Arrange-Act-Assert) with descriptive test names.
+    </standards>
+    <locations>
+      <location>tests/unit/</location>
+      <location>tests/integration/</location>
+      <location>tests/e2e/</location>
+      <location>tests/fixtures/</location>
+      <location>tests/conftest.py</location>
+    </locations>
+    <ideas>
+      <idea ac_id="1">Test pytest discovery: Create tests/unit/test_example.py with minimal passing test, run pytest --collect-only to verify test discovery</idea>
+      <idea ac_id="2">Test directory structure: Verify all directories exist (tests/unit/, tests/integration/, tests/e2e/, tests/fixtures/) with __init__.py files</idea>
+      <idea ac_id="3">Test golden dataset: Load tests/fixtures/golden_dataset.json, verify JSON structure with 20+ query-answer pairs including query, expected_answer, context, metadata fields</idea>
+      <idea ac_id="4">Test pytest config: Run pytest --collect-only, verify markers (unit, integration, e2e, slow, ragas) are registered, verify coverage threshold >70% in pyproject.toml</idea>
+      <idea ac_id="5">Test CI/CD coverage: Run pytest --cov=core --cov=ingestion --cov-report=xml --cov-fail-under=70, verify build fails if coverage &lt;70%, verify coverage report generated</idea>
+      <idea ac_id="6">Test TDD workflow: Document Red-Green-Refactor example in tests/README.md showing test-first approach with pytest</idea>
+    </ideas>
+  </tests>
+</story-context>
+
+

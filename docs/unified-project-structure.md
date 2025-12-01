@@ -33,11 +33,13 @@ docling-rag-agent/
 ├── docker-compose.yml           # ✅ Docker orchestration
 ├── Dockerfile                   # ✅ Streamlit container
 ├── Dockerfile.api               # ✅ API container (optional)
+├── Dockerfile.mcp               # ✅ MCP server container (optional)
 ├── .env.example                 # ✅ Environment variables template
 ├── .gitignore                   # ✅ Git ignore rules
 ├── coderabbit.yaml              # ✅ CodeRabbit configuration
 ├── mkdocs.yml                   # ✅ MkDocs configuration
 ├── package.json                 # ✅ Node.js dependencies (MkDocs)
+├── package-lock.json            # ✅ npm lock file
 ├── app.py                       # ✅ Streamlit UI entry point
 └── [NO OTHER FILES]             # ❌ Tutti gli altri file devono essere in directory appropriate
 ```
@@ -60,6 +62,7 @@ docling-rag-agent/
 ├── ingestion/                   # Document processing pipeline (Epic 1)
 ├── utils/                       # Shared utilities
 ├── api/                         # FastAPI service (Epic 4, optional)
+├── client/                       # API client utilities (Epic 2)
 ├── tests/                       # Test suite (Epic 5)
 ├── scripts/                     # Utility scripts (Epic 4)
 ├── docs/                        # Documentation (Epic 1)
@@ -134,6 +137,7 @@ ingestion/
 ├── __init__.py                  # Module exports
 ├── ingest.py                    # DocumentIngestionPipeline orchestration
 ├── chunker.py                   # HybridChunker, SimpleChunker
+├── chunker_no_docling.py        # Alternative chunker implementation (no Docling dependency)
 └── embedder.py                  # EmbeddingGenerator (OpenAI with caching)
 ```
 
@@ -154,7 +158,9 @@ utils/
 ├── __init__.py                  # Module exports
 ├── db_utils.py                  # AsyncPG connection pooling
 ├── models.py                    # Pydantic data models
-└── providers.py                 # OpenAI provider configuration
+├── providers.py                 # OpenAI provider configuration
+├── langfuse_streamlit.py        # LangFuse Streamlit integration utilities
+└── session_manager.py           # Session management utilities (Epic 3)
 ```
 
 **Rules:**
@@ -199,23 +205,33 @@ tests/
 │   ├── test_rag_service.py
 │   ├── test_embedder.py
 │   ├── test_langfuse_integration.py
+│   ├── test_langfuse_streamlit.py
 │   ├── test_performance_metrics.py
-│   └── test_mcp_server_validation.py
+│   ├── test_mcp_server_validation.py
+│   ├── test_api_client.py
+│   └── test_session_manager.py
 ├── integration/                 # Integration tests
 │   ├── test_mcp_server_integration.py
-│   └── test_observability_endpoints.py
+│   ├── test_observability_endpoints.py
+│   ├── test_api_health.py
+│   ├── test_langfuse_dashboard.py
+│   └── test_streamlit_observability.py
 ├── e2e/                         # End-to-end tests (Playwright)
-│   └── test_streamlit_workflow.py
+│   └── test_streamlit_ui_observability.py
+├── evaluation/                  # RAGAS evaluation tests (Epic 5 Story 5.3)
+│   └── test_ragas_evaluation.py
 └── fixtures/                    # Test fixtures + golden dataset
-    └── golden_dataset.json      # 20+ query-answer pairs (RAGAS)
+    ├── __init__.py
+    └── golden_dataset.json      # 25 query-answer pairs (RAGAS)
 ```
 
 **Rules:**
 
-- ✅ Rigorous organization: `unit/`, `integration/`, `e2e/`, `fixtures/`
+- ✅ Rigorous organization: `unit/`, `integration/`, `e2e/`, `evaluation/`, `fixtures/`
 - ✅ Test files: `test_*.py` or `*_test.py`
 - ✅ Coverage target: >70% for core modules, >80% for critical modules
 - ✅ Golden dataset in `fixtures/` for RAGAS evaluation
+- ✅ RAGAS evaluation tests in `evaluation/` directory (Epic 5 Story 5.3)
 
 **Epic Mapping:** Epic 5 (Testing & Quality Assurance)
 
@@ -231,18 +247,23 @@ tests/
 scripts/
 ├── verification/                # Verification and health check scripts
 │   ├── verify_api_endpoints.py
+│   ├── verify_api.py
 │   ├── verify_mcp_setup.py
 │   └── verify_client_integration.py
 ├── debug/                       # Debug utilities
 │   └── debug_mcp_tools.py
-└── [NO ROOT-LEVEL SCRIPTS]      # ❌ Tutti gli script devono essere in subdirectory
+├── optimize_database.py         # ⚠️ Should be moved to appropriate subdirectory
+├── test_cost_tracking.py        # ⚠️ Should be moved to tests/ or scripts/testing/
+├── test_e2e_langfuse_timing.py  # ⚠️ Should be moved to tests/e2e/ or scripts/testing/
+└── test_mcp_performance.py     # ⚠️ Should be moved to tests/performance/ or scripts/testing/
 ```
 
 **Rules:**
 
 - ✅ Scripts organized in subdirectories by purpose
 - ✅ No temporary or debug scripts in root
-- ✅ Performance test scripts can be in `scripts/` or `tests/performance/`
+- ✅ Performance test scripts can be in `scripts/testing/` or `tests/performance/`
+- ⚠️ **Current State**: Some scripts exist in `scripts/` root (should be moved to subdirectories - see Epic 6)
 
 **Epic Mapping:** Epic 4 (Production Infrastructure), Epic 6 (Project Structure)
 
@@ -697,12 +718,22 @@ pytest tests/ -v
 
 **⚠️ Needs Reorganization:**
 
-- `scriptsdebug/` → Should be `scripts/debug/`
-- `scriptsverification/` → Should be `scripts/verification/`
-- `T/` → Temporary directory, should be removed
-- `=3.0.0` → Temporary file, should be removed
-- `metrics` → Should be moved to appropriate location or removed
-- Root-level scripts → Should be in `scripts/` subdirectories
+**Scripts Directory:**
+- `scripts/optimize_database.py` → Should be moved to `scripts/verification/` or `scripts/database/`
+- `scripts/test_cost_tracking.py` → Should be moved to `tests/integration/` or `scripts/testing/`
+- `scripts/test_e2e_langfuse_timing.py` → Should be moved to `tests/e2e/` or `scripts/testing/`
+- `scripts/test_mcp_performance.py` → Should be moved to `tests/performance/` or `scripts/testing/`
+
+**Root Directory (Temporary/Copy Directories):**
+- `documents_copy_cooleman/` → Should be removed or moved to `documents/` if needed
+- `documents_copy_mia/` → Should be removed or moved to `documents/` if needed
+- `metrics` → Should be moved to appropriate location or removed (if not needed)
+
+**Root Directory (Generated/Build Files - should be in .gitignore):**
+- `site/` → MkDocs generated site (should be in `.gitignore`)
+- `node_modules/` → npm dependencies (should be in `.gitignore`)
+
+**Note:** `client/` directory is now documented as authorized (Epic 2).
 
 **Reference:** [Epic 6 Story 6.1](./epics.md#Story-6.1-Reorganize-Project-Structure)
 
@@ -772,10 +803,20 @@ docling-rag-agent/
 │   ├── __init__.py
 │   ├── ingest.py
 │   ├── chunker.py
+│   ├── chunker_no_docling.py
 │   └── embedder.py
 │
 ├── utils/                           # Shared Utilities
 │   ├── __init__.py
+│   ├── db_utils.py
+│   ├── models.py
+│   ├── providers.py
+│   ├── langfuse_streamlit.py
+│   └── session_manager.py
+│
+├── client/                          # Epic 2: API Client
+│   ├── __init__.py
+│   └── api_client.py
 │   ├── db_utils.py
 │   ├── models.py
 │   └── providers.py
@@ -792,6 +833,7 @@ docling-rag-agent/
 │   ├── unit/
 │   ├── integration/
 │   ├── e2e/
+│   ├── evaluation/                  # RAGAS evaluation (Epic 5 Story 5.3)
 │   └── fixtures/
 │
 ├── scripts/                         # Epic 4: Utility Scripts
@@ -828,10 +870,19 @@ docling-rag-agent/
 └── documents/                       # Source Documents
 ```
 
-**Files/Directories to Remove (Epic 6):**
+**Files/Directories to Remove or Reorganize (Epic 6):**
 
-- `scriptsdebug/` → Merge into `scripts/debug/`
-- `scriptsverification/` → Merge into `scripts/verification/`
-- `T/` → Remove (temporary)
-- `=3.0.0` → Remove (temporary)
-- `metrics` → Review and relocate or remove
+**Scripts to Move:**
+- `scripts/optimize_database.py` → Move to `scripts/verification/` or `scripts/database/`
+- `scripts/test_cost_tracking.py` → Move to `tests/integration/` or `scripts/testing/`
+- `scripts/test_e2e_langfuse_timing.py` → Move to `tests/e2e/` or `scripts/testing/`
+- `scripts/test_mcp_performance.py` → Move to `tests/performance/` or `scripts/testing/`
+
+**Temporary/Copy Directories to Remove:**
+- `documents_copy_cooleman/` → Remove or merge into `documents/` if needed
+- `documents_copy_mia/` → Remove or merge into `documents/` if needed
+- `metrics` → Review and relocate or remove if not needed
+
+**Generated/Build Directories (should be in .gitignore):**
+- `site/` → MkDocs generated site (already in .gitignore)
+- `node_modules/` → npm dependencies (should be in .gitignore)
