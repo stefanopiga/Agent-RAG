@@ -137,11 +137,13 @@ def test_embedding_cache_update_existing_key():
 @pytest.mark.unit
 def test_embedding_generator_init_default_config(mocker):
     """
-    Test that EmbeddingGenerator initializes with default configuration.
+    Verify EmbeddingGenerator initializes with expected default configuration.
     
-    Arrange: Mock OpenAI client
-    Act: Create EmbeddingGenerator
-    Assert: Default values are set
+    Creates an EmbeddingGenerator with a mocked provider and client, then asserts that:
+    - model_name == "text-embedding-3-small"
+    - batch_size == 100
+    - use_cache is True
+    - cache is not None
     """
     # Arrange
     mock_client = MagicMock()
@@ -526,11 +528,9 @@ async def test_embed_documents_all_cached(mocker):
 @pytest.mark.asyncio
 async def test_embed_chunks_backward_compatibility(mocker):
     """
-    Test that embed_chunks() processes chunks and assigns embeddings.
+    Verify that embed_chunks assigns embeddings to each chunk and augments non-empty metadata.
     
-    Arrange: Create mock chunks with non-empty metadata (empty dict is falsy in Python)
-    Act: Call embed_chunks
-    Assert: Chunks have embeddings assigned and metadata updated
+    Checks that for chunks with non-empty metadata the function sets each chunk's embedding, adds the metadata keys `embedding_model` and `embedding_generated_at`, and preserves existing metadata entries.
     """
     # Arrange
     mock_response = MagicMock()
@@ -556,6 +556,16 @@ async def test_embed_chunks_backward_compatibility(mocker):
     # Note: In source code, `if chunk.metadata:` is falsy for empty dict
     class SimpleChunk:
         def __init__(self, content):
+            """
+            Initialize the object with provided content, a default non-empty metadata dict, and no embedding.
+            
+            Parameters:
+                content (str): The textual content for this object.
+            
+            Notes:
+                - `metadata` is initialized to {"source": "test"}.
+                - `embedding` is initialized to None.
+            """
             self.content = content
             self.metadata = {"source": "test"}  # Non-empty so metadata gets updated
             self.embedding = None
@@ -602,6 +612,16 @@ async def test_embed_chunks_with_empty_metadata(mocker):
     
     class SimpleChunk:
         def __init__(self, content):
+            """
+            Initialize the object with provided textual content and default storage for metadata and embedding.
+            
+            Parameters:
+                content (str): The text content to store on the instance.
+            
+            Notes:
+                - `metadata` is initialized to an empty dictionary.
+                - `embedding` is initialized to `None`.
+            """
             self.content = content
             self.metadata = {}  # Empty dict - falsy in Python
             self.embedding = None
@@ -620,11 +640,7 @@ async def test_embed_chunks_with_empty_metadata(mocker):
 @pytest.mark.asyncio
 async def test_embed_chunks_empty_list():
     """
-    Test that embed_chunks() handles empty chunk list.
-    
-    Arrange: Create generator
-    Act: Call embed_chunks with empty list
-    Assert: Returns empty list
+    Verify embed_chunks returns an empty list when given an empty input list.
     """
     # Arrange
     with patch('ingestion.embedder.LangfuseAsyncOpenAI'), \
@@ -965,4 +981,3 @@ async def test_embed_documents_api_failure_propagation(mocker):
     # Tenacity wraps the error in RetryError, but original exception is preserved
     # Just verify an exception was raised (RetryError wraps original)
     assert exc_info.value is not None
-

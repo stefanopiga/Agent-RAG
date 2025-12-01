@@ -89,7 +89,11 @@ async def initialize_global_embedder():
 
 
 async def close_global_embedder():
-    """Close global embedder and cleanup resources."""
+    """
+    Shut down the module-level embedder and release associated state.
+    
+    If an initialization task is in progress, it is cancelled and awaited. Clears the global embedder instance, resets the readiness event, and clears the initialization task reference.
+    """
     global _global_embedder, _initialization_task
 
     if _initialization_task and not _initialization_task.done():
@@ -111,21 +115,25 @@ async def close_global_embedder():
 
 def is_embedder_initializing() -> bool:
     """
-    Check if embedder initialization is currently in progress.
-
+    Return whether the global embedder initialization task is still running.
+    
     Returns:
-        True if initialization task exists and is not done, False otherwise
+        bool: `True` if an initialization task exists and is not done, `False` otherwise.
     """
     return _initialization_task is not None and not _initialization_task.done()
 
 
 async def get_global_embedder():
     """
-    Get the global embedder instance.
-    Waits for initialization if it's still in progress.
-
+    Retrieve the module-wide embedder singleton, waiting briefly if initialization is in progress.
+    
+    Returns:
+        The global embedder instance.
+    
     Raises:
-        RuntimeError: If embedder not initialized or failed
+        RuntimeError: If initialization has not been started (call initialize_global_embedder() first).
+        RuntimeError: If waiting for initialization times out.
+        RuntimeError: If initialization completed but the embedder failed to initialize.
     """
     if _global_embedder is None:
         if not _initialization_task:

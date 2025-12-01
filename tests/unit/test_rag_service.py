@@ -25,10 +25,11 @@ import pytest
 @pytest.fixture(autouse=True)
 def cleanup_global_embedder():
     """
-    Reset global embedder state between tests.
+    Reset module-level embedder state before and after a test to ensure test isolation.
     
-    This fixture runs automatically before and after each test to ensure
-    test isolation for functions that use _global_embedder module state.
+    This autouse fixture clears the rag_service embedder globals: sets `_global_embedder` to `None`,
+    replaces `_embedder_ready` with a new `asyncio.Event`, and sets `_initialization_task` to `None`
+    both before the test runs and again after teardown.
     """
     # Setup: Reset state before test
     import core.rag_service as rag_service
@@ -117,6 +118,11 @@ async def test_initialize_global_embedder_already_in_progress(mocker):
     from core import rag_service
     
     async def slow_task():
+        """
+        Waits for ten seconds.
+        
+        Suspends execution for ten seconds before returning.
+        """
         await asyncio.sleep(10)
     
     rag_service._initialization_task = asyncio.create_task(slow_task())
@@ -177,6 +183,11 @@ async def test_close_global_embedder_cancels_pending_task():
     from core import rag_service
     
     async def slow_init():
+        """
+        Simulates a slow initialization by delaying for 10 seconds.
+        
+        This coroutine awaits for 10 seconds to emulate a long-running initialization task (useful in tests).
+        """
         await asyncio.sleep(10)
     
     rag_service._initialization_task = asyncio.create_task(slow_init())
@@ -224,6 +235,11 @@ def test_is_embedder_initializing_returns_true_when_task_running():
     from core import rag_service
     
     async def slow_task():
+        """
+        Waits for ten seconds.
+        
+        Suspends execution for ten seconds before returning.
+        """
         await asyncio.sleep(10)
     
     loop = asyncio.new_event_loop()
@@ -273,6 +289,11 @@ def test_is_embedder_initializing_returns_false_when_task_done():
     from core import rag_service
     
     async def quick_task():
+        """
+        A no-op asynchronous placeholder intended for lightweight scheduling or testing.
+        
+        This coroutine performs no operation and can be awaited where an asynchronous task is required (e.g., as a stub in tests or to yield control to the event loop).
+        """
         pass
     
     loop = asyncio.new_event_loop()
@@ -353,6 +374,11 @@ async def test_get_global_embedder_waits_for_initialization(mocker):
     mock_embedder = MagicMock()
     
     async def delayed_init():
+        """
+        Perform a short delayed initialization of the global embedder and mark it as ready.
+        
+        This coroutine sets the test embedder into rag_service._global_embedder and signals readiness on rag_service._embedder_ready after a brief delay to simulate asynchronous initialization.
+        """
         await asyncio.sleep(0.05)
         rag_service._global_embedder = mock_embedder
         rag_service._embedder_ready.set()
@@ -380,6 +406,11 @@ async def test_get_global_embedder_timeout_scenario(mocker):
     from core import rag_service
     
     async def very_slow_init():
+        """
+        Simulates a long-running initialization by delaying for approximately 100 seconds.
+        
+        This helper is used to emulate a very slow initialization task (for example, in tests that exercise initialization timeouts or concurrent startup behavior).
+        """
         await asyncio.sleep(100)  # Very slow
     
     rag_service._initialization_task = asyncio.create_task(very_slow_init())
@@ -388,6 +419,16 @@ async def test_get_global_embedder_timeout_scenario(mocker):
     original_wait_for = asyncio.wait_for
     
     async def mock_wait_for(coro, timeout):
+        """
+        Simulate a timeout when awaiting a coroutine.
+        
+        Parameters:
+            coro: The coroutine that would be awaited (ignored).
+            timeout (float): The timeout value that would be used (ignored).
+        
+        Raises:
+            asyncio.TimeoutError: Always raised to mimic a timeout from asyncio.wait_for.
+        """
         raise asyncio.TimeoutError()
     
     mocker.patch.object(asyncio, 'wait_for', mock_wait_for)
@@ -420,6 +461,11 @@ async def test_get_global_embedder_raises_on_init_failure():
     from core import rag_service
     
     async def failing_init():
+        """
+        Mark embedder initialization as completed while leaving the global embedder unset to simulate a failed initialization.
+        
+        This sets rag_service._embedder_ready and deliberately does not assign rag_service._global_embedder; intended for tests that need the initialization flag set but where embedder creation has failed.
+        """
         rag_service._embedder_ready.set()
         # But don't set _global_embedder (simulating failure)
     
@@ -846,4 +892,3 @@ async def test_search_knowledge_base_empty_results_with_source_filter(mock_embed
     # Assert
     assert "No relevant information found" in result
     assert "nonexistent-source" in result
-

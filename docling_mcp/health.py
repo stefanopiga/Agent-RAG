@@ -117,11 +117,10 @@ def check_langfuse() -> ServiceStatus:
 
 async def check_embedder() -> ServiceStatus:
     """
-    Check embedder readiness.
-
+    Assess embedder readiness and report its health.
+    
     Returns:
-        ServiceStatus with embedder health information.
-        Distinguishes between "initializing" (normal startup) and "down" (failed).
+        ServiceStatus: `status` is `"up"` if the embedder is initialized and available, `"initializing"` if embedder initialization is currently in progress, or `"down"` if the embedder is not ready or an error occurred. `message` provides a short human-readable explanation and `latency_ms` is the elapsed check time in milliseconds.
     """
     start_time = time.time()
 
@@ -172,15 +171,12 @@ async def check_embedder() -> ServiceStatus:
 
 async def get_health_status() -> HealthResponse:
     """
-    Get overall health status of the MCP server.
-
+    Compute the MCP server's overall health and per-service statuses.
+    
+    Performs health checks for the database, LangFuse, and embedder, collects each service's status (including message and latency), and determines the overall status using these rules: if the database or embedder is "down" → overall "down"; if the embedder is "initializing" or LangFuse is "down" → overall "degraded"; otherwise → overall "ok". The returned response includes a timestamp and a mapping of service names to their status details.
+    
     Returns:
-        HealthResponse with status and service details
-
-    Status Logic:
-    - "ok": All services UP
-    - "degraded": LangFuse DOWN or embedder INITIALIZING (non-critical or normal startup)
-    - "down": Database DOWN or embedder DOWN (critical dependency failed)
+        HealthResponse: Object containing the overall `status` ("ok", "degraded", or "down"), a Unix `timestamp`, and a `services` mapping where each service entry includes `status`, `message`, and `latency_ms`.
     """
     timestamp = time.time()
 

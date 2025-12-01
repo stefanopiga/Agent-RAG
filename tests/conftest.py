@@ -42,7 +42,12 @@ def pytest_configure(config):
 # ============================================================================
 @pytest.fixture(scope="session")
 def event_loop():
-    """Create an instance of the default event loop for the test session."""
+    """
+    Provide a fresh asyncio event loop for the test session and close it on teardown.
+    
+    Returns:
+        loop (asyncio.AbstractEventLoop): The event loop instance yielded to tests.
+    """
     loop = asyncio.get_event_loop_policy().new_event_loop()
     yield loop
     loop.close()
@@ -54,16 +59,15 @@ def event_loop():
 @pytest.fixture
 def mock_db_pool():
     """
-    Mock database pool for unit tests.
-
-    Returns a mocked DatabasePool that simulates async database operations
-    without requiring a real PostgreSQL connection.
-
-    Usage:
-        async def test_search(mock_db_pool):
-            mock_db_pool.fetch.return_value = [{"content": "test", "similarity": 0.95}]
-            result = await search_function()
-            assert "test" in result
+    Create a mock DatabasePool for tests with a configurable mocked connection.
+    
+    Returns:
+        mock_pool (MagicMock): A mocked pool whose `acquire` async context manager yields a mocked connection exposing:
+            - `fetch()` -> default: [] (list of rows)
+            - `fetchrow()` -> default: None (single row)
+            - `fetchval()` -> default: 1 (scalar value)
+            - `execute()` -> default: "OK" (DML result)
+        The returned mock also provides `initialize`, `close`, and `pool` attributes (all mocks) and exposes the underlying connection as `_mock_connection` for easy test setup and assertions.
     """
     mock_pool = MagicMock()
     mock_connection = AsyncMock()
@@ -82,6 +86,12 @@ def mock_db_pool():
 
     @asynccontextmanager
     async def mock_acquire():
+        """
+        Context manager that yields the mocked database connection used by the pool's acquire.
+        
+        Returns:
+            mock_connection: The mocked database connection object.
+        """
         yield mock_connection
 
     mock_pool.acquire = mock_acquire
@@ -98,16 +108,9 @@ def mock_db_pool():
 @pytest.fixture
 async def test_db(mock_db_pool):
     """
-    Test database fixture with setup/teardown for integration tests.
-
-    Provides an isolated database state for each test with automatic cleanup.
-
-    Usage:
-        @pytest.mark.integration
-        async def test_document_storage(test_db):
-            # test_db is ready with mock data
-            result = await list_documents()
-            assert len(result) >= 0
+    Provide a mock database pool pre-populated with default document data and reset its mocks after use.
+    
+    Yields a mocked database pool (`mock_db_pool`) whose `_mock_connection` has default `fetch`, `fetchrow`, and `execute` behaviours suitable for integration tests; on teardown the connection's `fetch`, `fetchrow`, and `execute` mocks are reset.
     """
     # Setup: Configure mock with test data
     mock_connection = mock_db_pool._mock_connection
@@ -139,15 +142,16 @@ async def test_db(mock_db_pool):
 @pytest.fixture
 def mock_embedder():
     """
-    Mock embedder for unit tests.
-
-    Returns a mocked EmbeddingGenerator that returns deterministic
-    embeddings without calling OpenAI API.
-
-    Usage:
-        async def test_embedding(mock_embedder):
-            embedding = await mock_embedder.embed_query("test")
-            assert len(embedding) == 1536
+    Provide a mocked embedder that produces deterministic embeddings for tests.
+    
+    The returned object exposes async methods `embed_query(text)` and `embed_documents(texts)`:
+    - `embed_query(text)` returns a deterministic list of 1536 floats derived from `text`.
+    - `embed_documents(texts)` returns a list of embeddings, one per input text.
+    
+    The mock also includes attributes `model_name` set to "text-embedding-3-small" and `cost_tracking_enabled` set to False.
+    
+    Returns:
+        mock_embedder: A mock embedder object with async `embed_query` and `embed_documents` methods that produce deterministic 1536-dimensional embeddings.
     """
     mock = AsyncMock()
 
@@ -156,14 +160,40 @@ def mock_embedder():
 
     # Generate deterministic mock embedding
     def generate_mock_embedding(text: str) -> List[float]:
-        """Generate a deterministic embedding based on text hash."""
+        """
+        Produce a deterministic embedding vector for the given text.
+        
+        Parameters:
+            text (str): Input text to generate an embedding for.
+        
+        Returns:
+            List[float]: A list of floats of length `embedding_dim` representing a deterministic embedding for the input text.
+        """
         seed = hash(text) % 10000
         return [float(seed + i) / 10000.0 for i in range(embedding_dim)]
 
     async def mock_embed_query(text: str) -> List[float]:
+        """
+        Generate a deterministic mock embedding for the given text.
+        
+        Parameters:
+            text (str): Input text to embed.
+        
+        Returns:
+            List[float]: Deterministic embedding vector of length 1536 derived from `text`.
+        """
         return generate_mock_embedding(text)
 
     async def mock_embed_documents(texts: List[str]) -> List[List[float]]:
+        """
+        Produce deterministic embeddings for each input text.
+        
+        Parameters:
+            texts (List[str]): Sequence of input strings to embed.
+        
+        Returns:
+            List[List[float]]: A list of embeddings where each embedding is a list of floats (length 1536) corresponding to the input texts; embeddings are deterministic for a given input.
+        """
         return [generate_mock_embedding(t) for t in texts]
 
     mock.embed_query = AsyncMock(side_effect=mock_embed_query)
@@ -180,19 +210,12 @@ def mock_embedder():
 @pytest.fixture
 def test_model():
     """
-    PydanticAI TestModel for LLM mocking in unit tests.
-
-    TestModel generates valid structured data automatically based on
-    tool schemas without making real API calls.
-
-    Usage:
-        async def test_agent_response(test_model):
-            agent = Agent('openai:gpt-4o-mini', result_type=str)
-            with agent.override(model=test_model):
-                result = await agent.run("What is RAG?")
-                assert result.data is not None
-
-    Reference: docs/stories/5/tech-spec-epic-5.md#PydanticAI-TestModel-Interface
+    Provide a TestModel-compatible model for unit tests that produces structured outputs without real API calls.
+    
+    Attempts to instantiate pydantic_ai.models.test.TestModel. If pydantic_ai is not installed, returns a MagicMock fallback with its name set to "test".
+    
+    Returns:
+        An instance of TestModel when available, otherwise a MagicMock with name "test".
     """
     try:
         from pydantic_ai.models.test import TestModel
@@ -208,12 +231,9 @@ def test_model():
 @pytest.fixture
 def disable_model_requests():
     """
-    Disable real LLM API calls globally for safety in tests.
-
-    Usage:
-        def test_no_real_api_calls(disable_model_requests):
-            # Any attempt to call real API will raise error
-            pass
+    Temporarily disable real LLM API requests from pydantic_ai for the duration of a test.
+    
+    Sets pydantic_ai.models.ALLOW_MODEL_REQUESTS to False while the fixture is active and restores the previous value on teardown. If pydantic_ai is not installed, the fixture does nothing.
     """
     try:
         from pydantic_ai import models
@@ -232,16 +252,17 @@ def disable_model_requests():
 @pytest.fixture
 def mock_langfuse():
     """
-    Mock LangFuse client for graceful degradation testing.
-
-    Returns a mocked LangFuse client that simulates tracing operations
-    without requiring real LangFuse connection.
-
-    Usage:
-        def test_tracing(mock_langfuse):
-            with patch('langfuse.get_client', return_value=mock_langfuse):
-                # Test code that uses LangFuse
-                pass
+    Provide a mocked LangFuse client that simulates tracing and scoring operations for tests.
+    
+    The returned mock simulates a LangFuse client with:
+    - trace(): returns a mock trace with id "test-trace-id" and methods span() and generation().
+    - span(): (on the trace) returns a mock span with id "test-span-id".
+    - generation(): (on the trace) returns a mock generation with id "test-generation-id".
+    - create_score(): returns a mock score object with id "test-score-id".
+    - flush: a callable mock for flushing/sending data.
+    
+    Returns:
+        MagicMock: A configured mock that imitates the LangFuse client API used in tests.
     """
     mock = MagicMock()
 
@@ -272,14 +293,9 @@ def mock_langfuse():
 @pytest.fixture
 def mock_langfuse_disabled():
     """
-    Fixture to simulate LangFuse being unavailable.
-
-    Tests graceful degradation when LangFuse service is down.
-
-    Usage:
-        def test_without_langfuse(mock_langfuse_disabled):
-            # Test code should work without LangFuse
-            pass
+    Temporarily disable LangFuse by setting LANGFUSE_ENABLED to "false" in the environment for the duration of a test.
+    
+    This fixture yields control to the test while the environment variable is set and restores the original environment afterwards, allowing tests to exercise behavior when LangFuse is not available.
     """
     with patch.dict("os.environ", {"LANGFUSE_ENABLED": "false"}):
         yield
@@ -290,9 +306,33 @@ def mock_langfuse_disabled():
 # ============================================================================
 @pytest.fixture
 def mock_httpx_response():
-    """Create a mock httpx response factory."""
+    """
+    Factory fixture that produces a callable for creating mocked httpx-like responses.
+    
+    The returned callable _create_response(status_code=200, json_data=None, text="") builds a MagicMock with these observable behaviors:
+    - .status_code set to the provided status_code.
+    - .text set to the provided text.
+    - .json() returning the provided json_data or an empty dict when json_data is None.
+    - .raise_for_status() does nothing for status codes below 400; for status_code >= 400 it raises an httpx.HTTPStatusError when invoked.
+    
+    Returns:
+        callable: A function that accepts (status_code: int = 200, json_data: Optional[dict] = None, text: str = "") and returns a mocked httpx-like response object.
+    """
 
     def _create_response(status_code=200, json_data=None, text=""):
+        """
+        Create a MagicMock that simulates an httpx-like Response for tests.
+        
+        Parameters:
+            status_code (int): HTTP status code to set on the mock. Defaults to 200.
+            json_data (Optional[dict]): Value to return from response.json(). If None, returns an empty dict.
+            text (str): Value to set on response.text. Defaults to empty string.
+        
+        Returns:
+            MagicMock: A mock response with `.status_code`, `.text`, and `.json()` configured.
+                Its `.raise_for_status()` is a mock that will raise `httpx.HTTPStatusError` when
+                `status_code` is 400 or greater, and do nothing otherwise.
+        """
         response = MagicMock()
         response.status_code = status_code
         response.text = text
@@ -314,7 +354,20 @@ def mock_httpx_response():
 # ============================================================================
 @pytest.fixture
 def mock_search_response():
-    """Mock successful search response."""
+    """
+    Provide a sample successful search API response for tests.
+    
+    Returns:
+        response (dict): Mocked search response with keys:
+            - results (list): List of result objects; each result contains:
+                - title (str)
+                - content (str)
+                - source (str)
+                - similarity (float)
+                - metadata (dict)
+            - count (int): Number of results
+            - processing_time_ms (int): Processing time in milliseconds
+    """
     return {
         "results": [
             {
@@ -332,7 +385,15 @@ def mock_search_response():
 
 @pytest.fixture
 def mock_list_documents_response():
-    """Mock successful list documents response."""
+    """
+    Provide a mocked response representing a successful listing of documents for tests.
+    
+    Returns:
+        dict: A response dictionary with keys:
+            - "documents": a list of document metadata dictionaries, each containing
+              "title", "source", "chunk_count", and "updated_at".
+            - "count": the total number of documents.
+    """
     return {
         "documents": [
             {
@@ -357,7 +418,12 @@ def mock_list_documents_response():
 # ============================================================================
 @pytest.fixture
 def golden_dataset_path():
-    """Path to golden dataset for RAGAS evaluation."""
+    """
+    Locate the golden_dataset.json fixture used for RAGAS evaluation.
+    
+    Returns:
+        file_path (str): Path to the golden_dataset.json file in the "fixtures" subdirectory next to this file.
+    """
     import os
 
     return os.path.join(os.path.dirname(__file__), "fixtures", "golden_dataset.json")
@@ -366,15 +432,15 @@ def golden_dataset_path():
 @pytest.fixture
 def golden_dataset(golden_dataset_path):
     """
-    Load golden dataset for RAGAS evaluation.
-
-    Returns the parsed JSON with 20+ query-answer pairs.
-
-    Usage:
-        @pytest.mark.ragas
-        async def test_ragas_evaluation(golden_dataset):
-            queries = golden_dataset["queries"]
-            assert len(queries) >= 20
+    Load and parse the golden dataset JSON used for RAGAS evaluation.
+    
+    If the file at golden_dataset_path does not exist, the current test is skipped.
+    
+    Returns:
+        The parsed JSON content of the golden dataset (typically a dict containing `queries` and related fields).
+    
+    Raises:
+        pytest.skip: If the golden dataset file is not found.
     """
     import json
     import os
