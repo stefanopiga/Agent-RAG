@@ -847,3 +847,297 @@ async def test_search_knowledge_base_empty_results_with_source_filter(mock_embed
     assert "No relevant information found" in result
     assert "nonexistent-source" in result
 
+
+
+# ============================================================================
+# Tests for is_embedder_initializing() - Story 5.2
+# ============================================================================
+
+
+class TestEmbedderInitializationStatus:
+    """
+    Test suite for is_embedder_initializing() function.
+    
+    This function checks if embedder initialization is currently in progress,
+    which is critical for health check endpoints to distinguish between:
+    - Normal startup (initializing=True)
+    - Failed initialization (initializing=False, but not ready)
+    - Ready state (initializing=False, ready=True)
+    """
+
+    @pytest.mark.unit
+    def test_is_embedder_initializing_no_task(self):
+        """Test when no initialization task exists (not started yet)."""
+        from core import rag_service
+        
+        # Clear any existing initialization state
+        rag_service._initialization_task = None
+        rag_service._embedder_ready.clear()
+        
+        result = rag_service.is_embedder_initializing()
+        
+        assert result is False, "Should return False when no task exists"
+
+    @pytest.mark.unit
+    async def test_is_embedder_initializing_task_in_progress(self):
+        """Test when initialization task is in progress."""
+        from core import rag_service
+        import asyncio
+        
+        # Create a mock async task that's not yet done
+        async def slow_init():
+            await asyncio.sleep(10)  # Simulates long initialization
+        
+        # Start the task but don't await it
+        rag_service._initialization_task = asyncio.create_task(slow_init())
+        rag_service._embedder_ready.clear()
+        
+        try:
+            result = rag_service.is_embedder_initializing()
+            assert result is True, "Should return True when task is in progress"
+        finally:
+            # Cleanup: cancel the task
+            if rag_service._initialization_task:
+                rag_service._initialization_task.cancel()
+                try:
+                    await rag_service._initialization_task
+                except asyncio.CancelledError:
+                    pass
+
+    @pytest.mark.unit
+    async def test_is_embedder_initializing_task_completed(self):
+        """Test when initialization task is completed."""
+        from core import rag_service
+        import asyncio
+        
+        # Create a mock async task that completes immediately
+        async def quick_init():
+            return "done"
+        
+        # Create and await the task to completion
+        rag_service._initialization_task = asyncio.create_task(quick_init())
+        await rag_service._initialization_task
+        
+        result = rag_service.is_embedder_initializing()
+        
+        assert result is False, "Should return False when task is done"
+
+    @pytest.mark.unit
+    async def test_is_embedder_initializing_task_failed(self):
+        """Test when initialization task failed with exception."""
+        from core import rag_service
+        import asyncio
+        
+        # Create a mock async task that raises an exception
+        async def failing_init():
+            raise RuntimeError("Initialization failed")
+        
+        # Create and await the task to let it fail
+        rag_service._initialization_task = asyncio.create_task(failing_init())
+        
+        try:
+            await rag_service._initialization_task
+        except RuntimeError:
+            pass  # Expected failure
+        
+        result = rag_service.is_embedder_initializing()
+        
+        assert result is False, "Should return False when task failed"
+
+    @pytest.mark.unit
+    async def test_is_embedder_initializing_race_condition(self):
+        """Test race condition: task exists and completes during check."""
+        from core import rag_service
+        import asyncio
+        
+        # Create a very short task
+        async def almost_done_init():
+            await asyncio.sleep(0.001)
+        
+        rag_service._initialization_task = asyncio.create_task(almost_done_init())
+        
+        # Small delay to let it almost complete
+        await asyncio.sleep(0.0005)
+        
+        # Check might happen right when task is finishing
+        result1 = rag_service.is_embedder_initializing()
+        
+        # Ensure task completes
+        await rag_service._initialization_task
+        
+        result2 = rag_service.is_embedder_initializing()
+        
+        # Either True (caught during init) or False (caught after completion)
+        assert isinstance(result1, bool), "Should always return a boolean"
+        assert result2 is False, "Should be False after completion"
+
+    @pytest.mark.unit
+    def test_is_embedder_initializing_integration_with_ready_flag(self):
+        """Test integration with _embedder_ready flag."""
+        from core import rag_service
+        
+        # Scenario 1: Task None, not ready → not initializing (not started)
+        rag_service._initialization_task = None
+        rag_service._embedder_ready.clear()
+        assert rag_service.is_embedder_initializing() is False
+        
+        # Scenario 2: Task done, ready set → not initializing (completed successfully)
+        rag_service._embedder_ready.set()
+        assert rag_service.is_embedder_initializing() is False
+
+
+# ============================================================================
+# Edge Cases and Error Handling
+# ============================================================================
+
+
+class TestEmbedderInitializationEdgeCases:
+    """Edge cases for embedder initialization status checking."""
+
+    @pytest.mark.unit
+    def test_is_embedder_initializing_called_before_any_initialization(self):
+        """Test calling is_embedder_initializing before any init attempt."""
+        from core import rag_service
+        
+        # Ensure clean slate
+        rag_service._initialization_task = None
+        rag_service._global_embedder = None
+        rag_service._embedder_ready.clear()
+        
+        # Should not raise, should return False
+        result = rag_service.is_embedder_initializing()
+        assert result is False
+
+    @pytest.mark.unit
+    async def test_is_embedder_initializing_multiple_concurrent_checks(self):
+        """Test multiple concurrent calls to is_embedder_initializing."""
+        from core import rag_service
+        import asyncio
+        
+        async def long_init():
+            await asyncio.sleep(0.1)
+        
+        rag_service._initialization_task = asyncio.create_task(long_init())
+        
+        try:
+            # Make multiple concurrent checks
+            results = await asyncio.gather(
+                asyncio.to_thread(rag_service.is_embedder_initializing),
+                asyncio.to_thread(rag_service.is_embedder_initializing),
+                asyncio.to_thread(rag_service.is_embedder_initializing),
+            )
+            
+            # All should return True (task in progress)
+            assert all(r is True for r in results), "All concurrent checks should return True"
+        finally:
+            rag_service._initialization_task.cancel()
+            try:
+                await rag_service._initialization_task
+            except asyncio.CancelledError:
+                pass
+
+    @pytest.mark.unit
+    async def test_is_embedder_initializing_after_cancellation(self):
+        """Test status check after task cancellation."""
+        from core import rag_service
+        import asyncio
+        
+        async def cancellable_init():
+            await asyncio.sleep(10)
+        
+        rag_service._initialization_task = asyncio.create_task(cancellable_init())
+        
+        # Cancel the task
+        rag_service._initialization_task.cancel()
+        
+        try:
+            await rag_service._initialization_task
+        except asyncio.CancelledError:
+            pass
+        
+        result = rag_service.is_embedder_initializing()
+        
+        # Cancelled task should be considered "done" (not initializing)
+        assert result is False, "Cancelled task should not be considered initializing"
+
+
+# ============================================================================
+# Integration Tests with Health Check Flow
+# ============================================================================
+
+
+class TestEmbedderInitializationHealthIntegration:
+    """
+    Integration tests for is_embedder_initializing with health check flow.
+    These tests verify the function works correctly in the health check context.
+    """
+
+    @pytest.mark.unit
+    async def test_health_check_uses_is_embedder_initializing_correctly(self):
+        """
+        Test that health check can use is_embedder_initializing to distinguish states.
+        
+        This is critical for AC5.2.10: Health checks should return 'initializing' 
+        status during startup, not 'down'.
+        """
+        from core import rag_service
+        import asyncio
+        
+        # Simulate startup: task in progress, embedder not ready
+        async def startup_init():
+            await asyncio.sleep(0.05)
+            rag_service._embedder_ready.set()
+        
+        rag_service._initialization_task = asyncio.create_task(startup_init())
+        rag_service._embedder_ready.clear()
+        
+        try:
+            # During initialization
+            is_initializing_1 = rag_service.is_embedder_initializing()
+            is_ready_1 = rag_service._embedder_ready.is_set()
+            
+            assert is_initializing_1 is True, "Should be initializing"
+            assert is_ready_1 is False, "Should not be ready yet"
+            
+            # Health check should return "initializing" not "down"
+            # (this is tested in test_health.py but we verify the logic here)
+            
+            # Wait for completion
+            await rag_service._initialization_task
+            
+            # After initialization
+            is_initializing_2 = rag_service.is_embedder_initializing()
+            is_ready_2 = rag_service._embedder_ready.is_set()
+            
+            assert is_initializing_2 is False, "Should not be initializing"
+            assert is_ready_2 is True, "Should be ready"
+            
+        finally:
+            if rag_service._initialization_task and not rag_service._initialization_task.done():
+                rag_service._initialization_task.cancel()
+                try:
+                    await rag_service._initialization_task
+                except asyncio.CancelledError:
+                    pass
+
+    @pytest.mark.unit
+    def test_embedder_status_state_transitions(self):
+        """
+        Test all possible state transitions for embedder initialization.
+        
+        States:
+        1. Not started: task=None, ready=False, initializing=False
+        2. In progress: task=running, ready=False, initializing=True
+        3. Completed: task=done, ready=True, initializing=False
+        4. Failed: task=done(exception), ready=False, initializing=False
+        """
+        from core import rag_service
+        
+        # State 1: Not started
+        rag_service._initialization_task = None
+        rag_service._embedder_ready.clear()
+        assert rag_service.is_embedder_initializing() is False
+        assert rag_service._embedder_ready.is_set() is False
+        
+        # Note: States 2-4 require async tasks and are covered in other tests
+        # This test documents the state machine for clarity
