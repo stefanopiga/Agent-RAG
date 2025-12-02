@@ -1,0 +1,144 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>6</epicId>
+    <storyId>6-1</storyId>
+    <title>Reorganize Project Structure</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-02</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/6/6-1/6-1-reorganize-project-structure.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>a rigorous directory structure without scattered files in root</iWant>
+    <soThat>the project is maintainable and easy to navigate</soThat>
+    <tasks>
+      <task id="1">Scan and identify files to reorganize (AC: 1, 2, 3, 7)</task>
+      <task id="2">Reorganize scripts directory (AC: 3)</task>
+      <task id="3">Remove or relocate temporary files from root (AC: 1, 2)</task>
+      <task id="4">Verify code organization by responsibility (AC: 4, 5)</task>
+      <task id="5">Handle temporary/copy directories (AC: 6)</task>
+      <task id="6">Handle metrics directory (AC: 7)</task>
+      <task id="7">Verify .gitignore includes generated directories (AC: 8)</task>
+      <task id="8">Update imports after file moves (AC: 4)</task>
+      <task id="9">Clean up generated files (AC: 1, 2)</task>
+      <task id="10">Testing and validation (AC: 1-8)</task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <criterion id="AC1">Given the project root, When I check for files, Then no markdown files exist except README.md (pr_description_concise.md removed or moved to docs/ if present)</criterion>
+    <criterion id="AC2">Given the project root, When I check for Python files, Then no temporary or debug files exist (temp_query.py, debug_mcp_tools.py removed or moved)</criterion>
+    <criterion id="AC3">Given the scripts directory, When I inspect it, Then scripts are organized in subdirectories: scripts/verification/, scripts/debug/</criterion>
+    <criterion id="AC4">Given the codebase, When I check organization, Then code is organized by responsibility: docling_mcp/, core/, ingestion/, utils/, api/</criterion>
+    <criterion id="AC5">Given the MCP server, When I check location, Then it's in docling_mcp/ module, not root</criterion>
+    <criterion id="AC6">Given temporary directories, When I check root, Then documents*copy*\* directories are verified in .gitignore (already ignored, no physical removal needed if they contain data)</criterion>
+    <criterion id="AC7">Given the metrics directory, When I check root, Then metrics directory is removed or relocated if not needed</criterion>
+    <criterion id="AC8">Given generated directories, When I check .gitignore, Then site/ and node_modules/ are in .gitignore</criterion>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/6/tech-spec-epic-6.md" title="Epic Technical Specification: Project Structure Refactoring &amp; Organization" section="Services and Modules, Workflows and Sequencing">
+        Specifica tecnica completa con ACs, workflow di riorganizzazione, e strategia di validazione. Definisce script di validazione struttura e imports.
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Epic 6: Project Structure Refactoring &amp; Organization">
+        Breakdown epic con goal, acceptance criteria, e technical notes per riorganizzazione struttura directory rigorosa.
+      </doc>
+      <doc path="docs/unified-project-structure.md" title="Unified Project Structure" section="Root Directory Structure, Scripts Organization">
+        Riferimento autoritativo per organizzazione directory. Definisce file autorizzati in root, organizzazione scripts in sottodirectory, e pattern "Rigorous Project Structure".
+      </doc>
+      <doc path="docs/stories/6/6-1/6-1-reorganize-project-structure.md" title="Story 6.1: Reorganize Project Structure" section="Dev Notes">
+        Story completa con acceptance criteria, tasks dettagliati, code references, e testing standards. Include snippet da unified-project-structure.md e .gitignore.
+      </doc>
+    </docs>
+    <code>
+      <artifact path="scripts/optimize_database.py" kind="utility script" symbol="main" lines="1-368" reason="Script da spostare in scripts/verification/ o scripts/database/. Database optimization con argparse CLI."/>
+      <artifact path="scripts/test_cost_tracking.py" kind="test utility" symbol="main" lines="1-70" reason="Script da spostare in scripts/testing/ o tests/integration/. Verifica LangFuse cost tracking (non pytest)."/>
+      <artifact path="scripts/test_mcp_performance.py" kind="test utility" symbol="main" lines="1-197" reason="Script da spostare in scripts/testing/ o tests/performance/. Performance test MCP (non pytest)."/>
+      <artifact path="scripts/test_e2e_langfuse_timing.py" kind="test utility" symbol="main" lines="1-133" reason="Script da spostare in scripts/testing/ o tests/e2e/. E2E timing verification (non pytest)."/>
+      <artifact path="scripts/verification/" kind="directory" symbol="" lines="" reason="Directory esistente contenente verify_*.py scripts. Verificare che contenga tutti gli script di verifica."/>
+      <artifact path="scripts/debug/" kind="directory" symbol="" lines="" reason="Directory esistente contenente debug_mcp_tools.py. Verificare che debug_mcp_tools.py non sia in root."/>
+      <artifact path="core/" kind="module" symbol="" lines="" reason="Modulo esistente con business logic RAG. Verificare organizzazione corretta: __init__.py, agent.py, rag_service.py."/>
+      <artifact path="docling_mcp/" kind="module" symbol="" lines="" reason="Modulo MCP server già organizzato (Epic 2 Story 2.5). Verificare struttura: server.py, lifespan.py, tools/, etc."/>
+      <artifact path="ingestion/" kind="module" symbol="" lines="" reason="Modulo document processing pipeline. Verificare organizzazione corretta."/>
+      <artifact path="utils/" kind="module" symbol="" lines="" reason="Modulo shared utilities. Verificare organizzazione corretta."/>
+      <artifact path="api/" kind="module" symbol="" lines="" reason="Modulo FastAPI service (optional). Verificare organizzazione corretta."/>
+      <artifact path="Dockerfile" kind="dockerfile" symbol="COPY" lines="42-44" reason="Verificare paths COPY dopo riorganizzazione: app.py, client/, utils/."/>
+      <artifact path="Dockerfile.mcp" kind="dockerfile" symbol="COPY" lines="72-76" reason="Verificare paths COPY dopo riorganizzazione: docling_mcp/, core/, ingestion/, utils/, client/."/>
+      <artifact path="Dockerfile.api" kind="dockerfile" symbol="COPY" lines="74-77" reason="Verificare paths COPY dopo riorganizzazione: api/, core/, ingestion/, utils/."/>
+      <artifact path=".github/workflows/ci.yml" kind="ci workflow" symbol="run" lines="94,135-138" reason="Verificare paths mypy e coverage dopo riorganizzazione: core ingestion docling_mcp utils."/>
+      <artifact path=".gitignore" kind="config" symbol="" lines="1-29" reason="Verificare che site/ sia aggiunto (manca attualmente). node_modules/ già presente. documents_copy_* e metrics già presenti."/>
+    </code>
+    <dependencies>
+      <ecosystem name="python">
+        <package name="python-dotenv" version=">=1.0.0"/>
+        <package name="asyncpg" version=">=0.30.0"/>
+        <package name="numpy" version=">=2.0.2"/>
+        <package name="openai" version=">=1.0.0"/>
+        <package name="httpx" version=">=0.27.0"/>
+        <package name="fastmcp" version=">=0.1.1" extra="mcp"/>
+        <package name="fastapi" version=">=0.109.0" extra="mcp,api"/>
+        <package name="pydantic-ai" version=">=0.7.4" extra="streamlit,api,mcp"/>
+        <package name="docling[vlm]" version=">=2.55.0" extra="api,mcp"/>
+        <package name="pytest" version=">=8.0.0" extra="dev"/>
+        <package name="ruff" version=">=0.8.0" extra="dev"/>
+        <package name="mypy" version=">=1.13.0" extra="dev"/>
+      </ecosystem>
+      <ecosystem name="node">
+        <package name="mkdocs" version=">=1.6.1" extra="docs"/>
+        <package name="mkdocs-material" version=">=9.7.0" extra="docs"/>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Use git mv instead of mv to preserve git history. Verify history preserved with git log --follow -- file.py after moves.</constraint>
+    <constraint>Follow "Rigorous Project Structure" pattern from architecture. Implement ADR-008 (Project Structure Mapping epics → directories).</constraint>
+    <constraint>Zero file sparsi in root directory. Organize by responsibility, not by file type.</constraint>
+    <constraint>Scripts organized in subdirectories by purpose: scripts/verification/, scripts/debug/, scripts/testing/.</constraint>
+    <constraint>Tests organized rigorously in tests/ subdirectories: tests/unit/, tests/integration/, tests/e2e/.</constraint>
+    <constraint>All imports must work correctly after reorganization. Run import validation script after all file moves.</constraint>
+    <constraint>Docker builds must complete without errors after reorganization. Verify all COPY paths in Dockerfile, Dockerfile.api, Dockerfile.mcp.</constraint>
+    <constraint>CI/CD paths must work correctly after reorganization. Verify mypy and coverage paths in .github/workflows/ci.yml.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="validate_structure.py" kind="CLI script" signature="uv run python scripts/validate_structure.py" path="scripts/validate_structure.py">
+      Validates project structure against Epic 6 requirements. Returns exit code 0 if valid, 1 if violations found.
+    </interface>
+    <interface name="validate_imports.py" kind="CLI script" signature="uv run python scripts/validate_imports.py" path="scripts/validate_imports.py">
+      Validates all Python imports work correctly after reorganization. Verifies both syntax and actual import resolution.
+    </interface>
+    <interface name="Python Import System" kind="module imports" signature="from docling_mcp.server import mcp; from core.rag_service import RAGService; from ingestion.embedder import EmbeddingGenerator; from utils.db_utils import get_db_pool; from api.main import app" path="various">
+      Standard import patterns after reorganization. All imports must resolve correctly.
+    </interface>
+    <interface name="Docker Build" kind="CLI command" signature="docker-compose build" path="docker-compose.yml">
+      Validates Docker builds work after reorganization. Must complete without errors.
+    </interface>
+    <interface name="CI/CD Pipeline" kind="GitHub Actions workflow" signature=".github/workflows/ci.yml" path=".github/workflows/ci.yml">
+      Validates CI/CD paths work after reorganization. Checks mypy and coverage paths.
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Structure validation: Create validation script scripts/validate_structure.py per tech spec. Validate root directory contains only authorized files. Validate required directories exist and are organized correctly. Import validation: Create validation script scripts/validate_imports.py per tech spec. Verify all imports work correctly after reorganization (syntax + actual import resolution). Run import validation after all file moves. Test execution: Run full test suite after reorganization: uv run pytest tests/ -v. Verify Docker builds: docker-compose build. Verify CI/CD paths work correctly.
+    </standards>
+    <locations>
+      tests/unit/, tests/integration/, tests/e2e/, scripts/validate_structure.py, scripts/validate_imports.py
+    </locations>
+    <ideas>
+      <test ac="AC1">Scan root directory, verify no .md files except README.md</test>
+      <test ac="AC2">Scan root directory, verify no temp_*.py or debug_*.py files</test>
+      <test ac="AC3">Inspect scripts/ directory, verify subdirectories verification/ and debug/</test>
+      <test ac="AC4">Verify code organization: docling_mcp/, core/, ingestion/, utils/, api/</test>
+      <test ac="AC5">Verify MCP server is in docling_mcp/ module, not root</test>
+      <test ac="AC6">Verify documents*copy*\* directories in .gitignore</test>
+      <test ac="AC7">Verify metrics directory removed or relocated</test>
+      <test ac="AC8">Verify site/ and node_modules/ in .gitignore</test>
+    </ideas>
+  </tests>
+</story-context>
+
