@@ -380,7 +380,8 @@ docker compose run --rm ingestion uv run python -m ingestion.ingest \
 ```yaml
 # docker-compose.yml
 environment:
-  DATABASE_URL: postgresql://postgres:postgres@db:5432/ragdb
+  # External PostgreSQL database (Supabase, Neon, or self-hosted)
+  DATABASE_URL: ${DATABASE_URL}
   OPENAI_API_KEY: ${OPENAI_API_KEY}
   OPENAI_BASE_URL: ${OPENAI_BASE_URL}
   EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-3-small}
@@ -389,6 +390,11 @@ environment:
 ```
 
 Le variabili vengono caricate dal file `.env` nella root del progetto.
+
+> **Nota:** Il `DATABASE_URL` deve essere impostato nel file `.env` per puntare al database esterno PostgreSQL (Supabase, Neon, o self-hosted) utilizzato dal deployment. Esempi:
+> - **Supabase:** `postgresql://postgres.[project]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres`
+> - **Neon:** `postgresql://[user]:[password]@[endpoint].neon.tech/[dbname]`
+> - **Self-hosted:** `postgresql://[user]:[password]@[host]:5432/[dbname]`
 
 ### Local Development vs Docker
 

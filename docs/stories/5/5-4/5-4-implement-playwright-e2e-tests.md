@@ -68,9 +68,9 @@ so that I can validate user experience.
 
 - [ ] Task 5: Testing subtasks (AC: #1, #2, #3)
 
-  - [ ] Run E2E test localmente: `pytest tests/e2e/ --base-url=http://localhost:8501` (verifica AC#13)
+  - [ ] Run E2E test localmente: `pytest tests/e2e/ --base-url=http://localhost:8501` (verifica AC#13, headless mode è il default)
   - [ ] Verify screenshot/video sono generati correttamente (verifica AC#14)
-  - [ ] Verify E2E test funziona in headless mode: `pytest tests/e2e/ --base-url=http://localhost:8501 --headed=false` (verifica AC#15)
+  - [ ] Verify E2E test funziona in headless mode: `pytest tests/e2e/ --base-url=http://localhost:8501` (verifica AC#15, headless è il default; per headed mode usare `--headed`)
   - [ ] Verify CI/CD pipeline esegue E2E tests correttamente (verifica AC#15)
   - [ ] Document E2E test results in Dev Notes
 

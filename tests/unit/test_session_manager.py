@@ -12,7 +12,10 @@ from uuid import UUID
 from utils.models import QueryLog, SessionStats
 from utils.session_manager import (
     InMemorySessionStats,
+    MAX_RESPONSE_TEXT_BYTES,
+    TRUNCATION_INDICATOR,
     generate_session_id,
+    truncate_response_text,
 )
 
 
@@ -190,3 +193,75 @@ class TestInMemorySessionStats:
 
         stats.update(Decimal("0.0"), Decimal("100.0"))
         assert stats.last_activity >= initial_activity
+
+
+class TestTruncateResponseText:
+    """Tests for truncate_response_text function (data retention)."""
+
+    def test_truncate_none_returns_none(self):
+        """Verify None input returns None."""
+        assert truncate_response_text(None) is None
+
+    def test_truncate_empty_string_returns_empty(self):
+        """Verify empty string is not truncated."""
+        assert truncate_response_text("") == ""
+
+    def test_truncate_short_text_unchanged(self):
+        """Verify text under limit is not modified."""
+        short_text = "Hello, this is a short response."
+        assert truncate_response_text(short_text) == short_text
+
+    def test_truncate_exactly_at_limit(self):
+        """Verify text exactly at limit is not modified."""
+        # Create text exactly at the limit
+        exact_text = "a" * MAX_RESPONSE_TEXT_BYTES
+        result = truncate_response_text(exact_text)
+        assert result == exact_text
+        assert len(result.encode("utf-8")) == MAX_RESPONSE_TEXT_BYTES
+
+    def test_truncate_over_limit(self):
+        """Verify text over limit is truncated with indicator."""
+        # Create text over the limit
+        over_text = "a" * (MAX_RESPONSE_TEXT_BYTES + 1000)
+        result = truncate_response_text(over_text)
+
+        # Should be truncated
+        assert len(result.encode("utf-8")) <= MAX_RESPONSE_TEXT_BYTES
+        # Should have truncation indicator
+        assert TRUNCATION_INDICATOR in result
+
+    def test_truncate_preserves_content_start(self):
+        """Verify truncation keeps the beginning of the response."""
+        prefix = "IMPORTANT_START_"
+        over_text = prefix + "x" * (MAX_RESPONSE_TEXT_BYTES + 1000)
+        result = truncate_response_text(over_text)
+
+        # Prefix should be preserved
+        assert result.startswith(prefix)
+
+    def test_truncate_unicode_safe(self):
+        """Verify truncation handles multi-byte UTF-8 characters."""
+        # Create text with multi-byte characters (emoji = 4 bytes each)
+        emoji_text = "🎉" * (MAX_RESPONSE_TEXT_BYTES // 4 + 100)
+        result = truncate_response_text(emoji_text)
+
+        # Should not raise and should be valid UTF-8
+        assert len(result.encode("utf-8")) <= MAX_RESPONSE_TEXT_BYTES
+        # Should be decodable without errors
+        result.encode("utf-8").decode("utf-8")
+
+    def test_truncate_mixed_content(self):
+        """Verify truncation works with mixed ASCII and Unicode."""
+        mixed_text = "Response: " + "日本語テスト" * 500 + "a" * MAX_RESPONSE_TEXT_BYTES
+        result = truncate_response_text(mixed_text)
+
+        assert len(result.encode("utf-8")) <= MAX_RESPONSE_TEXT_BYTES
+        assert result.startswith("Response:")
+
+    def test_max_response_text_bytes_constant(self):
+        """Verify MAX_RESPONSE_TEXT_BYTES is 10KB."""
+        assert MAX_RESPONSE_TEXT_BYTES == 10240  # 10KB
+
+    def test_truncation_indicator_present(self):
+        """Verify TRUNCATION_INDICATOR is defined."""
+        assert "truncated" in TRUNCATION_INDICATOR.lower()

@@ -3,6 +3,12 @@ Session Manager for Streamlit UI Observability.
 
 Provides session tracking, query logging, and statistics persistence
 using PostgreSQL for storage with graceful degradation to in-memory fallback.
+
+Data Retention Strategy:
+- response_text is truncated to MAX_RESPONSE_TEXT_BYTES (10KB) before storage
+- Database uses monthly partitioning for query_logs table
+- pg_cron job deletes data older than 90 days (configurable in DB)
+- See sql/01-init-schema.sql for full retention policy details
 """
 
 import logging
@@ -15,6 +21,57 @@ from uuid import UUID
 from utils.db_utils import db_pool
 
 logger = logging.getLogger(__name__)
+
+# ============================================================================
+# Data Retention Constants
+# ============================================================================
+# Maximum size for response_text in bytes (10KB)
+# Responses exceeding this limit are truncated with an indicator
+# This prevents unbounded storage growth in query_logs table
+# Reference: sql/01-init-schema.sql (CHECK constraint on response_text)
+MAX_RESPONSE_TEXT_BYTES: int = 10240  # 10KB
+
+# Truncation indicator appended when response is truncated
+TRUNCATION_INDICATOR: str = "\n\n[... response truncated for storage ...]"
+
+
+def truncate_response_text(response_text: Optional[str]) -> Optional[str]:
+    """
+    Truncate response text to MAX_RESPONSE_TEXT_BYTES if it exceeds the limit.
+
+    This prevents unbounded storage growth in the query_logs table.
+    The DB schema also has a CHECK constraint as a safeguard.
+
+    Args:
+        response_text: The response text to potentially truncate.
+
+    Returns:
+        Truncated response text if over limit, original text otherwise.
+        None if input is None.
+    """
+    if response_text is None:
+        return None
+
+    # Check byte length (UTF-8 encoded)
+    response_bytes = response_text.encode("utf-8")
+    if len(response_bytes) <= MAX_RESPONSE_TEXT_BYTES:
+        return response_text
+
+    # Calculate max content length (account for truncation indicator)
+    indicator_bytes = TRUNCATION_INDICATOR.encode("utf-8")
+    max_content_bytes = MAX_RESPONSE_TEXT_BYTES - len(indicator_bytes)
+
+    # Truncate at byte boundary (may cut mid-character)
+    truncated_bytes = response_bytes[:max_content_bytes]
+
+    # Decode safely (replace invalid continuation bytes)
+    truncated_text = truncated_bytes.decode("utf-8", errors="ignore")
+
+    logger.debug(
+        f"Truncated response_text from {len(response_bytes)} to {len(truncated_text.encode('utf-8'))} bytes"
+    )
+
+    return truncated_text + TRUNCATION_INDICATOR
 
 
 def generate_session_id() -> UUID:
@@ -169,17 +226,24 @@ async def log_query(
     Args:
         session_id: UUID v4 session identifier.
         query_text: User query text.
-        response_text: Agent response text.
+        response_text: Agent response text (truncated to 10KB if larger).
         cost: Query cost in USD.
         latency_ms: Query latency in milliseconds.
         langfuse_trace_id: Optional LangFuse trace ID.
 
     Returns:
         True if logging was successful, False if DB unavailable.
+
+    Note:
+        response_text is automatically truncated to MAX_RESPONSE_TEXT_BYTES (10KB)
+        to prevent unbounded storage growth. See truncate_response_text() for details.
     """
+    # Truncate response_text to prevent storage bloat (max 10KB)
+    truncated_response = truncate_response_text(response_text)
+
     try:
         async with db_pool.acquire() as conn:
-            # Insert query log
+            # Insert query log with truncated response
             await conn.execute(
                 """
                 INSERT INTO query_logs 
@@ -188,7 +252,7 @@ async def log_query(
                 """,
                 session_id,
                 query_text,
-                response_text,
+                truncated_response,
                 float(cost),
                 float(latency_ms),
                 langfuse_trace_id,

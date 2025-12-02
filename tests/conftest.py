@@ -261,7 +261,10 @@ def mock_langfuse():
     mock_trace.generation.return_value = mock_generation
 
     # Mock score creation (for RAGAS evaluation tracking)
-    mock.create_score = MagicMock(return_value=MagicMock(id="test-score-id"))
+    # Note: LangFuse SDK uses .score() method, not .create_score()
+    mock.score = MagicMock(return_value=MagicMock(id="test-score-id"))
+    # Keep create_score for backwards compatibility
+    mock.create_score = mock.score
 
     # Mock flush (for ensuring data is sent)
     mock.flush = MagicMock()

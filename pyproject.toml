@@ -11,7 +11,6 @@ dependencies = [
     "numpy>=2.0.2",
     "openai>=1.0.0",
     "httpx>=0.27.0",
-    "langfuse>=3.0.0",
 ]
 
 [project.optional-dependencies]
@@ -24,6 +23,7 @@ streamlit = [
     "aiohttp>=3.9.0",
     "tenacity>=8.2.0",  # used by client/api_client.py
     "pydantic>=2.0.0",  # used by utils/models.py
+    "langfuse>=3.0.0",  # optional: observability/tracing (graceful degradation if unavailable)
 ]
 
 # API service - includes docling for document processing
@@ -36,6 +36,7 @@ api = [
     "aiofiles>=24.1.0",
     "tenacity>=8.2.0",  # used by ingestion/embedder.py
     "pydantic>=2.0.0",  # used by api/models.py
+    "langfuse>=3.0.0",  # optional: observability/tracing (graceful degradation if unavailable)
 ]
 
 # MCP server - includes docling for document processing
@@ -49,6 +50,7 @@ mcp = [
     "prometheus_client>=0.19.0",
     "tenacity>=8.2.0",  # used by client/api_client.py
     "pydantic>=2.0.0",  # used by utils/models.py
+    "langfuse>=3.0.0",  # optional: observability/tracing (graceful degradation if unavailable)
 ]
 
 # Development dependencies
@@ -63,6 +65,8 @@ dev = [
     "ragas>=0.1.0",
     "langchain-openai>=0.1.0",
     "datasets>=2.14.0",
+    # Observability testing
+    "langfuse>=3.0.0",  # optional: for testing observability features
 ]
 
 # Documentation

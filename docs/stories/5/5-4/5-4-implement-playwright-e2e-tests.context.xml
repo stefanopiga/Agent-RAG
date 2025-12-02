@@ -59,7 +59,7 @@
         <subtasks>
           <subtask>Run E2E test localmente: pytest tests/e2e/ --base-url=http://localhost:8501 (verifica AC#13)</subtask>
           <subtask>Verify screenshot/video sono generati correttamente (verifica AC#14)</subtask>
-          <subtask>Verify E2E test funziona in headless mode: pytest tests/e2e/ --base-url=http://localhost:8501 --headed=false (verifica AC#15)</subtask>
+          <subtask>Verify E2E test funziona in headless mode: pytest tests/e2e/ --base-url=http://localhost:8501 (verifica AC#15, headless è il default; per headed mode usare --headed)</subtask>
           <subtask>Verify CI/CD pipeline esegue E2E tests correttamente (verifica AC#15)</subtask>
           <subtask>Document E2E test results in Dev Notes</subtask>
         </subtasks>
@@ -162,7 +162,7 @@
     <ideas>
       <idea ac="1">test_streamlit_query_workflow: Navigate to Streamlit app, wait for query-input selector, fill query, click submit, wait for response, verify response contains expected content</idea>
       <idea ac="2">test_screenshot_video_recording: Verify screenshot/video sono generati correttamente dopo test completion. Usare pytest-playwright automatic screenshot/video capture.</idea>
-      <idea ac="3">test_headless_mode: Verify E2E test funziona in headless mode. Run test con --headed=false flag e verificare che test passa.</idea>
+      <idea ac="3">test_headless_mode: Verify E2E test funziona in headless mode (default behavior). Per headed mode usare --headed flag. Verificare che test passa in entrambe le modalità.</idea>
       <idea ac="1,2,3">test_ci_cd_integration: Verify CI/CD pipeline esegue E2E tests correttamente. Test che playwright browsers sono installati, Streamlit app è started, tests sono eseguiti in headless mode.</idea>
       <idea ac="1">test_data_testid_selectors: Verify che app.py ha data-testid attributes per elementi critici (query-input, submit-button, response). Test che selectors sono unici e non cambiano con UI updates.</idea>
       <idea ac="1,2">test_golden_dataset_integration: Test Streamlit workflow con golden dataset queries. Riutilizzare tests/fixtures/golden_dataset.json per test consistenti.</idea>

@@ -19,12 +19,14 @@ Reference:
 Note: Tests requiring LLM calls will be skipped if OPENAI_API_KEY is not set.
 """
 
+import asyncio
 import json
 import logging
 import os
 from typing import Any, Dict, List, Optional
 
 import pytest
+from pydantic_ai import Agent
 
 # Load environment variables from .env if available
 try:
@@ -135,6 +137,26 @@ _embedder_initialized = False
 _db_initialized = False
 
 
+async def reset_db_pool():
+    """Reset database pool to recover from event loop corruption.
+    
+    RAGAS evaluate() can corrupt the event loop even when run in a thread.
+    This function closes and reinitializes the DB pool to recover.
+    """
+    global _db_initialized
+    from utils.db_utils import db_pool
+    
+    if db_pool.pool:
+        try:
+            await db_pool.close()
+            logger.info("Database pool closed for reset")
+        except Exception as e:
+            logger.warning(f"Error closing DB pool: {e}")
+            db_pool.pool = None
+    
+    _db_initialized = False
+
+
 async def ensure_embedder_initialized():
     """Ensure global embedder is initialized for RAG queries."""
     global _embedder_initialized, _db_initialized
@@ -142,6 +164,17 @@ async def ensure_embedder_initialized():
     # Initialize database pool first
     if not _db_initialized:
         from utils.db_utils import db_pool
+        # Reset pool if it exists but might be corrupted
+        if db_pool.pool:
+            try:
+                # Test if pool is healthy
+                async with db_pool.acquire() as conn:
+                    await conn.fetchval("SELECT 1")
+            except Exception:
+                # Pool is corrupted, reset it
+                logger.warning("DB pool corrupted, resetting...")
+                db_pool.pool = None
+        
         await db_pool.initialize()
         _db_initialized = True
         logger.info("Database pool initialized for RAGAS evaluation")
@@ -159,7 +192,7 @@ async def ensure_embedder_initialized():
 
 async def run_rag_query(query: str, limit: int = 5) -> tuple[str, List[str]]:
     """
-    Execute RAG query using core/rag_service.py.
+    Execute RAG query using core/rag_service.py and generate answer via LLM.
 
     Args:
         query: User query string
@@ -167,7 +200,7 @@ async def run_rag_query(query: str, limit: int = 5) -> tuple[str, List[str]]:
 
     Returns:
         Tuple of (answer, contexts) where:
-        - answer: Generated answer string
+        - answer: LLM-generated answer based on contexts
         - contexts: List of retrieved context strings
     """
     from core.rag_service import search_knowledge_base_structured
@@ -176,24 +209,60 @@ async def run_rag_query(query: str, limit: int = 5) -> tuple[str, List[str]]:
         # Ensure embedder is initialized before running RAG query
         await ensure_embedder_initialized()
 
+        # Step 1: Retrieve contexts using embedding search
         result = await search_knowledge_base_structured(query, limit=limit)
         results = result.get("results", [])
 
         # Extract contexts from search results
         contexts = [r["content"] for r in results]
 
-        # For now, concatenate contexts as the "answer"
-        # In a full RAG system, this would go through an LLM to generate an answer
-        if contexts:
-            answer = " ".join(contexts[:3])  # Use top 3 contexts as answer
-        else:
-            answer = "No relevant information found."
+        if not contexts:
+            return "No relevant information found in the knowledge base.", []
+
+        # Step 2: Generate answer using LLM with retrieved contexts
+        # PydanticAI uses model string format, API key from OPENAI_API_KEY env var
+        model_name = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+        
+        agent = Agent(
+            f"openai:{model_name}",
+            system_prompt=(
+                "You are a helpful assistant that answers questions based on provided context. "
+                "Use ONLY the information from the context to answer. "
+                "If the context doesn't contain enough information, say so clearly. "
+                "Be concise and accurate."
+            ),
+        )
+
+        # Prepare context for LLM (use top 3 contexts)
+        context_text = "\n\n".join([
+            f"Context {i+1}:\n{ctx}" 
+            for i, ctx in enumerate(contexts[:3])
+        ])
+
+        prompt = f"""Based on the following context, answer the question.
+
+Context:
+{context_text}
+
+Question: {query}
+
+Provide a clear, concise answer based only on the context provided."""
+
+        result = await agent.run(prompt)
+        answer = result.output if hasattr(result, 'output') else str(result.data)
+
+        logger.info(f"Generated answer for query '{query[:50]}...'")
 
         return answer, contexts
 
     except Exception as e:
-        logger.error(f"RAG query failed for '{query}': {e}")
-        return f"Error: {str(e)}", []
+        logger.error(f"RAG query failed for '{query}': {e}", exc_info=True)
+        # Return error message that won't artificially inflate scores
+        return (
+            "I apologize, but I encountered an error while processing your question. "
+            "Please try again later.",
+            []
+        )
 
 
 async def generate_evaluation_batch(
@@ -208,6 +277,9 @@ async def generate_evaluation_batch(
 
     Returns:
         Tuple of (answers, contexts) lists
+    
+    Note: Queries are executed sequentially to avoid event loop conflicts
+    when RAGAS evaluation runs in a separate thread.
     """
     answers = []
     all_contexts = []
@@ -267,13 +339,34 @@ async def execute_ragas_evaluation(
 
     Returns:
         Dict of metric_name -> score (float)
+    
+    Note:
+        Uses asyncio.to_thread with evaluate() instead of aevaluate() because
+        aevaluate() closes the event loop after completion, breaking subsequent
+        async operations in pytest's session-scoped event loop.
     """
     from ragas import evaluate
-
+    from ragas.run_config import RunConfig
+    
     logger.info(f"Starting RAGAS evaluation with {len(metrics)} metrics on {len(dataset)} samples...")
-
-    # Run evaluation (RAGAS v0.3.9 returns EvaluationResult object)
-    result = evaluate(dataset=dataset, metrics=metrics, llm=evaluator_llm)
+    
+    # Use evaluate() in thread to isolate RAGAS from pytest's event loop
+    # aevaluate() causes "Event loop is closed" errors in subsequent tests
+    run_config = RunConfig(max_workers=10, timeout=120)
+    
+    result = await asyncio.to_thread(
+        evaluate,
+        dataset=dataset,
+        metrics=metrics,
+        llm=evaluator_llm,
+        run_config=run_config,
+        raise_exceptions=False,
+        allow_nest_asyncio=False,  # Prevent event loop corruption in pytest
+    )
+    
+    # Reset DB pool after RAGAS evaluation to recover from potential event loop corruption
+    # RAGAS can corrupt asyncpg pool even with allow_nest_asyncio=False
+    await reset_db_pool()
 
     # Convert to pandas DataFrame and extract mean scores
     df = result.to_pandas()
@@ -506,32 +599,48 @@ async def test_ragas_evaluation_tracks_in_langfuse(golden_dataset_data, ragas_me
 @pytest.mark.asyncio
 @skip_without_openai
 @skip_without_database
-async def test_ragas_evaluation_graceful_degradation(golden_dataset_data, ragas_metrics, monkeypatch):
+async def test_ragas_evaluation_graceful_degradation(golden_dataset_data, ragas_metrics):
     """
     Verify evaluation continues if LangFuse is unavailable.
 
     AC: #3/AC#12 - Graceful degradation
     """
+    import sys
+    from types import ModuleType
+    
     # Arrange
     metrics, evaluator_llm = ragas_metrics
     queries = golden_dataset_data["queries"][:2]  # Minimal subset
     answers, contexts = await generate_evaluation_batch(queries, limit=2)
     dataset = prepare_ragas_dataset(queries, answers, contexts)
 
-    # Simulate LangFuse unavailable
-    def mock_langfuse_init(*args, **kwargs):
-        raise ConnectionError("LangFuse service unavailable")
+    # Remove langfuse from sys.modules to force re-import in track_ragas_results
+    original_langfuse = sys.modules.pop("langfuse", None)
+    
+    try:
+        # Create mock module that raises on Langfuse() instantiation
+        mock_langfuse_module = ModuleType("langfuse")
+        
+        def mock_langfuse_init(*args, **kwargs):
+            raise ConnectionError("LangFuse service unavailable")
+        
+        mock_langfuse_module.Langfuse = mock_langfuse_init
+        sys.modules["langfuse"] = mock_langfuse_module
 
-    monkeypatch.setattr("tests.evaluation.test_ragas_evaluation.Langfuse", mock_langfuse_init, raising=False)
+        # Act
+        scores = await execute_ragas_evaluation(dataset, metrics, evaluator_llm)
+        trace_id = track_ragas_results(scores)  # Should not raise
 
-    # Act
-    scores = await execute_ragas_evaluation(dataset, metrics, evaluator_llm)
-    trace_id = track_ragas_results(scores)  # Should not raise
-
-    # Assert - Evaluation completed, tracking gracefully degraded
-    assert len(scores) > 0, "Scores should be calculated even without LangFuse"
-    assert trace_id is None, "trace_id should be None when LangFuse unavailable"
-    logger.info("Graceful degradation verified: evaluation completed without LangFuse")
+        # Assert - Evaluation completed, tracking gracefully degraded
+        assert len(scores) > 0, "Scores should be calculated even without LangFuse"
+        assert trace_id is None, "trace_id should be None when LangFuse unavailable"
+        logger.info("Graceful degradation verified: evaluation completed without LangFuse")
+    finally:
+        # Restore original langfuse module
+        if original_langfuse is not None:
+            sys.modules["langfuse"] = original_langfuse
+        else:
+            sys.modules.pop("langfuse", None)
 
 
 @pytest.mark.ragas

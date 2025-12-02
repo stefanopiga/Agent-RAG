@@ -153,7 +153,7 @@ docling-rag-agent/
 | **Document Processing** | Docling            | 2.55+   | 2025-11-26 | Multi-format          | PDF, DOCX, PPTX, XLSX, HTML, MD, TXT                                      |
 | **Observability**       | LangFuse           | 3.0.0+  | 2025-11-26 | Tracing & Monitoring  | Python SDK v3 (OTel-based)                                                |
 | **Testing Framework**   | pytest             | 8.x+    | 2025-11-26 | Testing               | With pytest-asyncio, pytest-cov                                           |
-| **E2E Testing**         | pytest-playwright  | 0.4.0+  | 2025-12-01 | E2E Tests             | Streamlit workflow testing, fixtures automatiche (page, context, browser) |
+| **E2E Testing**         | pytest-playwright  | 0.7.2   | 2025-12-01 | E2E Tests             | Streamlit workflow testing, fixtures automatiche (page, context, browser) |
 | **RAG Evaluation**      | RAGAS              | 0.1.0+  | 2025-11-26 | Quality Metrics       | Faithfulness, relevancy scores                                            |
 | **Logging**             | python-json-logger | 4.0.0+  | 2025-11-26 | Structured Logging    | JSON format for production                                                |
 | **Retry Logic**         | tenacity           | 9.1.2+  | 2025-11-26 | Resilience            | Exponential backoff                                                       |

@@ -719,17 +719,20 @@ pytest tests/ -v
 **⚠️ Needs Reorganization:**
 
 **Scripts Directory:**
+
 - `scripts/optimize_database.py` → Should be moved to `scripts/verification/` or `scripts/database/`
 - `scripts/test_cost_tracking.py` → Should be moved to `tests/integration/` or `scripts/testing/`
 - `scripts/test_e2e_langfuse_timing.py` → Should be moved to `tests/e2e/` or `scripts/testing/`
 - `scripts/test_mcp_performance.py` → Should be moved to `tests/performance/` or `scripts/testing/`
 
 **Root Directory (Temporary/Copy Directories):**
+
 - `documents_copy_cooleman/` → Should be removed or moved to `documents/` if needed
 - `documents_copy_mia/` → Should be removed or moved to `documents/` if needed
 - `metrics` → Should be moved to appropriate location or removed (if not needed)
 
 **Root Directory (Generated/Build Files - should be in .gitignore):**
+
 - `site/` → MkDocs generated site (should be in `.gitignore`)
 - `node_modules/` → npm dependencies (should be in `.gitignore`)
 
@@ -816,10 +819,8 @@ docling-rag-agent/
 │
 ├── client/                          # Epic 2: API Client
 │   ├── __init__.py
-│   └── api_client.py
-│   ├── db_utils.py
-│   ├── models.py
-│   └── providers.py
+│   ├── api_client.py
+│   └── __pycache__/
 │
 ├── api/                             # Epic 4: FastAPI Service (optional)
 │   ├── __init__.py
@@ -873,16 +874,19 @@ docling-rag-agent/
 **Files/Directories to Remove or Reorganize (Epic 6):**
 
 **Scripts to Move:**
+
 - `scripts/optimize_database.py` → Move to `scripts/verification/` or `scripts/database/`
 - `scripts/test_cost_tracking.py` → Move to `tests/integration/` or `scripts/testing/`
 - `scripts/test_e2e_langfuse_timing.py` → Move to `tests/e2e/` or `scripts/testing/`
 - `scripts/test_mcp_performance.py` → Move to `tests/performance/` or `scripts/testing/`
 
 **Temporary/Copy Directories to Remove:**
+
 - `documents_copy_cooleman/` → Remove or merge into `documents/` if needed
 - `documents_copy_mia/` → Remove or merge into `documents/` if needed
 - `metrics` → Review and relocate or remove if not needed
 
 **Generated/Build Directories (should be in .gitignore):**
+
 - `site/` → MkDocs generated site (already in .gitignore)
 - `node_modules/` → npm dependencies (should be in .gitignore)
