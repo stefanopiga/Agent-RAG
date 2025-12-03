@@ -42,6 +42,14 @@ docs_dir: guide
 
 nav:
   - Home: index.md
+  - Getting Started: getting-started.md
+  - Architecture: architecture.md
+  - Development Guide: development-guide.md
+  - Coding Standards: coding-standards.md
+  - Testing Strategy: testing-strategy.md
+  - Project Structure: unified-project-structure.md
+  - Troubleshooting Guide: troubleshooting-guide.md
+  - LangFuse Dashboard: langfuse-dashboard-guide.md
   - API Reference:
     - Overview: api-reference/index.md
     - Core: api-reference/core.md

@@ -211,15 +211,27 @@ async def execute_query(query: str, *params) -> List[Dict[str, Any]]:
 
 async def test_connection() -> bool:
     """
-    Test database connection.
+    Test database connection using a dedicated connection (not the shared pool).
+    
+    This avoids race conditions when health check runs from a different thread
+    than the MCP server.
 
     Returns:
-        True if connection successful
+        True if connection successful, False otherwise
     """
     try:
-        async with db_pool.acquire() as conn:
+        database_url = os.getenv("DATABASE_URL")
+        if not database_url:
+            logger.debug("DATABASE_URL not set")
+            return False
+        
+        # Create a dedicated connection for health check (thread-safe)
+        conn = await asyncpg.connect(database_url, timeout=5)
+        try:
             await conn.fetchval("SELECT 1")
-        return True
+            return True
+        finally:
+            await conn.close()
     except Exception as e:
         logger.error(f"Database connection test failed: {e}")
         return False

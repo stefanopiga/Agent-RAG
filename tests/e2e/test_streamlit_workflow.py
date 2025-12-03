@@ -248,9 +248,9 @@ class TestHeadlessMode:
         page.goto(streamlit_app_url, timeout=e2e_timeouts["navigation"])
         page.wait_for_load_state("networkidle", timeout=e2e_timeouts["navigation"])
 
-        # Wait for Streamlit app to fully initialize
-        page.wait_for_timeout(2000)
-
+        # Wait for Streamlit app to fully initialize - wait for chat input
+        chat_input = page.locator('[data-testid="stChatInput"]')
+        expect(chat_input).to_be_visible(timeout=e2e_timeouts["element_wait"])
         # Assert: Page loaded successfully (proves headless mode works)
         title = page.title()
         assert "Docling RAG Agent" in title or "Streamlit" in title, (
@@ -325,11 +325,10 @@ class TestIsolation:
         previous_query = page.locator("text=ISOLATION_TEST_QUERY_FIRST_12345")
         expect(previous_query).not_to_be_visible(timeout=e2e_timeouts["short_wait"])
 
-        # Assert: Chat should be empty or show only initial messages
+        # Assert: Chat should be empty (fresh session)
         chat_messages = page.locator('[data-testid="stChatMessage"]')
         # Should have 0 chat messages (fresh session)
         expect(chat_messages).to_have_count(0, timeout=e2e_timeouts["short_wait"])
-
 
 # ============================================================================
 # NETWORK INTERCEPTION TESTS
@@ -360,9 +359,12 @@ class TestNetworkInterception:
         page.wait_for_load_state("networkidle", timeout=e2e_timeouts["navigation"])
 
         # Act: Submit query (will use mocked API)
-        chat_input = page.locator('[data-testid="stChatInput"]')
-        expect(chat_input).to_be_visible(timeout=e2e_timeouts["element_wait"])
+        # Note: stChatInput is a <div>, the actual textarea is inside
+        chat_input_container = page.locator('[data-testid="stChatInput"]')
+        expect(chat_input_container).to_be_visible(timeout=e2e_timeouts["element_wait"])
 
+        # Find the actual textarea inside the container
+        chat_input = chat_input_container.locator("textarea")
         chat_input.fill("Test query with mocked API")
         chat_input.press("Enter")
 

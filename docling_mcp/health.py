@@ -59,11 +59,11 @@ async def check_database() -> ServiceStatus:
 
         if is_connected:
             return ServiceStatus(
-                status="up", message="PostgreSQL connection successful", latency_ms=latency_ms
+                status="up", message="Database connection successful (Supabase/PostgreSQL)", latency_ms=latency_ms
             )
         else:
             return ServiceStatus(
-                status="down", message="PostgreSQL connection test failed", latency_ms=latency_ms
+                status="down", message="Database connection failed (check DATABASE_URL and network)", latency_ms=latency_ms
             )
 
     except Exception as e:

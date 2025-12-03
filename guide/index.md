@@ -32,4 +32,4 @@ Esplora la [API Reference](api-reference/index.md) per comprendere la struttura 
 
 ## Quick Start
 
-Consulta il [README](../README.md) per istruzioni di installazione e setup.
+Consulta la [Guida Getting Started](getting-started.md) per istruzioni di installazione e setup.

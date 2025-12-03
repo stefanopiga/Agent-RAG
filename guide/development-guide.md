@@ -18,13 +18,21 @@ Questa guida fornisce informazioni dettagliate sull'architettura del progetto, p
 ```
 docling-rag-agent/
 ├── app.py                         # Interfaccia web Streamlit
-├── docling_mcp/                   # MCP server per Cursor IDE (standalone)
+├── mcp_server.py                  # Entry point MCP + HTTP observability
+├── docling_mcp/                   # MCP server module
+│   ├── server.py                  # FastMCP instance con tools
+│   ├── lifespan.py                # Lifecycle risorse (DB, embedder)
+│   ├── http_server.py             # HTTP server per /health e /metrics
+│   ├── health.py                  # Health check logic
+│   └── metrics.py                 # Prometheus metrics
 ├── core/
 │   ├── agent.py                   # PydanticAI agent wrapper
 │   └── rag_service.py             # Core RAG logic (decoupled)
 ├── api/
 │   ├── main.py                    # FastAPI REST API
 │   └── models.py                  # Modelli API
+├── client/
+│   └── api_client.py              # Client API per chiamate esterne
 ├── ingestion/
 │   ├── ingest.py                  # Pipeline ingestione documenti
 │   ├── embedder.py                # Generazione embedding con caching
@@ -36,28 +44,45 @@ docling-rag-agent/
 ├── sql/
 │   └── optimize_index.sql         # Schema completo + HNSW index ottimizzato
 ├── scripts/
-│   ├── optimize_database.py       # Tool gestione index e performance
-│   └── test_mcp_performance.py    # Performance test suite
+│   ├── verification/              # Script di verifica e validazione
+│   │   ├── verify_api.py
+│   │   ├── verify_api_endpoints.py
+│   │   ├── verify_mcp_setup.py
+│   │   └── optimize_database.py
+│   ├── validation/                # Script validazione struttura
+│   │   ├── validate_structure.py
+│   │   └── validate_imports.py
+│   ├── testing/                   # Script test utilities (non pytest)
+│   │   ├── test_cost_tracking.py
+│   │   ├── test_e2e_langfuse_timing.py
+│   │   └── test_mcp_performance.py
+│   └── debug/                     # Script debug
+│       └── debug_mcp_tools.py
 ├── guide/                         # Documentazione progetto
 ├── docs/                          # Documentazione BMAD workflow
 ├── documents/                     # Documenti per ingestione
-└── tests/                         # Test suite
+└── tests/                         # Test suite (pytest)
     ├── unit/                      # Unit tests
-    └── integration/               # Integration tests
+    ├── integration/               # Integration tests
+    └── e2e/                       # End-to-end tests
 ```
 
 ### Responsabilità Moduli
 
-| Directory     | Responsabilità                                                    |
-| ------------- | ----------------------------------------------------------------- |
-| `core/`       | Business logic principale, agent RAG, servizio ricerca           |
-| `api/`        | REST API per accesso programmatico                               |
-| `mcp/`        | Server MCP per integrazione Cursor IDE                           |
-| `ingestion/`  | Pipeline ingestione documenti, chunking, embedding               |
-| `utils/`      | Utility condivise: configurazione, connessione DB, modelli       |
-| `scripts/`    | Script operativi: ottimizzazione DB, test performance            |
-| `guide/`      | Documentazione progetto (troubleshooting, development guide)     |
-| `docs/`       | Documentazione workflow BMAD                                      |
+| Directory               | Responsabilità                                                 |
+| ----------------------- | -------------------------------------------------------------- |
+| `core/`                 | Business logic principale, agent RAG, servizio ricerca         |
+| `api/`                  | REST API per accesso programmatico                             |
+| `docling_mcp/`          | Server MCP per integrazione Cursor IDE                         |
+| `client/`               | Client API per chiamate esterne                                |
+| `ingestion/`            | Pipeline ingestione documenti, chunking, embedding             |
+| `utils/`                | Utility condivise: configurazione, connessione DB, modelli     |
+| `scripts/verification/` | Script verifica: API, MCP setup, ottimizzazione DB             |
+| `scripts/validation/`   | Script validazione: struttura progetto, imports Python         |
+| `scripts/testing/`      | Script test utilities (non pytest): performance, cost tracking |
+| `scripts/debug/`        | Script debug: MCP tools debugging                              |
+| `guide/`                | Documentazione progetto (troubleshooting, development guide)   |
+| `docs/`                 | Documentazione workflow BMAD                                   |
 
 ---
 
@@ -115,10 +140,10 @@ asyncio_mode = "auto"
 
 ### Risorse Dinamiche vs Tools
 
-| Concetto      | Semantica                                                                                              |
-| ------------- | ------------------------------------------------------------------------------------------------------ |
+| Concetto      | Semantica                                                                                            |
+| ------------- | ---------------------------------------------------------------------------------------------------- |
 | **Resources** | Rappresentano dati che un server MCP vuole rendere disponibili ai client (file, schemi DB, info app) |
-| **Tools**     | Rappresentano operazioni dinamiche che possono modificare lo stato o interagire con sistemi esterni   |
+| **Tools**     | Rappresentano operazioni dinamiche che possono modificare lo stato o interagire con sistemi esterni  |
 
 #### Quando Usare Resources
 
@@ -161,7 +186,7 @@ def divide(a: float, b: float) -> float:
     if b == 0:
         # Questo messaggio arriva SEMPRE al client
         raise ToolError("Division by zero is not allowed.")
-    
+
     try:
         result = a / b
         if result > 1000000:
@@ -174,9 +199,9 @@ def divide(a: float, b: float) -> float:
 
 #### Comportamento con `mask_error_details`
 
-| `mask_error_details` | `ToolError`        | Altre Eccezioni              |
-| -------------------- | ------------------ | ---------------------------- |
-| `False` (default)    | Messaggio visibile | Messaggio visibile           |
+| `mask_error_details` | `ToolError`        | Altre Eccezioni               |
+| -------------------- | ------------------ | ----------------------------- |
+| `False` (default)    | Messaggio visibile | Messaggio visibile            |
 | `True`               | Messaggio visibile | Messaggio generico mascherato |
 
 #### Logging verso il Client
@@ -222,15 +247,15 @@ Testing in PydanticAI segue patterns standard Python con strumenti specializzati
 
 #### Stack Testing Raccomandato
 
-| Tool                      | Scopo                                              |
-| ------------------------- | -------------------------------------------------- |
-| `pytest`                  | Test harness                                       |
-| `inline-snapshot`         | Assertions lunghe                                  |
-| `dirty-equals`            | Comparazione strutture dati complesse              |
-| `TestModel`               | Mock model per sostituire LLM reali                |
-| `FunctionModel`           | Mock model con logica custom                       |
-| `Agent.override()`        | Mock model/dependencies/toolsets                   |
-| `ALLOW_MODEL_REQUESTS`    | Blocca chiamate accidentali a LLM                  |
+| Tool                   | Scopo                                 |
+| ---------------------- | ------------------------------------- |
+| `pytest`               | Test harness                          |
+| `inline-snapshot`      | Assertions lunghe                     |
+| `dirty-equals`         | Comparazione strutture dati complesse |
+| `TestModel`            | Mock model per sostituire LLM reali   |
+| `FunctionModel`        | Mock model con logica custom          |
+| `Agent.override()`     | Mock model/dependencies/toolsets      |
+| `ALLOW_MODEL_REQUESTS` | Blocca chiamate accidentali a LLM     |
 
 ### TestModel
 
@@ -269,7 +294,7 @@ async def test_forecast():
     with weather_agent.override(model=TestModel()):
         prompt = 'What will the weather be like in London on 2024-11-28?'
         result = await weather_agent.run(prompt)
-        
+
     # Assert sul risultato
     assert result.data == expected_data
 ```
@@ -346,7 +371,7 @@ from pydantic_ai import ModelMessage, ModelResponse, TextPart, ToolCallPart
 from pydantic_ai.models.function import AgentInfo, FunctionModel
 
 def call_weather_forecast(
-    messages: list[ModelMessage], 
+    messages: list[ModelMessage],
     info: AgentInfo
 ) -> ModelResponse:
     """Custom function per generare tool calls realistici."""
@@ -355,7 +380,7 @@ def call_weather_forecast(
         user_prompt = messages[0].parts[-1]
         m = re.search(r'\d{4}-\d{2}-\d{2}', user_prompt.content)
         assert m is not None
-        
+
         # Call weather_forecast tool con date estratta
         return ModelResponse(
             parts=[
@@ -373,10 +398,10 @@ def call_weather_forecast(
 
 async def test_forecast_future():
     from weather_app import weather_agent
-    
+
     with weather_agent.override(model=FunctionModel(call_weather_forecast)):
         result = await weather_agent.run('Weather for 2024-12-25?')
-        
+
     # Ora il tool viene chiamato con date futura!
     assert '2024-12-25' in result.data
 ```
@@ -497,6 +522,7 @@ Il modulo **`docling_mcp/`** usa la libreria `FastMCP`:
 - `docling_mcp/tools/`: Tools organizzati per dominio (search.py, documents.py, overview.py)
 
 Tools disponibili:
+
 - `query_knowledge_base`: Ricerca semantica nella knowledge base
 - `ask_knowledge_base`: Domande con risposta formattata
 - `list_knowledge_base_documents`: Lista documenti
@@ -519,14 +545,33 @@ Tools disponibili:
    uv sync
    ```
 
-2. Configura il tuo editor. È stato creato un file **`claude_desktop_config.json`** nella root.
+2. Configura il tuo editor.
 
-   - **Per Cursor**: Vai a Settings > Features > MCP. Aggiungi un nuovo server con:
-     - Type: `stdio`
-     - Command: `uv`
-     - Args: `run --project /path/to/docling-rag-agent python -m docling_mcp.server`
-     
-   - **Per Claude Desktop**: Copia i contenuti di `claude_desktop_config.json` nel tuo file di configurazione.
+   **Per Cursor** (`~/.cursor/mcp.json` su Windows `%USERPROFILE%\.cursor\mcp.json`):
+
+   ```json
+   {
+     "docling-rag": {
+       "command": "uv",
+       "args": [
+         "run",
+         "--project",
+         "C:/path/to/docling-rag-agent",
+         "python",
+         "C:/path/to/docling-rag-agent/mcp_server.py"
+       ]
+     }
+   }
+   ```
+
+   **Nota importante**: Il parametro `--project` è **obbligatorio** per garantire che `uv` utilizzi il virtual environment corretto del progetto. Senza questo wrapper, l'MCP potrebbe fallire a trovare le dipendenze.
+
+   **Per Claude Desktop**: Copia la stessa configurazione nel file di configurazione di Claude Desktop.
+
+3. **Verifica Observability**: Dopo l'avvio del server MCP, gli endpoint di osservabilità saranno disponibili:
+   - Health check: http://localhost:8080/health
+   - Prometheus metrics: http://localhost:8080/metrics
+   - API docs: http://localhost:8080/docs
 
 #### Running the Streamlit App
 
@@ -563,4 +608,3 @@ streamlit run app.py
 1. **Unit Tests**: Testa business logic con mock models
 2. **Integration Tests**: Testa interazioni componenti con FunctionModel
 3. **ALLOW_MODEL_REQUESTS=False**: Sempre attivo per evitare chiamate API accidentali
-

@@ -3,18 +3,33 @@ Session Manager for Streamlit UI Observability.
 
 Provides session tracking, query logging, and statistics persistence
 using PostgreSQL for storage with graceful degradation to in-memory fallback.
+
+Note: Uses dedicated connections instead of shared pool to avoid event loop
+conflicts in Streamlit (which creates multiple event loops via asyncio.run()).
 """
 
 import logging
+import os
 import uuid
 from datetime import datetime, timezone
 from decimal import Decimal
 from typing import Optional
 from uuid import UUID
 
-from utils.db_utils import db_pool
+import asyncpg
+from dotenv import load_dotenv
+
+load_dotenv()
 
 logger = logging.getLogger(__name__)
+
+
+async def _get_connection():
+    """Get a dedicated database connection (thread/event-loop safe)."""
+    database_url = os.getenv("DATABASE_URL")
+    if not database_url:
+        raise RuntimeError("DATABASE_URL not set")
+    return await asyncpg.connect(database_url, timeout=10)
 
 
 def generate_session_id() -> UUID:
@@ -38,7 +53,8 @@ async def create_session(session_id: UUID) -> bool:
         True if session was created successfully, False if DB unavailable.
     """
     try:
-        async with db_pool.acquire() as conn:
+        conn = await _get_connection()
+        try:
             await conn.execute(
                 """
                 INSERT INTO sessions (session_id, created_at, last_activity, query_count, total_cost, total_latency_ms)
@@ -47,8 +63,10 @@ async def create_session(session_id: UUID) -> bool:
                 """,
                 session_id,
             )
-        logger.info(f"Session created: {session_id}")
-        return True
+            logger.info(f"Session created: {session_id}")
+            return True
+        finally:
+            await conn.close()
     except Exception as e:
         logger.warning(
             f"Failed to create session in DB, using in-memory fallback: {e}",
@@ -68,7 +86,8 @@ async def get_session_stats(session_id: UUID) -> Optional[dict]:
         Dictionary with session stats or None if session not found or DB unavailable.
     """
     try:
-        async with db_pool.acquire() as conn:
+        conn = await _get_connection()
+        try:
             row = await conn.fetchrow(
                 """
                 SELECT 
@@ -101,6 +120,8 @@ async def get_session_stats(session_id: UUID) -> Optional[dict]:
                 }
 
             return None
+        finally:
+            await conn.close()
 
     except Exception as e:
         logger.warning(
@@ -126,7 +147,8 @@ async def update_session_stats(session_id: UUID, cost: Decimal, latency_ms: Deci
         True if update was successful, False if DB unavailable.
     """
     try:
-        async with db_pool.acquire() as conn:
+        conn = await _get_connection()
+        try:
             await conn.execute(
                 """
                 UPDATE sessions
@@ -141,7 +163,9 @@ async def update_session_stats(session_id: UUID, cost: Decimal, latency_ms: Deci
                 float(cost),
                 float(latency_ms),
             )
-        return True
+            return True
+        finally:
+            await conn.close()
     except Exception as e:
         logger.warning(
             f"Failed to update session stats in DB: {e}",
@@ -178,7 +202,8 @@ async def log_query(
         True if logging was successful, False if DB unavailable.
     """
     try:
-        async with db_pool.acquire() as conn:
+        conn = await _get_connection()
+        try:
             # Insert query log
             await conn.execute(
                 """
@@ -193,6 +218,8 @@ async def log_query(
                 float(latency_ms),
                 langfuse_trace_id,
             )
+        finally:
+            await conn.close()
 
         # Update session stats
         await update_session_stats(session_id, cost, latency_ms)

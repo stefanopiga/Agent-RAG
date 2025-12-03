@@ -25,5 +25,7 @@ PRPs
 
 
 metrics
-=3.0.0
 .coverage
+
+# Generated directories
+/site
