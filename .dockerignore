@@ -28,7 +28,22 @@ docling-rag-agent/
 .DS_Store
 
 documents_copy_mia/
+documents_copy_cooleman/
 node_modules/
-.bamad
+site/
+.bmad/
+.agent/
 .claude
-.cursor
+.cursor/
+.vscode/
+tests/
+scripts/
+docs/
+guide/
+sql/
+*.md
+!README.md
+.git/
+*.excalidraw
+prometheus.yml
+metrics

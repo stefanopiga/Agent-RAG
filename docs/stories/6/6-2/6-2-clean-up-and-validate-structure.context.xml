@@ -1,0 +1,106 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>6</epicId>
+    <storyId>2</storyId>
+    <title>Clean Up and Validate Structure</title>
+    <status>ready-for-dev</status>
+    <generatedAt>2025-01-27</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/stories/6/6-2/6-2-clean-up-and-validate-structure.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>developer</asA>
+    <iWant>verify that the project structure is rigorous and complete</iWant>
+    <soThat>I can confidently proceed with implementation</soThat>
+    <tasks>Task 1: Run structure validation script (AC: 1, 2)
+Task 2: Verify root directory contains only essential files (AC: 2)
+Task 3: Validate import resolution (AC: 4)
+Task 4: Update documentation to reflect new structure (AC: 3)
+Task 5: Optimize and validate Docker builds (AC: 5, 6)
+Task 6: Validate CI/CD paths (AC: 7)
+Task 7: Run full test suite validation (AC: 4)
+Task 8: Final validation and documentation (AC: 1-7)</tasks>
+  </story>
+
+  <acceptanceCriteria>AC1: Given the project structure, When I validate it, Then all files are in appropriate directories
+AC2: Given the root directory, When I check it, Then only essential files exist (README.md, pyproject.toml, docker-compose.yml, app.py entry point)
+AC3: Given the documentation, When I check structure guide, Then it accurately reflects the new organization
+AC4: Given the codebase, When I check imports, Then all imports work correctly after reorganization
+AC5: Given Docker builds, When I run docker-compose build, Then builds complete without errors AND images are minimized (no unnecessary files/directories)
+AC6: Given Docker images, When I inspect them, Then they contain ONLY runtime-required files (no docs/, tests/, scripts/, .bmad/, .cursor/, etc.) AND image size is optimized
+AC7: Given CI/CD pipeline, When I check paths, Then CI/CD paths work correctly after reorganization</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/stories/6/tech-spec-epic-6.md" title="Epic Technical Specification: Project Structure Refactoring &amp; Organization" section="Acceptance Criteria (Authoritative)" snippet="Story 6.2 ACs: validate structure, verify root files, update documentation, validate imports, Docker builds, CI/CD paths. Validation workflow includes structure validation, import validation, Docker validation, CI/CD validation." />
+      <doc path="docs/epics.md" title="docling-rag-agent - Epic Breakdown" section="Story 6.2: Clean Up and Validate Structure" snippet="Story validates project structure after reorganization. ACs cover structure validation, root directory verification, documentation updates, import validation. Prerequisites: Story 6.1 (structure reorganized)." />
+      <doc path="docs/architecture.md" title="Architecture - docling-rag-agent" section="Project Structure" snippet="Project structure follows Epic to Directory Mapping. Root contains only essential files. Modules organized by responsibility: docling_mcp/, core/, ingestion/, utils/, api/. Scripts in scripts/ subdirectories. Documentation in docs/." />
+      <doc path="docs/unified-project-structure.md" title="Unified Project Structure - docling-rag-agent" section="Root Directory Structure" snippet="Authorized root files: README.md, CHANGELOG.md, pyproject.toml, uv.lock, docker-compose.yml, Dockerfile*, .env.example, .gitignore, coderabbit.yaml, mkdocs.yml, package.json, app.py. No markdown files except README.md. No Python temp/debug files." />
+      <doc path="docs/prd.md" title="docling-rag-agent - Product Requirements Document" section="Project Structure &amp; Organization" snippet="FR45-FR49: Rigorous project structure, markdown files in docs/, scripts organized, code by responsibility, zero temporary files in root." />
+    </docs>
+    <code>
+      <file path="scripts/validation/validate_structure.py" kind="validation-script" symbol="main" lines="1-270" reason="Validates project structure against Epic 6 requirements. Checks root files, forbidden patterns, required directories, script organization, gitignore entries, MCP server location, code organization." />
+      <file path="scripts/validation/validate_imports.py" kind="validation-script" symbol="main" lines="1-170" reason="Validates all Python imports work correctly after reorganization. Verifies syntax and import resolution for project modules: core, ingestion, docling_mcp, utils, api, client." />
+      <file path="Dockerfile" kind="dockerfile" symbol="Dockerfile" lines="1-59" reason="Streamlit container Dockerfile. Currently uses COPY . . which should be replaced with explicit COPY commands. Needs optimization: rename to Dockerfile.streamlit, use multi-stage build, exclude non-runtime files." />
+      <file path="Dockerfile.api" kind="dockerfile" symbol="Dockerfile.api" lines="1-81" reason="API container Dockerfile. Already optimized with multi-stage build and explicit COPY: api/, core/, ingestion/, utils/. Verify no unnecessary files copied." />
+      <file path="Dockerfile.mcp" kind="dockerfile" symbol="Dockerfile.mcp" lines="1-81" reason="MCP container Dockerfile. Already optimized with multi-stage build and explicit COPY: docling_mcp/, core/, ingestion/, utils/. Verify no unnecessary files copied." />
+      <file path="docker-compose.yml" kind="docker-config" symbol="services" lines="1-57" reason="Docker Compose configuration. Service 'streamlit' uses dockerfile: Dockerfile (needs update to Dockerfile.streamlit after rename). All services properly configured with environment variables." />
+      <file path=".dockerignore" kind="config" symbol=".dockerignore" lines="1-45" reason="Docker ignore patterns. Includes: tests/, scripts/, docs/, guide/, *.md (except README.md), .git/, node_modules/, site/, .venv/, __pycache__/. Verify all non-runtime directories excluded." />
+      <file path=".github/workflows/ci.yml" kind="ci-cd" symbol="jobs" lines="1-353" reason="GitHub Actions CI/CD workflow. Mypy paths: core ingestion docling_mcp utils (line 94). Pytest coverage paths: --cov=core --cov=ingestion --cov=docling_mcp --cov=utils (lines 135-138). Verify all paths correct after reorganization." />
+    </code>
+    <dependencies>
+      <python>
+        <package name="python-dotenv" version=">=1.0.0" />
+        <package name="aiohttp" version=">=3.9.0" />
+        <package name="pydantic-ai" version=">=0.7.4" />
+        <package name="asyncpg" version=">=0.30.0" />
+        <package name="numpy" version=">=2.0.2" />
+        <package name="openai" version=">=1.0.0" />
+        <package name="docling" version=">=2.55.0" />
+        <package name="streamlit" version=">=1.31.0" />
+        <package name="fastmcp" version=">=0.1.1" />
+        <package name="fastapi" version=">=0.109.0" />
+        <package name="pytest" version=">=8.0.0" />
+        <package name="pytest-asyncio" version=">=0.23.0" />
+        <package name="pytest-cov" version=">=4.1.0" />
+        <package name="langfuse" version=">=3.0.0" />
+        <package name="ruff" version=">=0.8.0" />
+        <package name="mypy" version=">=1.13.0" />
+      </python>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture-pattern">Project Structure Validation Pattern: Follow validation strategy from tech spec. Use validation scripts created in Story 6.1. Validate both structure and imports comprehensively.</constraint>
+    <constraint type="import-validation">Import Validation Requirements: Verify syntax correctness with ast.parse(). Verify actual import resolution with importlib. Test project modules: core, ingestion, docling_mcp, utils, api, client.</constraint>
+    <constraint type="docker-optimization">Docker Build Optimization (CRITICAL): Docker images MUST be optimized to absolute minimum. Rename Dockerfile to Dockerfile.streamlit for consistency. Use explicit COPY commands instead of COPY . . Never copy: docs/, tests/, scripts/, .bmad/, .cursor/, guide/, sql/, *.md (except README.md). All Dockerfiles MUST use multi-stage builds (builder + runtime). Verify .dockerignore excludes ALL non-runtime directories.</constraint>
+    <constraint type="ci-cd">CI/CD Path Validation: Verify mypy paths in .github/workflows/ci.yml: core ingestion docling_mcp utils. Verify pytest coverage paths: --cov=core --cov=ingestion --cov=docling_mcp --cov=utils. Check all run: commands for relative paths.</constraint>
+    <constraint type="validation-scripts">Validation Scripts Location: Structure validation: scripts/validation/validate_structure.py. Import validation: scripts/validation/validate_imports.py. Exit code 0 = success, exit code 1 = violations found.</constraint>
+    <constraint type="root-files">Expected Root Directory Files: README.md, CHANGELOG.md, pyproject.toml, uv.lock, docker-compose.yml, Dockerfile.streamlit (after rename), Dockerfile.api, Dockerfile.mcp, .env.example, .gitignore, coderabbit.yaml, mkdocs.yml, package.json, package-lock.json, app.py.</constraint>
+    <constraint type="required-directories">Required Directories: docling_mcp/, core/, ingestion/, utils/, api/, tests/, scripts/, docs/, sql/, scripts/verification/, scripts/debug/, scripts/testing/, scripts/validation/.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="Structure Validation CLI" kind="CLI" signature="uv run python scripts/validation/validate_structure.py" path="scripts/validation/validate_structure.py" />
+    <interface name="Import Validation CLI" kind="CLI" signature="uv run python scripts/validation/validate_imports.py" path="scripts/validation/validate_imports.py" />
+    <interface name="Docker Build" kind="CLI" signature="docker-compose build --no-cache" path="docker-compose.yml" />
+    <interface name="Python Import Pattern" kind="code-pattern" signature="from docling_mcp.server import mcp; from core.rag_service import search_knowledge_base_structured; from ingestion.embedder import EmbeddingGenerator; from utils.db_utils import get_db_pool; from api.main import app" path="N/A" />
+    <interface name="CI/CD Mypy" kind="CI/CD" signature="uv run mypy core ingestion docling_mcp utils --ignore-missing-imports" path=".github/workflows/ci.yml" />
+    <interface name="CI/CD Pytest Coverage" kind="CI/CD" signature="uv run pytest --cov=core --cov=ingestion --cov=docling_mcp --cov=utils --cov-report=xml --cov-report=term-missing --cov-fail-under=70 tests/unit/" path=".github/workflows/ci.yml" />
+  </interfaces>
+
+  <tests>
+    <standards>Validation scripts use Python standard library (ast, importlib, pathlib). Structure validation checks root files, forbidden patterns, required directories, script organization, gitignore entries. Import validation verifies syntax and actual import resolution. Docker builds must complete without errors. CI/CD paths must reference correct directories. Test execution: uv run pytest tests/ -v. Coverage target: &gt;70% for core modules.</standards>
+    <locations>tests/unit/, tests/integration/, tests/e2e/, scripts/validation/</locations>
+    <ideas>
+      <test ac="AC1">Run scripts/validation/validate_structure.py, verify exit code 0, verify all files in appropriate directories</test>
+      <test ac="AC2">Scan root directory, verify only essential files exist, verify no unauthorized markdown or Python temp/debug files</test>
+      <test ac="AC3">Review docs/unified-project-structure.md, verify docs/architecture.md Project Structure section, update README.md and docs/development-guide.md paths</test>
+      <test ac="AC4">Run scripts/validation/validate_imports.py, verify exit code 0, test critical imports manually: docling_mcp.server.mcp, core.rag_service.search_knowledge_base_structured, ingestion.embedder.EmbeddingGenerator, utils.db_utils.get_db_pool, api.main.app</test>
+      <test ac="AC5">Build all images: docker-compose build --no-cache, verify builds complete without errors, verify images are minimal</test>
+      <test ac="AC6">Inspect image contents: docker run --rm &lt;image&gt; find /app -type d -name &quot;docs&quot; (should return nothing), verify no tests/, scripts/, .bmad/, .cursor/ directories, check image sizes, verify functionality</test>
+      <test ac="AC7">Review .github/workflows/ci.yml, verify mypy paths: core ingestion docling_mcp utils, verify pytest coverage paths: --cov=core --cov=ingestion --cov=docling_mcp --cov=utils, check all run: commands for relative paths</test>
+    </ideas>
+  </tests>
+</story-context>

@@ -1,6 +1,6 @@
 # Story 6.1: Reorganize Project Structure
 
-Status: ready-for-review
+Status: done
 
 ## Story
 
@@ -498,6 +498,7 @@ N/A
 **Causa**: Ogni interazione WebSocket in Streamlit può creare una nuova sessione (`st.session_state` viene resettato). La query viene loggata per la sessione A, ma il render successivo usa la sessione B (nuova, con 0 query).
 
 **Soluzione proposta** (futura storia):
+
 - Persistere `session_id` in cookie o URL query parameters
 - Implementare meccanismo di recupero sessione esistente dal DB
 - Aggiungere `st.rerun()` dopo log query per forzare refresh stats

@@ -1,10 +1,10 @@
 # Build stage
 FROM python:3.11-slim-bookworm AS builder
 
-# Copy UV from official image
+# Copy uv directly from its official image (best practice)
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Install build dependencies
+# Install build dependencies (will NOT be in final image)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
@@ -26,8 +26,9 @@ COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project
 
-# Copy application code
-COPY api/ ./api/
+# Copy ONLY runtime-required application code (explicit COPY)
+COPY app.py ./
+COPY client/ ./client/
 COPY core/ ./core/
 COPY ingestion/ ./ingestion/
 COPY utils/ ./utils/
@@ -36,14 +37,16 @@ COPY utils/ ./utils/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen
 
-# Runtime stage
+# Runtime stage (clean, minimal image)
 FROM python:3.11-slim-bookworm
 
 # Copy UV
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
-# Install only runtime dependencies (no build tools)
+# Install ONLY runtime dependencies (no build tools)
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    ffmpeg \
+    postgresql-client \
     libpq5 \
     curl \
     && rm -rf /var/lib/apt/lists/*
@@ -53,8 +56,9 @@ WORKDIR /app
 # Copy virtual environment from builder (only runtime files)
 COPY --from=builder /app/.venv /app/.venv
 
-# Copy application code
-COPY api/ ./api/
+# Copy ONLY runtime-required application code
+COPY app.py ./
+COPY client/ ./client/
 COPY core/ ./core/
 COPY ingestion/ ./ingestion/
 COPY utils/ ./utils/
@@ -65,16 +69,16 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONPATH=/app
 
-# Expose the API port
-EXPOSE 8000
+# Expose Streamlit port
+EXPOSE 8501
 
 # Create a non-root user for security
 RUN useradd -m appuser && chown -R appuser /app
 USER appuser
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
+# Health check for Streamlit
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:8501/_stcore/health || exit 1
 
-# Start the API service
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the Streamlit app
+CMD ["streamlit", "run", "app.py", "--server.address", "0.0.0.0"]

@@ -31,14 +31,18 @@ docling-rag-agent/
 ├── pyproject.toml               # ✅ Project configuration (UV)
 ├── uv.lock                      # ✅ Dependency lock file
 ├── docker-compose.yml           # ✅ Docker orchestration
-├── Dockerfile                   # ✅ Streamlit container
-├── Dockerfile.api               # ✅ API container (optional)
+├── Dockerfile.streamlit         # ✅ Streamlit container
+├── Dockerfile.api               # ✅ API container
+├── Dockerfile.mcp               # ✅ MCP server container
 ├── .env.example                 # ✅ Environment variables template
 ├── .gitignore                   # ✅ Git ignore rules
 ├── coderabbit.yaml              # ✅ CodeRabbit configuration
 ├── mkdocs.yml                   # ✅ MkDocs configuration
 ├── package.json                 # ✅ Node.js dependencies (MkDocs)
+├── package-lock.json            # ✅ Node.js lock file
 ├── app.py                       # ✅ Streamlit UI entry point
+├── mcp_server.py                # ✅ MCP server entry point with observability (Story 6-1)
+├── prometheus.yml               # ✅ Prometheus scraping configuration
 └── [NO OTHER FILES]             # ❌ Tutti gli altri file devono essere in directory appropriate
 ```
 
@@ -379,17 +383,19 @@ sql/
 
 ### 9.2 MCP Server Entry Point
 
-**Location:** `docling_mcp/server.py` (not in root)
+**Location:** `mcp_server.py` (root) + `docling_mcp/server.py` (module)
 
-**Responsibility:** MCP server entry point for Cursor IDE integration.
+**Responsibility:** MCP server entry point for Cursor IDE integration with observability.
 
 **Rules:**
 
-- ✅ Entry point is `docling_mcp/server.py` (not root-level `mcp_server.py`)
+- ✅ Entry point is `mcp_server.py` in root (Story 6-1)
+- ✅ `mcp_server.py` starts both MCP server (STDIO) and HTTP observability server (/health, /metrics)
+- ✅ `docling_mcp/server.py` contains FastMCP instance and tool definitions
 - ✅ Uses FastMCP framework
 - ✅ Standalone server (no external API dependency)
 
-**Epic Mapping:** Epic 2 (MCP Observability)
+**Epic Mapping:** Epic 2 (MCP Observability), Epic 6 (Project Structure)
 
 ---
 
@@ -693,18 +699,17 @@ pytest tests/ -v
 - `docs/` - Documentation centralized
 - `sql/` - Database scripts organized
 
-### 17.2 Areas Requiring Cleanup (Epic 6)
+### 17.2 Areas Validated (Epic 6 Story 6-1 Complete)
 
-**⚠️ Needs Reorganization:**
+**✅ Reorganized in Story 6-1:**
 
-- `scriptsdebug/` → Should be `scripts/debug/`
-- `scriptsverification/` → Should be `scripts/verification/`
-- `T/` → Temporary directory, should be removed
-- `=3.0.0` → Temporary file, should be removed
-- `metrics` → Should be moved to appropriate location or removed
-- Root-level scripts → Should be in `scripts/` subdirectories
+- Scripts properly organized in `scripts/debug/`, `scripts/verification/`, `scripts/testing/`, `scripts/validation/`
+- No temporary directories remaining
+- `metrics` - kept in root as runtime-generated file (in .gitignore)
+- `mcp_server.py` - authorized entry point (observability server)
+- `prometheus.yml` - authorized configuration file
 
-**Reference:** [Epic 6 Story 6.1](./epics.md#Story-6.1-Reorganize-Project-Structure)
+**Reference:** [Epic 6 Story 6.1](./stories/6/6-1/6-1-reorganize-project-structure.md)
 
 ---
 
@@ -741,14 +746,18 @@ docling-rag-agent/
 ├── pyproject.toml                   # ✅ Authorized root file
 ├── uv.lock                          # ✅ Authorized root file
 ├── docker-compose.yml               # ✅ Authorized root file
-├── Dockerfile                       # ✅ Authorized root file
+├── Dockerfile.streamlit             # ✅ Authorized root file (Streamlit)
 ├── Dockerfile.api                   # ✅ Authorized root file
+├── Dockerfile.mcp                   # ✅ Authorized root file
 ├── .env.example                     # ✅ Authorized root file
 ├── .gitignore                       # ✅ Authorized root file
 ├── coderabbit.yaml                  # ✅ Authorized root file
 ├── mkdocs.yml                       # ✅ Authorized root file
 ├── package.json                     # ✅ Authorized root file
-├── app.py                           # ✅ Authorized entry point
+├── package-lock.json                # ✅ Authorized root file
+├── app.py                           # ✅ Authorized entry point (Streamlit)
+├── mcp_server.py                    # ✅ Authorized entry point (MCP + observability)
+├── prometheus.yml                   # ✅ Authorized config file
 │
 ├── docling_mcp/                     # Epic 2: MCP Server
 │   ├── __init__.py
@@ -778,9 +787,15 @@ docling-rag-agent/
 │   ├── __init__.py
 │   ├── db_utils.py
 │   ├── models.py
-│   └── providers.py
+│   ├── providers.py
+│   ├── session_manager.py
+│   └── langfuse_streamlit.py
 │
-├── api/                             # Epic 4: FastAPI Service (optional)
+├── client/                          # API Client
+│   ├── __init__.py
+│   └── api_client.py
+│
+├── api/                             # Epic 4: FastAPI Service
 │   ├── __init__.py
 │   ├── main.py
 │   └── models.py
@@ -792,11 +807,13 @@ docling-rag-agent/
 │   ├── unit/
 │   ├── integration/
 │   ├── e2e/
-│   └── fixtures/
+│   └── evaluation/
 │
-├── scripts/                         # Epic 4: Utility Scripts
+├── scripts/                         # Epic 4/6: Utility Scripts
 │   ├── verification/
-│   └── debug/
+│   ├── debug/
+│   ├── testing/
+│   └── validation/
 │
 ├── docs/                            # Epic 1: Documentation
 │   ├── index.md
@@ -822,16 +839,16 @@ docling-rag-agent/
 │
 ├── .github/                         # Epic 4: CI/CD
 │   └── workflows/
+│       └── ci.yml
 │
 ├── .bmad/                           # BMAD Configuration
 │
-└── documents/                       # Source Documents
+└── documents/                       # Source Documents (user data)
 ```
 
-**Files/Directories to Remove (Epic 6):**
+**Cleanup Status (Epic 6 Story 6-1 Complete):**
 
-- `scriptsdebug/` → Merge into `scripts/debug/`
-- `scriptsverification/` → Merge into `scripts/verification/`
-- `T/` → Remove (temporary)
-- `=3.0.0` → Remove (temporary)
-- `metrics` → Review and relocate or remove
+- ✅ Scripts organized in proper subdirectories
+- ✅ No temporary directories
+- ✅ `metrics` file in .gitignore (runtime-generated)
+- ✅ All validation scripts passing

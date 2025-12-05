@@ -14,7 +14,7 @@ ROOT_ALLOWED_FILES = [
     "pyproject.toml",
     "uv.lock",
     "docker-compose.yml",
-    "Dockerfile",
+    "Dockerfile.streamlit",  # Streamlit container (renamed from Dockerfile)
     "Dockerfile.api",
     "Dockerfile.mcp",
     ".env.example",
@@ -24,6 +24,8 @@ ROOT_ALLOWED_FILES = [
     "package.json",
     "package-lock.json",
     "app.py",
+    "mcp_server.py",  # MCP server entry point (Story 6-1)
+    "prometheus.yml",  # Prometheus configuration
 ]
 
 # Forbidden patterns in root (except allowed)

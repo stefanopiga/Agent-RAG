@@ -6,42 +6,51 @@ services:
     container_name: docling-rag-api
     ports:
       - "8000:8000"
+    env_file:
+      - .env
     environment:
-      - DATABASE_URL=postgresql://postgres:postgres@db:5432/ragdb
+      - DATABASE_URL=${DATABASE_URL}
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OPENAI_BASE_URL=${OPENAI_BASE_URL}
       - EMBEDDING_MODEL=${EMBEDDING_MODEL:-text-embedding-3-small}
-      - LLM_CHOICE=${LLM_CHOICE:-gpt-4.1-mini}
-    depends_on:
-      db:
-        condition: service_healthy
-    networks:
-      - rag-network
+      - LLM_CHOICE=${LLM_CHOICE:-gpt-4o-mini}
     volumes:
       - ./documents:/app/documents
 
-  db:
-    image: pgvector/pgvector:pg16
-    container_name: docling-rag-db
+  streamlit:
+    build:
+      context: .
+      dockerfile: Dockerfile.streamlit
+    container_name: docling-rag-streamlit
     ports:
-      - "5432:5432"
+      - "8501:8501"
+    env_file:
+      - .env
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=ragdb
+      - DATABASE_URL=${DATABASE_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-text-embedding-3-small}
+      - LLM_CHOICE=${LLM_CHOICE:-gpt-4o-mini}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    networks:
-      - rag-network
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      - ./documents:/app/documents
 
-networks:
-  rag-network:
-    driver: bridge
-
-volumes:
-  postgres_data:
+  mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile.mcp
+    container_name: docling-rag-mcp
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - OPENAI_BASE_URL=${OPENAI_BASE_URL}
+      - EMBEDDING_MODEL=${EMBEDDING_MODEL:-text-embedding-3-small}
+      - LLM_CHOICE=${LLM_CHOICE:-gpt-4o-mini}
+      - METRICS_PORT=8080
+    command: ["uv", "run", "python", "-m", "docling_mcp.http_server"]
+    volumes:
+      - ./documents:/app/documents

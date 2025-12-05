@@ -37,7 +37,7 @@ Documentazione dei workflow CI/CD per il progetto docling-rag-agent.
 
 4. **build** (Docker)
 
-   - Build Streamlit Docker image (`Dockerfile`)
+   - Build Streamlit Docker image (`Dockerfile.streamlit`)
    - Build API Docker image (`Dockerfile.api`)
    - Verifica dimensioni immagini <500MB
    - Timeout: 20 minuti
@@ -94,7 +94,7 @@ Tutti i job sono **bloccanti** per garantire che solo codice di qualità venga m
    uv run pytest --cov=core --cov=ingestion --cov=docling_mcp --cov=utils --cov-report=term-missing --cov-fail-under=70 tests/unit/
 
    # Docker build
-   docker build -f Dockerfile -t docling-rag-agent:test .
+   docker build -f Dockerfile.streamlit -t docling-rag-agent:test .
    docker build -f Dockerfile.api -t docling-rag-agent-api:test .
    ```
 
@@ -107,8 +107,8 @@ Tutti i job sono **bloccanti** per garantire che solo codice di qualità venga m
 
 ### Docker Build Fails
 
-- Verifica che `Dockerfile` e `Dockerfile.api` siano corretti
-- Testa build locale: `docker build -f Dockerfile .`
+- Verifica che `Dockerfile.streamlit` e `Dockerfile.api` siano corretti
+- Testa build locale: `docker build -f Dockerfile.streamlit .`
 - Verifica dipendenze in `pyproject.toml`
 
 ### TruffleHog False Positives

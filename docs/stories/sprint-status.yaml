@@ -70,6 +70,6 @@ development_status:
   epic-5-retrospective: optional
 
   epic-6: backlog
-  6-1-reorganize-project-structure: backlog
-  6-2-clean-up-and-validate-structure: backlog
+  6-1-reorganize-project-structure: done
+  6-2-clean-up-and-validate-structure: review
   epic-6-retrospective: optional

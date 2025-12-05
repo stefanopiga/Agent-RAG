@@ -100,6 +100,7 @@ LANGFUSE_BASE_URL=https://cloud.langfuse.com
 
 ```bash
 # Esegui lo schema completo (include HNSW index ottimizzato)
+# Per Supabase: Usa SQL Editor e incolla contenuto di optimize_index.sql
 psql $DATABASE_URL < sql/optimize_index.sql
 ```
 
@@ -108,7 +109,7 @@ psql $DATABASE_URL < sql/optimize_index.sql
 **Upgrade database esistente:**
 
 ```bash
-python scripts/optimize_database.py --apply
+uv run python scripts/verification/optimize_database.py --apply
 ```
 
 Il file SQL (`sql/optimize_index.sql`) crea:
@@ -209,7 +210,11 @@ documents/
 ### 5. Esegui l'Applicazione (~10 secondi)
 
 ```bash
-streamlit run app.py
+# esegui api così accendi la parte sotto il cofano
+uv run uvicorn api.main:app --host 0.0.0.0 --port 8000
+
+# esegui streamlit cosi puoi interagire con l'UI
+uv run streamlit run app.py
 ```
 
 L'applicazione si aprirà automaticamente nel browser: `http://localhost:8501`
@@ -320,7 +325,19 @@ Il progetto include un **Model Context Protocol (MCP) server** ottimizzato per i
 
 **Setup MCP:**
 
-1. **Configura `.cursor/mcp.json`:**
+1. **Esegui il comando per avviare il server mcp:**
+
+```bash
+
+# avvia il server mcp
+uv run python mcp_server.py
+
+# apri la porta locale http://localhost:8080/health
+curl http://localhost:8080/health
+
+```
+
+2. **Configura `.cursor/mcp.json`:**
 
 ```json
 {
@@ -332,20 +349,16 @@ Il progetto include un **Model Context Protocol (MCP) server** ottimizzato per i
         "--project",
         "/path/to/docling-rag-agent",
         "python",
-        "-m",
-        "docling_mcp.server"
-      ],
-      "env": {
-        "PYTHONPATH": "/path/to/docling-rag-agent"
-      }
+        "/path/to/docling-rag-agent/mcp_server.py"
+      ]
     }
   }
 }
 ```
 
-2. **Restart Cursor** - MCP server si avvia automaticamente
+3. **Restart Cursor** - MCP server si avvia automaticamente
 
-3. **Usa il tool** in Cursor:
+4. **Usa il tool** in Cursor:
 
 ```
 Chiedi: "What is Docling?"
@@ -367,38 +380,12 @@ Il MCP tool cercherà nella knowledge base e risponderà con context
 
 ## 🤖 Code Quality & CI/CD
 
-### GitHub MCP Server (Development Standard)
-
-Il progetto utilizza il **GitHub MCP Server** come standard per operazioni GitHub automatizzate in Cursor IDE.
-
-**Configurazione `.cursor/mcp.json`:**
-
-```json
-{
-  "mcpServers": {
-    "github": {
-      "command": "npx",
-      "args": ["-y", "@modelcontextprotocol/server-github"],
-      "env": {
-        "GITHUB_PERSONAL_ACCESS_TOKEN": "<your-token>"
-      }
-    }
-  }
-}
-```
-
-**Funzionalità disponibili:**
-- Branch management: `create_branch`, `list_branches`
-- File operations: `push_files`, `create_or_update_file`
-- Pull requests: `create_pull_request`, `merge_pull_request`
-- Issues: `list_issues`, `issue_write`, `add_issue_comment`
-- Code search: `search_code`, `search_repositories`
-
 ### CodeRabbit Integration
 
 Il repository utilizza [CodeRabbit](https://coderabbit.ai) per code review AI-powered automatica su ogni pull request.
 
 **Funzionalità:**
+
 - ✅ Review automatica su ogni PR
 - 📝 Suggerimenti inline e best practices
 - 🔒 Security analysis automatica
@@ -408,13 +395,13 @@ Il repository utilizza [CodeRabbit](https://coderabbit.ai) per code review AI-po
 
 GitHub Actions esegue automaticamente su ogni PR e push a `main`/`develop`:
 
-| Job | Descrizione | Tool |
-|-----|-------------|------|
-| **lint** | Linting e format check | Ruff |
-| **type-check** | Type checking statico | Mypy |
-| **test** | Unit/integration tests con coverage >70% | Pytest |
-| **build** | Docker image build validation (<500MB) | Docker Buildx |
-| **secret-scan** | Secret scanning preventivo | TruffleHog OSS |
+| Job             | Descrizione                              | Tool           |
+| --------------- | ---------------------------------------- | -------------- |
+| **lint**        | Linting e format check                   | Ruff           |
+| **type-check**  | Type checking statico                    | Mypy           |
+| **test**        | Unit/integration tests con coverage >70% | Pytest         |
+| **build**       | Docker image build validation (<500MB)   | Docker Buildx  |
+| **secret-scan** | Secret scanning preventivo               | TruffleHog OSS |
 
 ## 📚 Developer Resources
 
@@ -660,13 +647,13 @@ Il sistema è stato ottimizzato per performance reattive:
 
 ```bash
 # Verifica status DB index
-python scripts/optimize_database.py --check
+uv run python scripts/verification/optimize_database.py --check
 
 # Applica ottimizzazioni (upgrade HNSW index)
-python scripts/optimize_database.py --apply
+uv run python scripts/verification/optimize_database.py --apply
 
 # Test performance
-python scripts/test_mcp_performance.py
+uv run python scripts/testing/test_mcp_performance.py
 ```
 
 ### Cache Embedding
@@ -797,7 +784,7 @@ psql $DATABASE_URL -c "SELECT 1"
 psql $DATABASE_URL -c "SELECT * FROM pg_extension WHERE extname = 'vector'"
 
 # Test performance index
-python scripts/optimize_database.py --check
+python scripts/verification/optimize_database.py --check
 ```
 
 ### Reset Ambiente

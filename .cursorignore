@@ -2,3 +2,32 @@
 .env.*
 !.env.example 
 
+# Dependencies
+node_modules/
+.venv/
+venv/
+__pycache__/
+.pytest_cache/
+
+# Build outputs
+dist/
+build/
+site/
+*.egg-info/
+
+# Generated files
+metrics/
+.coverage/
+htmlcov/
+
+# Large document folders
+documents_copy_mia/
+documents_copy_cooleman/
+
+# IDE and tooling
+.vscode/
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db

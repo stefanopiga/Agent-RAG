@@ -111,13 +111,17 @@ docling-rag-agent/
 │       └── release.yml              # Release automation
 │
 ├── app.py                           # Epic 3: Streamlit UI entry point
+├── mcp_server.py                    # Epic 2: MCP server entry point with observability
 ├── pyproject.toml                   # Project configuration (UV)
 ├── uv.lock                          # Dependency lock file
 ├── docker-compose.yml               # Docker orchestration
-├── Dockerfile                       # Streamlit container
-├── Dockerfile.api                   # API container (optional)
+├── Dockerfile.streamlit             # Streamlit container
+├── Dockerfile.api                   # API container
+├── Dockerfile.mcp                   # MCP server container
+├── prometheus.yml                   # Prometheus scraping configuration
 ├── .env.example                     # Environment variables template
 ├── coderabbit.yaml                  # CodeRabbit configuration
+├── mkdocs.yml                       # MkDocs configuration
 ├── CHANGELOG.md                     # Semantic versioning changelog
 ├── .gitignore
 └── README.md                        # Project documentation

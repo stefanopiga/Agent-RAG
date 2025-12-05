@@ -22,12 +22,14 @@ from docling_mcp.metrics import generate_metrics_output, get_metrics_content_typ
 logger = logging.getLogger(__name__)
 
 # Create FastAPI app for observability endpoints
+# Disable automatic redirects to prevent /metrics -> /metric issues
 app = FastAPI(
     title="Docling RAG Agent - Observability",
     description="Prometheus metrics and health check endpoints for the MCP server",
     version="1.0.0",
     docs_url="/docs",
     redoc_url=None,
+    redirect_slashes=False,  # Disable automatic redirects to prevent routing issues
 )
 
 
@@ -46,6 +48,17 @@ async def metrics_endpoint():
 
     Recommended scrape_interval: 15s (default) for real-time monitoring,
     60s for cost-sensitive deployments.
+    """
+    metrics_output = generate_metrics_output()
+    return Response(content=metrics_output, media_type=get_metrics_content_type())
+
+
+@app.get("/metrics/", tags=["Observability"])
+async def metrics_endpoint_with_slash():
+    """
+    Prometheus metrics endpoint (with trailing slash).
+    
+    Same as /metrics, provided for compatibility.
     """
     metrics_output = generate_metrics_output()
     return Response(content=metrics_output, media_type=get_metrics_content_type())

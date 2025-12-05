@@ -1,5 +1,32 @@
 # Changelog - docling-rag-agent
 
+## [2.1.0] - 2025-12-05
+
+### Changed
+
+- **Dockerfile Optimization (Story 6-2)**
+  - Renamed `Dockerfile` → `Dockerfile.streamlit` for naming consistency
+  - Converted to multi-stage build (builder + runtime stages)
+  - Replaced `COPY . .` with explicit COPY commands for minimal images
+  - Added non-root user for security
+  - Updated docker-compose.yml to reference new Dockerfile name
+
+- **Project Structure Validation**
+  - Added `mcp_server.py` and `prometheus.yml` to authorized root files
+  - Updated validation script to accept new file naming convention
+  - All validation scripts pass (structure + imports)
+
+- **Documentation Updates**
+  - Updated `docs/unified-project-structure.md` with current file list
+  - Updated `docs/architecture.md` Project Structure section
+  - Updated `.github/workflows/ci.yml` to use `Dockerfile.streamlit`
+  - Updated `.github/workflows/README.md` with correct Dockerfile references
+
+- **Docker Ignore Improvements**
+  - Added `.bmad/`, `.agent/`, `.cursor/`, `.vscode/` to exclusions
+  - Added `sql/`, `prometheus.yml`, `metrics` to exclusions
+  - Ensures Docker images contain only runtime-required files
+
 ## [2.0.0] - 2025-11-24
 
 ### 🚀 Major Performance Optimizations

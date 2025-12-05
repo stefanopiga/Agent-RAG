@@ -26,8 +26,8 @@ COPY pyproject.toml uv.lock ./
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-install-project
 
-# Copy application code
-COPY api/ ./api/
+# Copy application code (MCP server needs docling_mcp, core, ingestion, utils)
+COPY docling_mcp/ ./docling_mcp/
 COPY core/ ./core/
 COPY ingestion/ ./ingestion/
 COPY utils/ ./utils/
@@ -54,7 +54,7 @@ WORKDIR /app
 COPY --from=builder /app/.venv /app/.venv
 
 # Copy application code
-COPY api/ ./api/
+COPY docling_mcp/ ./docling_mcp/
 COPY core/ ./core/
 COPY ingestion/ ./ingestion/
 COPY utils/ ./utils/
@@ -65,8 +65,8 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONPATH=/app
 
-# Expose the API port
-EXPOSE 8000
+# Expose the MCP HTTP server port (for /health and /metrics)
+EXPOSE 8080
 
 # Create a non-root user for security
 RUN useradd -m appuser && chown -R appuser /app
@@ -74,7 +74,7 @@ USER appuser
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-  CMD curl -f http://localhost:8000/health || exit 1
+  CMD curl -f http://localhost:8080/health || exit 1
 
-# Start the API service
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start the MCP HTTP server
+CMD ["uv", "run", "python", "-m", "docling_mcp.http_server"]
