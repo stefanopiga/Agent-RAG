@@ -83,7 +83,7 @@ Screenshot del dashboard LangFuse focalizzato su metriche di costo e utilizzo:
   - Ripartizione per tipo:
     - `OpenAI-generation` (1.045): chiamate generazione testo
     - `OpenAI-embedding` (543): chiamate creazione embeddings
-    - `klansit_query` (6): operazioni specifiche custom
+    - `streamlit_query` (6): query dall'interfaccia Streamlit
 
 - **Sezione "Model costs":**
   - **$0.11665 Total cost:** costo cumulativo
