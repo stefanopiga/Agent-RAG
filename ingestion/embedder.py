@@ -22,8 +22,7 @@ try:
 except ImportError:
     from openai import AsyncOpenAI as LangfuseAsyncOpenAI
 
-    logger.info(
-        "LangFuse OpenAI wrapper not available - using direct OpenAI client")
+    logger.info("LangFuse OpenAI wrapper not available - using direct OpenAI client")
 
 
 class BaseEmbedder(ABC):
@@ -89,8 +88,7 @@ class EmbeddingGenerator(BaseEmbedder):
         self.base_url = base_url or provider_config.base_url
 
         # Initialize OpenAI client (LangFuse wrapper if available for cost tracking)
-        self.client = LangfuseAsyncOpenAI(
-            api_key=self.api_key, base_url=self.base_url)
+        self.client = LangfuseAsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
 
         if self.use_cache:
             self.cache = EmbeddingCache()
@@ -127,7 +125,7 @@ class EmbeddingGenerator(BaseEmbedder):
 
         # Process in batches
         for i in range(0, len(texts), self.batch_size):
-            batch = texts[i: i + self.batch_size]
+            batch = texts[i : i + self.batch_size]
 
             # Check cache for each item in batch
             batch_embeddings: List[List[float] | None] = [None] * len(batch)
@@ -193,8 +191,7 @@ class EmbeddingGenerator(BaseEmbedder):
             chunk.embedding = embeddings[i]
             if chunk.metadata:
                 chunk.metadata["embedding_model"] = self.model_name
-                chunk.metadata["embedding_generated_at"] = datetime.now(
-                ).isoformat()
+                chunk.metadata["embedding_generated_at"] = datetime.now().isoformat()
 
         return chunks
 
