@@ -42,7 +42,7 @@ class DocumentIngestionPipeline:
         self,
         config: IngestionConfig,
         documents_folder: str = "documents",
-        clean_before_ingest: bool = True,
+        clean_before_ingest: bool = False,
         fast_mode: bool = False,
     ):
         """
@@ -51,7 +51,7 @@ class DocumentIngestionPipeline:
         Args:
             config: Ingestion configuration
             documents_folder: Folder containing markdown documents
-            clean_before_ingest: Whether to clean existing data before ingestion (default: True)
+            clean_before_ingest: Whether to clean existing data before ingestion (default: False)
             fast_mode: Whether to use fast mode (disable OCR and table structure)
         """
         self.config = config
@@ -397,25 +397,67 @@ class DocumentIngestionPipeline:
         chunks: List[DocumentChunk],
         metadata: Dict[str, Any],
     ) -> str:
-        """Save document and chunks to PostgreSQL."""
+        """
+        Save document and chunks to PostgreSQL.
+
+        Idempotent: If a document with the same source already exists, it will be updated
+        instead of creating a duplicate. Old chunks are deleted and new ones inserted.
+        """
         async with db_pool.acquire() as conn:
             async with conn.transaction():
-                # Insert document
-                document_result = await conn.fetchrow(
+                # Check if document with same source already exists
+                existing_doc = await conn.fetchrow(
                     """
-                    INSERT INTO documents (title, source, content, metadata)
-                    VALUES ($1, $2, $3, $4)
-                    RETURNING id::text
+                    SELECT id FROM documents WHERE source = $1
                     """,
-                    title,
                     source,
-                    content,
-                    json.dumps(metadata),
                 )
 
-                document_id = document_result["id"]
+                if existing_doc:
+                    # Document exists: update it and replace chunks
+                    document_id = existing_doc["id"]
+                    logger.info(
+                        f"Document with source '{source}' already exists (ID: {document_id}), updating..."
+                    )
 
-                # Insert chunks
+                    # Update document
+                    await conn.execute(
+                        """
+                        UPDATE documents
+                        SET title = $1, content = $2, metadata = $3
+                        WHERE id = $4
+                        """,
+                        title,
+                        content,
+                        json.dumps(metadata),
+                        document_id,
+                    )
+
+                    # Delete old chunks
+                    await conn.execute(
+                        """
+                        DELETE FROM chunks WHERE document_id = $1
+                        """,
+                        document_id,
+                    )
+                    logger.info(f"Deleted old chunks for document {document_id}")
+                else:
+                    # Document doesn't exist: insert new one
+                    document_result = await conn.fetchrow(
+                        """
+                        INSERT INTO documents (title, source, content, metadata)
+                        VALUES ($1, $2, $3, $4)
+                        RETURNING id::text
+                        """,
+                        title,
+                        source,
+                        content,
+                        json.dumps(metadata),
+                    )
+                    document_id = document_result["id"]
+                    logger.info(f"Created new document with ID: {document_id}")
+
+                # Insert chunks (same for both update and insert cases)
                 for chunk in chunks:
                     # Convert embedding to PostgreSQL vector string format
                     embedding_data = None
@@ -456,9 +498,9 @@ async def main():
     parser = argparse.ArgumentParser(description="Ingest documents into vector DB")
     parser.add_argument("--documents", "-d", default="documents", help="Documents folder path")
     parser.add_argument(
-        "--no-clean",
+        "--clean",
         action="store_true",
-        help="Skip cleaning existing data before ingestion (default: cleans automatically)",
+        help="Clean existing data before ingestion (default: incremental update, no clean)",
     )
     parser.add_argument(
         "--chunk-size", type=int, default=1000, help="Chunk size for splitting documents"
@@ -488,11 +530,11 @@ async def main():
         use_semantic_chunking=not args.no_semantic,
     )
 
-    # Create and run pipeline - clean by default unless --no-clean is specified
+    # Create and run pipeline - incremental by default (no clean) unless --clean is specified
     pipeline = DocumentIngestionPipeline(
         config=config,
         documents_folder=args.documents,
-        clean_before_ingest=not args.no_clean,  # Clean by default
+        clean_before_ingest=args.clean,  # Only clean if explicitly requested
         fast_mode=args.fast,
     )
 

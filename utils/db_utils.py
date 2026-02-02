@@ -26,16 +26,19 @@ class DatabasePool:
         Initialize database pool.
 
         Args:
-            database_url: PostgreSQL connection URL
+            database_url: PostgreSQL connection URL. If not provided, reads from DATABASE_URL env var.
         """
+        # Don't validate DATABASE_URL here - only check during initialize()
+        # This allows importing the module without requiring DATABASE_URL to be set
         self.database_url = database_url or os.getenv("DATABASE_URL")
-        if not self.database_url:
-            raise ValueError("DATABASE_URL environment variable not set")
-
         self.pool: Optional[Pool] = None
 
     async def initialize(self):
         """Create optimized connection pool."""
+        # Validate DATABASE_URL here, not in __init__
+        if not self.database_url:
+            raise ValueError("DATABASE_URL environment variable not set")
+
         if not self.pool:
             # Optimized pool settings for MCP server workload
             # - min_size=2: Keep minimal connections warm (MCP has bursty traffic)
@@ -212,7 +215,7 @@ async def execute_query(query: str, *params) -> List[Dict[str, Any]]:
 async def test_connection() -> bool:
     """
     Test database connection using a dedicated connection (not the shared pool).
-    
+
     This avoids race conditions when health check runs from a different thread
     than the MCP server.
 
@@ -224,7 +227,7 @@ async def test_connection() -> bool:
         if not database_url:
             logger.debug("DATABASE_URL not set")
             return False
-        
+
         # Create a dedicated connection for health check (thread-safe)
         conn = await asyncpg.connect(database_url, timeout=5)
         try:

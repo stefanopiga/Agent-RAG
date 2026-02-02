@@ -84,4 +84,3 @@ class TestAPIHealthEndpoint:
             assert data["status"] == "down"
             assert data["services"]["database"]["status"] == "down"
             assert "Connection refused" in data["services"]["database"]["message"]
-

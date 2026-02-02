@@ -37,6 +37,17 @@ COPY utils/ ./utils/
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen
 
+# Clean up .venv to reduce size: remove unnecessary files (keep .dist-info for metadata)
+RUN find /app/.venv -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true && \
+    find /app/.venv -type f -name "*.pyc" -delete && \
+    find /app/.venv -type f -name "*.pyo" -delete && \
+    find /app/.venv -type f -name "*.py[co]" -delete && \
+    find /app/.venv -type d -name "tests" -not -path "*/site-packages/*/tests" -exec rm -rf {} + 2>/dev/null || true && \
+    find /app/.venv -type d -name "test" -not -path "*/site-packages/*/test" -exec rm -rf {} + 2>/dev/null || true && \
+    find /app/.venv -type d -name "docs" -not -path "*/site-packages/*/docs" -exec rm -rf {} + 2>/dev/null || true && \
+    find /app/.venv -type f -name "*.txt" -path "*/test*" -delete 2>/dev/null || true && \
+    find /app/.venv -type f -name "*.md" -path "*/test*" -delete 2>/dev/null || true
+
 # Runtime stage (clean, minimal image)
 FROM python:3.11-slim-bookworm
 
@@ -53,15 +64,18 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /app
 
-# Copy virtual environment from builder (only runtime files)
-COPY --from=builder /app/.venv /app/.venv
+# Create non-root user first (needed for --chown)
+RUN useradd -m appuser
 
-# Copy ONLY runtime-required application code
-COPY app.py ./
-COPY client/ ./client/
-COPY core/ ./core/
-COPY ingestion/ ./ingestion/
-COPY utils/ ./utils/
+# Copy virtual environment from builder with correct ownership
+COPY --from=builder --chown=appuser:appuser /app/.venv /app/.venv
+
+# Copy ONLY runtime-required application code with correct ownership
+COPY --chown=appuser:appuser app.py ./
+COPY --chown=appuser:appuser client/ ./client/
+COPY --chown=appuser:appuser core/ ./core/
+COPY --chown=appuser:appuser ingestion/ ./ingestion/
+COPY --chown=appuser:appuser utils/ ./utils/
 
 # Set environment
 ENV PATH="/app/.venv/bin:$PATH"
@@ -72,8 +86,6 @@ ENV PYTHONPATH=/app
 # Expose Streamlit port
 EXPOSE 8501
 
-# Create a non-root user for security
-RUN useradd -m appuser && chown -R appuser /app
 USER appuser
 
 # Health check for Streamlit

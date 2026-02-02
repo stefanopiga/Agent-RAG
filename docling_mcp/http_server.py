@@ -57,7 +57,7 @@ async def metrics_endpoint():
 async def metrics_endpoint_with_slash():
     """
     Prometheus metrics endpoint (with trailing slash).
-    
+
     Same as /metrics, provided for compatibility.
     """
     metrics_output = generate_metrics_output()

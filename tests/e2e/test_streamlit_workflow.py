@@ -104,17 +104,13 @@ class TestStreamlitQueryWorkflow:
         chat_input.press("Enter")
 
         # Assert: User message appears in chat
-        user_message = page.locator('[data-testid="stChatMessage"]').filter(
-            has_text=test_query
-        )
+        user_message = page.locator('[data-testid="stChatMessage"]').filter(has_text=test_query)
         expect(user_message).to_be_visible(timeout=e2e_timeouts["element_wait"])
 
         # Assert: Assistant response appears (wait longer for LLM response)
         # Look for chat messages - should have at least 2 (user + assistant)
         chat_messages = page.locator('[data-testid="stChatMessage"]')
-        expect(chat_messages).to_have_count(
-            2, timeout=e2e_timeouts["api_call"]
-        )
+        expect(chat_messages).to_have_count(2, timeout=e2e_timeouts["api_call"])
 
         # Take screenshot after workflow completion (AC#14)
         page.screenshot(path="tests/e2e/screenshots/query_workflow_success.png")
@@ -297,9 +293,7 @@ class TestIsolation:
         chat_input.press("Enter")
 
         # Assert: Query appears
-        user_message = page.locator('[data-testid="stChatMessage"]').filter(
-            has_text=unique_query
-        )
+        user_message = page.locator('[data-testid="stChatMessage"]').filter(has_text=unique_query)
         expect(user_message).to_be_visible(timeout=e2e_timeouts["element_wait"])
 
     def test_session_state_isolated_second(
@@ -327,6 +321,7 @@ class TestIsolation:
         chat_messages = page.locator('[data-testid="stChatMessage"]')
         # Should have 0 chat messages (fresh session)
         expect(chat_messages).to_have_count(0, timeout=e2e_timeouts["short_wait"])
+
 
 # ============================================================================
 # NETWORK INTERCEPTION TESTS
@@ -370,4 +365,3 @@ class TestNetworkInterception:
         # Note: Actual response depends on how app handles mocked API
         chat_messages = page.locator('[data-testid="stChatMessage"]')
         expect(chat_messages).to_have_count(2, timeout=e2e_timeouts["api_call"])
-

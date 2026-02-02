@@ -271,7 +271,9 @@ def mock_all_external_apis(
 
 
 @pytest.fixture
-def screenshot_on_failure(page: Page, request: pytest.FixtureRequest) -> Generator[None, None, None]:
+def screenshot_on_failure(
+    page: Page, request: pytest.FixtureRequest
+) -> Generator[None, None, None]:
     """
     Capture screenshot on test failure.
 
@@ -298,4 +300,3 @@ def pytest_runtest_makereport(item, call):
     outcome = yield
     rep = outcome.get_result()
     setattr(item, f"rep_{rep.when}", rep)
-

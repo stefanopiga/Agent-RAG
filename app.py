@@ -175,27 +175,46 @@ async def run_agent(user_input: str):
             latency_ms=latency_ms,
             langfuse_trace_id=trace_id,
         )
+        # Mark that stats need refresh - sidebar will read fresh data on next render
+        if "stats_refresh_needed" not in st.session_state:
+            st.session_state.stats_refresh_needed = True
     else:
         # Fallback to in-memory stats
         if st.session_state.in_memory_stats:
             st.session_state.in_memory_stats.update(cost, latency_ms)
+            # Mark that stats need refresh
+            if "stats_refresh_needed" not in st.session_state:
+                st.session_state.stats_refresh_needed = True
 
     return response_text
 
 
 # Get session stats for sidebar (AC3.1.6)
 def get_cached_session_stats():
-    """Get session stats with caching for performance."""
+    """
+    Get session stats with caching for performance.
+
+    Always fetches fresh data from DB to ensure metrics are up-to-date.
+    Streamlit's rerun mechanism will refresh the sidebar after each query.
+    """
     session_id = st.session_state.session_id
 
     if st.session_state.session_db_available:
+        # Always fetch fresh stats from DB to ensure metrics are current
         stats = asyncio.run(get_session_stats(session_id))
         if stats:
+            # Clear refresh flag if it was set
+            if st.session_state.get("stats_refresh_needed"):
+                st.session_state.stats_refresh_needed = False
             return stats
 
     # Fallback to in-memory stats
     if st.session_state.in_memory_stats:
-        return st.session_state.in_memory_stats.to_dict()
+        stats = st.session_state.in_memory_stats.to_dict()
+        # Clear refresh flag if it was set
+        if st.session_state.get("stats_refresh_needed"):
+            st.session_state.stats_refresh_needed = False
+        return stats
 
     # Default empty stats
     return {
@@ -291,3 +310,7 @@ if prompt := st.chat_input("Ask something about your documents..."):
 
     # Add assistant message to chat history
     st.session_state.messages.append({"role": "assistant", "content": response_text})
+
+    # Trigger rerun to refresh sidebar metrics after query completion
+    # This ensures metrics are updated immediately after the query
+    st.rerun()

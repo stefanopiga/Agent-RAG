@@ -1,49 +1,121 @@
-__pycache__
-*.pyc
-*.pyo
-*.pyd
+# Python cache and bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
 .Python
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
 env/
 venv/
 .venv/
-pip-log.txt
-pip-delete-this-directory.txt
+ENV/
+env.bak/
+venv.bak/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing and coverage
+.pytest_cache/
 .tox/
 .coverage
 .coverage.*
-.cache
+htmlcov/
+.nox/
+.hypothesis/
 nosetests.xml
 coverage.xml
 *.cover
-*.log
-.git
-.mypy_cache
-.pytest_cache
-.hypothes
-documents/
-documents copy/
-docling_basics/output/
-docling-rag-agent/
-.env
-.DS_Store
 
-documents_copy_mia/
-documents_copy_cooleman/
-node_modules/
-site/
-.bmad/
-.agent/
-.claude
-.cursor/
-.vscode/
-tests/
-scripts/
+# Logs and temporary files
+*.log
+*.tmp
+*.bak
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation and guides (not needed in containers)
 docs/
 guide/
-sql/
 *.md
 !README.md
-.git/
 *.excalidraw
+
+# Project management and configuration (not needed in containers)
+.bmad/
+.agent/
+.claude/
+.cursor/
+.coderabbit.yaml
 prometheus.yml
-metrics
+metrics/
+
+# Test files and scripts (not needed in containers)
+tests/
+scripts/
+sql/
+
+# Development directories
+documents_copy_mia/
+documents_copy_cooleman/
+documents copy/
+docling_basics/
+docling-rag-agent/
+
+# Node.js (if present)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+package.json
+
+# Build artifacts
+site/
+.mkdocs_cache/
+
+# Environment files (should be passed via env_file in docker-compose)
+.env
+.env.*
+.venv
+
+# Cache directories
+.cache/
+*.cache
+
+# Database files (if any local DBs)
+*.db
+*.sqlite
+*.sqlite3
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# pyenv
+.python-version
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# ruff
+.ruff_cache/
+
+# GitHub
+.github/

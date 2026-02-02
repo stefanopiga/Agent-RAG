@@ -253,10 +253,10 @@ jobs:
 
       - name: Run TruffleHog OSS
         # --results=verified,unknown: Include only verified or unknown secrets (reduces false positives)
-        # --fail: Exit with error code if secrets found
+        # --fail: Exit with error code if secrets found (handled by action itself)
         uses: trufflesecurity/trufflehog@main
         with:
-          extra_args: --results=verified,unknown --fail
+          extra_args: --results=verified,unknown
 
   # ============================================================================
   # HEALTH-CHECK JOB

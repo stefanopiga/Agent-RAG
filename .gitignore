@@ -17,9 +17,9 @@ PRPs
 /documents_copy_cooleman
 /documents_copy_mia
 
-.agent
-.bmad
-.cursor
+#.agent
+#.bmad
+#.cursor
 .claude
 .vscode
 
