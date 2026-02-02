@@ -121,14 +121,14 @@ class EmbeddingGenerator(BaseEmbedder):
 
     async def embed_documents(self, texts: List[str]) -> List[List[float]]:
         """Embed a list of texts (chunks)."""
-        all_embeddings = []
+        all_embeddings: List[List[float]] = []
 
         # Process in batches
         for i in range(0, len(texts), self.batch_size):
             batch = texts[i : i + self.batch_size]
 
             # Check cache for each item in batch
-            batch_embeddings = [None] * len(batch)
+            batch_embeddings: List[List[float] | None] = [None] * len(batch)
             indices_to_fetch = []
             texts_to_fetch = []
 

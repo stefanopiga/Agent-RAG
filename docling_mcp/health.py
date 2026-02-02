@@ -200,7 +200,14 @@ async def get_health_status() -> HealthResponse:
     else:
         overall_status = "ok"
 
-    return HealthResponse(status=overall_status, timestamp=timestamp, services=services)
+    # Type cast to satisfy Literal type requirement
+    from typing import cast
+    
+    return HealthResponse(
+        status=cast(Literal["ok", "degraded", "down"], overall_status), 
+        timestamp=timestamp, 
+        services=services
+    )
 
 
 def get_health_response_dict() -> Dict[str, Any]:
