@@ -32,12 +32,12 @@ Endpoints (after server starts):
 import asyncio
 import logging
 import os
-import sys
 import threading
 from typing import Optional
 
 # Load environment variables FIRST (before any other imports)
 from dotenv import load_dotenv
+
 load_dotenv()
 
 # Configure logging before imports
@@ -64,6 +64,7 @@ def start_http_server_thread(host: str = "0.0.0.0", port: int = 8080) -> Optiona
     def run_server():
         try:
             import uvicorn
+
             from docling_mcp.http_server import app
             
             # Suppress uvicorn access logs to avoid polluting STDIO

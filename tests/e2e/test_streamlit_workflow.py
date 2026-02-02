@@ -17,11 +17,9 @@ AC Coverage:
 """
 
 import os
-import re
 
 import pytest
 from playwright.sync_api import Page, expect
-
 
 # ============================================================================
 # TEST CONFIGURATION
