@@ -1,0 +1,2207 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Docling RAG Agent">
+      
+      
+        <meta name="author" content="Stefano">
+      
+      
+      
+        <link rel="prev" href="../architecture/">
+      
+      
+        <link rel="next" href="../coding-standards/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Development Guide - Docling RAG Agent</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#guida-allo-sviluppo" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Docling RAG Agent" class="md-header__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Docling RAG Agent
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Development Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting-started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Development Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../coding-standards/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Coding Standards
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../testing-strategy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Testing Strategy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../unified-project-structure.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Project Structure
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../langfuse-dashboard-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  LangFuse Dashboard
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api-reference/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Docling RAG Agent" class="md-nav__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Docling RAG Agent
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Guide
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#indice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Indice
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#struttura-del-progetto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Struttura del Progetto
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Struttura del Progetto">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#organizzazione-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Organizzazione Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#responsabilita-moduli" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Responsabilità Moduli
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pattern-fastmcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern FastMCP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pattern FastMCP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#testabilita-unitaria-con-fastmcp-2x" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testabilità Unitaria con FastMCP 2.x
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#soluzioni-per-testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Soluzioni per Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Soluzioni per Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-accesso-alla-funzione-originale-tramite-fn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A) Accesso alla Funzione Originale tramite .fn
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-approccio-raccomandato-test-via-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B) Approccio Raccomandato: Test via Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risorse-dinamiche-vs-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risorse Dinamiche vs Tools
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Risorse Dinamiche vs Tools">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#quando-usare-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quando Usare Resources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quando-usare-tools" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quando Usare Tools
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gestione-errori-e-propagazione-al-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gestione Errori e Propagazione al Client
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gestione Errori e Propagazione al Client">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#meccanismo-di-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Meccanismo di Default
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comportamento-con-mask_error_details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comportamento con mask_error_details
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-verso-il-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging verso il Client
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#codici-errore-mcp-standard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Codici Errore MCP Standard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#raccomandazioni-fastmcp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Raccomandazioni FastMCP
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing-con-pydanticai" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing con PydanticAI
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing con PydanticAI">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#panoramica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Panoramica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Panoramica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#stack-testing-raccomandato" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stack Testing Raccomandato
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testmodel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TestModel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agentoverride" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent.override()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pytest-fixture-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pytest Fixture Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#capture_run_messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        capture_run_messages()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#allow_model_requests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ALLOW_MODEL_REQUESTS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ALLOW_MODEL_REQUESTS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pattern-conftestpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pattern conftest.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#functionmodel-testing-avanzato" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FunctionModel - Testing Avanzato
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing Checklist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gotchaswarnings-comuni" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Gotchas/Warnings Comuni
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Gotchas/Warnings Comuni">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-testmodel-hardcoded-values" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. TestModel Hardcoded Values
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-allow_model_requests-dimenticato" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ALLOW_MODEL_REQUESTS Dimenticato
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-capture_run_messages-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. capture_run_messages Scope
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-pytest-async-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Pytest Async Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#link-documentazione-ufficiale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Link Documentazione Ufficiale
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#walkthrough-implementazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Walkthrough Implementazione
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Walkthrough Implementazione">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#refactoring-e-implementazione-mcp-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Refactoring e Implementazione MCP Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#1-core-logic-decoupling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Core Logic Decoupling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-mcp-server-implementation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. MCP Server Implementation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-application-updates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Application Updates
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#come-usare" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Come Usare
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Come Usare">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-the-mcp-server-cursor-claude-desktop" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the MCP Server (Cursor / Claude Desktop)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#running-the-streamlit-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running the Streamlit App
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verifica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifica
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices-generali" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices Generali
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices Generali">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#code-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding-standards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unified-project-structure.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../langfuse-dashboard-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangFuse Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/ingestion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="guida-allo-sviluppo">Guida allo Sviluppo</h1>
+<p>Questa guida fornisce informazioni dettagliate sull'architettura del progetto, pattern di sviluppo con FastMCP, testing con PydanticAI, e walkthrough dell'implementazione.</p>
+<h2 id="indice">Indice</h2>
+<ul>
+<li><a href="#struttura-del-progetto">Struttura del Progetto</a></li>
+<li><a href="#pattern-fastmcp">Pattern FastMCP</a></li>
+<li><a href="#testing-con-pydanticai">Testing con PydanticAI</a></li>
+<li><a href="#walkthrough-implementazione">Walkthrough Implementazione</a></li>
+</ul>
+<hr />
+<h2 id="struttura-del-progetto">Struttura del Progetto</h2>
+<h3 id="organizzazione-directory">Organizzazione Directory</h3>
+<pre><code>docling-rag-agent/
+├── app.py                         # Interfaccia web Streamlit
+├── mcp_server.py                  # Entry point MCP + HTTP observability
+├── docling_mcp/                   # MCP server module
+│   ├── server.py                  # FastMCP instance con tools
+│   ├── lifespan.py                # Lifecycle risorse (DB, embedder)
+│   ├── http_server.py             # HTTP server per /health e /metrics
+│   ├── health.py                  # Health check logic
+│   └── metrics.py                 # Prometheus metrics
+├── core/
+│   ├── agent.py                   # PydanticAI agent wrapper
+│   └── rag_service.py             # Core RAG logic (decoupled)
+├── api/
+│   ├── main.py                    # FastAPI REST API
+│   └── models.py                  # Modelli API
+├── client/
+│   └── api_client.py              # Client API per chiamate esterne
+├── ingestion/
+│   ├── ingest.py                  # Pipeline ingestione documenti
+│   ├── embedder.py                # Generazione embedding con caching
+│   └── chunker.py                 # Chunking intelligente (Docling HybridChunker)
+├── utils/
+│   ├── providers.py               # Configurazione modelli/client OpenAI
+│   ├── db_utils.py                # Connection pooling ottimizzato
+│   └── models.py                  # Modelli Pydantic per validazione
+├── sql/
+│   └── optimize_index.sql         # Schema completo + HNSW index ottimizzato
+├── scripts/
+│   ├── verification/              # Script di verifica e validazione
+│   │   ├── verify_api.py
+│   │   ├── verify_api_endpoints.py
+│   │   ├── verify_mcp_setup.py
+│   │   └── optimize_database.py
+│   ├── validation/                # Script validazione struttura
+│   │   ├── validate_structure.py
+│   │   └── validate_imports.py
+│   ├── testing/                   # Script test utilities (non pytest)
+│   │   ├── test_cost_tracking.py
+│   │   ├── test_e2e_langfuse_timing.py
+│   │   └── test_mcp_performance.py
+│   └── debug/                     # Script debug
+│       └── debug_mcp_tools.py
+├── guide/                         # Documentazione progetto
+├── docs/                          # Documentazione BMAD workflow
+├── documents/                     # Documenti per ingestione
+└── tests/                         # Test suite (pytest)
+    ├── unit/                      # Unit tests
+    ├── integration/               # Integration tests
+    └── e2e/                       # End-to-end tests
+</code></pre>
+<h3 id="responsabilita-moduli">Responsabilità Moduli</h3>
+<table>
+<thead>
+<tr>
+<th>Directory</th>
+<th>Responsabilità</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>core/</code></td>
+<td>Business logic principale, agent RAG, servizio ricerca</td>
+</tr>
+<tr>
+<td><code>api/</code></td>
+<td>REST API per accesso programmatico</td>
+</tr>
+<tr>
+<td><code>docling_mcp/</code></td>
+<td>Server MCP per integrazione Cursor IDE</td>
+</tr>
+<tr>
+<td><code>client/</code></td>
+<td>Client API per chiamate esterne</td>
+</tr>
+<tr>
+<td><code>ingestion/</code></td>
+<td>Pipeline ingestione documenti, chunking, embedding</td>
+</tr>
+<tr>
+<td><code>utils/</code></td>
+<td>Utility condivise: configurazione, connessione DB, modelli</td>
+</tr>
+<tr>
+<td><code>scripts/verification/</code></td>
+<td>Script verifica: API, MCP setup, ottimizzazione DB</td>
+</tr>
+<tr>
+<td><code>scripts/validation/</code></td>
+<td>Script validazione: struttura progetto, imports Python</td>
+</tr>
+<tr>
+<td><code>scripts/testing/</code></td>
+<td>Script test utilities (non pytest): performance, cost tracking</td>
+</tr>
+<tr>
+<td><code>scripts/debug/</code></td>
+<td>Script debug: MCP tools debugging</td>
+</tr>
+<tr>
+<td><code>guide/</code></td>
+<td>Documentazione progetto (troubleshooting, development guide)</td>
+</tr>
+<tr>
+<td><code>docs/</code></td>
+<td>Documentazione workflow BMAD</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="pattern-fastmcp">Pattern FastMCP</h2>
+<h3 id="testabilita-unitaria-con-fastmcp-2x">Testabilità Unitaria con FastMCP 2.x</h3>
+<p>In FastMCP 2.x, i decoratori <code>@mcp.tool</code> e <code>@mcp.resource</code> trasformano le funzioni in oggetti (<code>FunctionTool</code>, <code>FunctionResource</code>).</p>
+<pre><code class="language-python"># FastMCP 2.x - NON funziona
+@mcp.tool
+def add(a: int, b: int) -&gt; int:
+    return a + b
+
+print(add(1, 2))  # TypeError: 'FunctionTool' object is not callable
+</code></pre>
+<h3 id="soluzioni-per-testing">Soluzioni per Testing</h3>
+<h4 id="a-accesso-alla-funzione-originale-tramite-fn">A) Accesso alla Funzione Originale tramite <code>.fn</code></h4>
+<pre><code class="language-python"># Accesso diretto alla funzione wrappata
+result = add.fn(1, 2)  # Funziona
+</code></pre>
+<h4 id="b-approccio-raccomandato-test-via-client">B) Approccio Raccomandato: Test via Client</h4>
+<pre><code class="language-python">import pytest
+from fastmcp.client import Client
+from my_project.main import mcp
+
+@pytest.fixture
+async def main_mcp_client():
+    async with Client(transport=mcp) as mcp_client:
+        yield mcp_client
+
+@pytest.mark.parametrize(&quot;a, b, expected&quot;, [(1, 2, 3), (2, 3, 5)])
+async def test_add(a: int, b: int, expected: int, main_mcp_client: Client):
+    result = await main_mcp_client.call_tool(
+        name=&quot;add&quot;,
+        arguments={&quot;x&quot;: a, &quot;y&quot;: b}
+    )
+    assert result.data == expected
+</code></pre>
+<p>Configurazione pytest richiesta in <code>pyproject.toml</code>:</p>
+<pre><code class="language-toml">[tool.pytest.ini_options]
+asyncio_mode = &quot;auto&quot;
+</code></pre>
+<h3 id="risorse-dinamiche-vs-tools">Risorse Dinamiche vs Tools</h3>
+<table>
+<thead>
+<tr>
+<th>Concetto</th>
+<th>Semantica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Resources</strong></td>
+<td>Rappresentano dati che un server MCP vuole rendere disponibili ai client (file, schemi DB, info app)</td>
+</tr>
+<tr>
+<td><strong>Tools</strong></td>
+<td>Rappresentano operazioni dinamiche che possono modificare lo stato o interagire con sistemi esterni</td>
+</tr>
+</tbody>
+</table>
+<h4 id="quando-usare-resources">Quando Usare Resources</h4>
+<p>Una lista di documenti generata dinamicamente da query DB <strong>può essere esposta come Resource</strong> se:</p>
+<ol>
+<li>È read-only</li>
+<li>Non ha side-effects</li>
+<li>Rappresenta "lo stato corrente" di una collezione</li>
+</ol>
+<pre><code class="language-python">@mcp.resource(&quot;documents://{document_id}&quot;)
+def get_document(document_id: str) -&gt; dict:
+    return db.query(f&quot;SELECT * FROM docs WHERE id = {document_id}&quot;)
+</code></pre>
+<h4 id="quando-usare-tools">Quando Usare Tools</h4>
+<p>Preferire Tool se:</p>
+<ul>
+<li>L'operazione richiede parametri di filtro complessi</li>
+<li>L'operazione ha effetti collaterali</li>
+<li>Vuoi che l'LLM possa "invocare" l'operazione attivamente</li>
+</ul>
+<p><strong>Nota Critica:</strong> Dalla documentazione Cursor: "Resources are not yet supported in Cursor." Se il client è Cursor, <strong>usare Tools</strong> è l'unica opzione funzionante.</p>
+<h3 id="gestione-errori-e-propagazione-al-client">Gestione Errori e Propagazione al Client</h3>
+<h4 id="meccanismo-di-default">Meccanismo di Default</h4>
+<p>FastMCP converte automaticamente le eccezioni in risposte MCP error:</p>
+<pre><code class="language-python">from fastmcp import FastMCP
+from fastmcp.exceptions import ToolError
+
+mcp = FastMCP(name=&quot;Server&quot;, mask_error_details=True)
+
+@mcp.tool
+def divide(a: float, b: float) -&gt; float:
+    if b == 0:
+        # Questo messaggio arriva SEMPRE al client
+        raise ToolError(&quot;Division by zero is not allowed.&quot;)
+
+    try:
+        result = a / b
+        if result &gt; 1000000:
+            # Con mask_error_details=True, questo diventa messaggio generico
+            raise ValueError(&quot;Result too large&quot;)
+        return result
+    except Exception as e:
+        raise ToolError(&quot;Calculation failed&quot;) from e
+</code></pre>
+<h4 id="comportamento-con-mask_error_details">Comportamento con <code>mask_error_details</code></h4>
+<table>
+<thead>
+<tr>
+<th><code>mask_error_details</code></th>
+<th><code>ToolError</code></th>
+<th>Altre Eccezioni</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>False</code> (default)</td>
+<td>Messaggio visibile</td>
+<td>Messaggio visibile</td>
+</tr>
+<tr>
+<td><code>True</code></td>
+<td>Messaggio visibile</td>
+<td>Messaggio generico mascherato</td>
+</tr>
+</tbody>
+</table>
+<h4 id="logging-verso-il-client">Logging verso il Client</h4>
+<p>Usare il <code>Context</code> per inviare log strutturati al client MCP:</p>
+<pre><code class="language-python">from fastmcp import FastMCP, Context
+
+@mcp.tool
+async def risky_operation(ctx: Context) -&gt; dict:
+    try:
+        await ctx.info(&quot;Starting operation&quot;)
+        result = await db.execute(...)
+        await ctx.info(&quot;Operation completed&quot;)
+        return result
+    except DatabaseError as e:
+        await ctx.error(f&quot;Database error: {e}&quot;)
+        raise ToolError(&quot;Database operation failed&quot;)
+</code></pre>
+<h4 id="codici-errore-mcp-standard">Codici Errore MCP Standard</h4>
+<p>Per errori critici (DB down), usare i codici JSON-RPC standard:</p>
+<ul>
+<li><code>-32002</code>: Resource not found</li>
+<li><code>-32602</code>: Invalid params</li>
+<li><code>-32603</code>: Internal error</li>
+</ul>
+<h3 id="raccomandazioni-fastmcp">Raccomandazioni FastMCP</h3>
+<ol>
+<li><strong>Testing</strong>: Usare <code>.fn</code> per unit test rapidi, Client fixture per integration test completi</li>
+<li><strong>Resources vs Tools</strong>: Dato che Cursor non supporta Resources, convertire <code>documents://list</code> in un Tool <code>list_documents()</code></li>
+<li><strong>Errori</strong>: Usare <code>ToolError</code> per messaggi espliciti, <code>mask_error_details=True</code> in produzione, Context logging per debug</li>
+</ol>
+<hr />
+<h2 id="testing-con-pydanticai">Testing con PydanticAI</h2>
+<h3 id="panoramica">Panoramica</h3>
+<p>Testing in PydanticAI segue patterns standard Python con strumenti specializzati per evitare chiamate reali a LLM durante i test.</p>
+<h4 id="stack-testing-raccomandato">Stack Testing Raccomandato</h4>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Scopo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pytest</code></td>
+<td>Test harness</td>
+</tr>
+<tr>
+<td><code>inline-snapshot</code></td>
+<td>Assertions lunghe</td>
+</tr>
+<tr>
+<td><code>dirty-equals</code></td>
+<td>Comparazione strutture dati complesse</td>
+</tr>
+<tr>
+<td><code>TestModel</code></td>
+<td>Mock model per sostituire LLM reali</td>
+</tr>
+<tr>
+<td><code>FunctionModel</code></td>
+<td>Mock model con logica custom</td>
+</tr>
+<tr>
+<td><code>Agent.override()</code></td>
+<td>Mock model/dependencies/toolsets</td>
+</tr>
+<tr>
+<td><code>ALLOW_MODEL_REQUESTS</code></td>
+<td>Blocca chiamate accidentali a LLM</td>
+</tr>
+</tbody>
+</table>
+<h3 id="testmodel">TestModel</h3>
+<p><code>TestModel</code> è un mock model per testing che:</p>
+<ul>
+<li>Chiama automaticamente tutti i tool dell'agent</li>
+<li>Genera risposte deterministiche (testo o structured output)</li>
+<li><strong>NON usa ML/AI</strong> - solo codice Python procedurale</li>
+<li>Genera dati validi che soddisfano JSON schema dei tool registrati</li>
+</ul>
+<pre><code class="language-python">from pydantic_ai.models.test import TestModel
+
+# Basic usage
+test_model = TestModel()
+
+# Con custom output text
+test_model = TestModel(custom_output_text='Sunny')
+</code></pre>
+<p><strong>Limitazioni:</strong></p>
+<ul>
+<li>Dati generati sono "fake" e non semanticamente corretti</li>
+<li>Usa hardcoded values (es. date nel passato)</li>
+<li>Per testing realistico, usa <code>FunctionModel</code> con custom logic</li>
+</ul>
+<h3 id="agentoverride">Agent.override()</h3>
+<pre><code class="language-python">import pytest
+from pydantic_ai.models.test import TestModel
+from weather_app import weather_agent
+
+async def test_forecast():
+    # Override model con TestModel
+    with weather_agent.override(model=TestModel()):
+        prompt = 'What will the weather be like in London on 2024-11-28?'
+        result = await weather_agent.run(prompt)
+
+    # Assert sul risultato
+    assert result.data == expected_data
+</code></pre>
+<h3 id="pytest-fixture-pattern">Pytest Fixture Pattern</h3>
+<pre><code class="language-python"># test_agent.py
+import pytest
+from pydantic_ai.models.test import TestModel
+from weather_app import weather_agent
+
+@pytest.fixture
+def override_weather_agent():
+    with weather_agent.override(model=TestModel()):
+        yield
+
+async def test_forecast(override_weather_agent: None):
+    # TestModel già attivo qui
+    result = await weather_agent.run('test prompt')
+    assert result.data == expected
+</code></pre>
+<h3 id="capture_run_messages">capture_run_messages()</h3>
+<p>Catturare e ispezionare messaggi scambiati tra agent e model:</p>
+<pre><code class="language-python">from pydantic_ai import capture_run_messages
+
+with capture_run_messages() as messages:
+    with weather_agent.override(model=TestModel()):
+        result = await weather_agent.run('test prompt')
+
+# Inspect tool calls
+assert messages[1].parts[0].tool_name == 'weather_forecast'
+assert messages[1].parts[0].args == {'location': 'London'}
+</code></pre>
+<h3 id="allow_model_requests">ALLOW_MODEL_REQUESTS</h3>
+<p>Safety measure per bloccare globalmente richieste a modelli non-test:</p>
+<pre><code class="language-python">from pydantic_ai import models
+
+# A livello modulo (top del file test)
+models.ALLOW_MODEL_REQUESTS = False
+</code></pre>
+<h4 id="pattern-conftestpy">Pattern conftest.py</h4>
+<pre><code class="language-python"># conftest.py
+import pytest
+from pydantic_ai import models
+
+@pytest.fixture(autouse=True)
+def disable_real_model_requests():
+    &quot;&quot;&quot;Disable real LLM requests globally for all tests.&quot;&quot;&quot;
+    original = models.ALLOW_MODEL_REQUESTS
+    models.ALLOW_MODEL_REQUESTS = False
+    yield
+    models.ALLOW_MODEL_REQUESTS = original
+</code></pre>
+<h3 id="functionmodel-testing-avanzato">FunctionModel - Testing Avanzato</h3>
+<p>Per test che richiedono valori specifici o logica custom:</p>
+<pre><code class="language-python">import re
+from pydantic_ai import ModelMessage, ModelResponse, TextPart, ToolCallPart
+from pydantic_ai.models.function import AgentInfo, FunctionModel
+
+def call_weather_forecast(
+    messages: list[ModelMessage],
+    info: AgentInfo
+) -&gt; ModelResponse:
+    &quot;&quot;&quot;Custom function per generare tool calls realistici.&quot;&quot;&quot;
+    if len(messages) == 1:
+        # First call: extract date from prompt
+        user_prompt = messages[0].parts[-1]
+        m = re.search(r'\d{4}-\d{2}-\d{2}', user_prompt.content)
+        assert m is not None
+
+        # Call weather_forecast tool con date estratta
+        return ModelResponse(
+            parts=[
+                ToolCallPart(
+                    tool_name='weather_forecast',
+                    args={'location': 'London', 'date': m.group()}
+                )
+            ]
+        )
+    else:
+        # Second call: return final response
+        return ModelResponse(
+            parts=[TextPart(content='Forecast result')]
+        )
+
+async def test_forecast_future():
+    from weather_app import weather_agent
+
+    with weather_agent.override(model=FunctionModel(call_weather_forecast)):
+        result = await weather_agent.run('Weather for 2024-12-25?')
+
+    # Ora il tool viene chiamato con date futura!
+    assert '2024-12-25' in result.data
+</code></pre>
+<h3 id="testing-checklist">Testing Checklist</h3>
+<pre><code>✅ Setup
+- [ ] ALLOW_MODEL_REQUESTS = False
+- [ ] pytest.mark.anyio per async tests
+- [ ] TestModel override configurato
+
+✅ Test Coverage
+- [ ] Agent logic (TestModel)
+- [ ] Tool calls (capture_run_messages)
+- [ ] Tool integration (FunctionModel)
+- [ ] Error handling
+- [ ] Dependency mocking
+
+✅ Assertions
+- [ ] Response data validation
+- [ ] Tool call parameters
+- [ ] Message exchange sequence
+- [ ] Side effects (DB writes, etc.)
+</code></pre>
+<h3 id="gotchaswarnings-comuni">Gotchas/Warnings Comuni</h3>
+<h4 id="1-testmodel-hardcoded-values">1. TestModel Hardcoded Values</h4>
+<pre><code class="language-python"># ❌ TestModel genera date nel passato
+# Tool chiamato con: {'date': '2020-01-01'}
+
+# ✅ Usa FunctionModel per date specifiche
+def custom_model(...):
+    return ToolCallPart(args={'date': '2024-12-25'})
+</code></pre>
+<h4 id="2-allow_model_requests-dimenticato">2. ALLOW_MODEL_REQUESTS Dimenticato</h4>
+<pre><code class="language-python"># ❌ Senza safety flag
+async def test_agent():
+    # Se override fallisce, chiama OpenAI API! 💸
+
+# ✅ Con safety flag
+models.ALLOW_MODEL_REQUESTS = False
+async def test_agent():
+    # Fallisce subito se override mancante
+</code></pre>
+<h4 id="3-capture_run_messages-scope">3. capture_run_messages Scope</h4>
+<pre><code class="language-python"># ❌ Cattura fuori scope
+with capture_run_messages() as messages:
+    pass
+await agent.run('test')  # Non catturato!
+
+# ✅ Cattura dentro scope
+with capture_run_messages() as messages:
+    await agent.run('test')  # ✅ Catturato
+</code></pre>
+<h4 id="4-pytest-async-setup">4. Pytest Async Setup</h4>
+<pre><code class="language-python"># ❌ Senza anyio
+async def test_agent():  # Non eseguito!
+    pass
+
+# ✅ Con anyio
+pytestmark = pytest.mark.anyio
+async def test_agent():  # ✅ Eseguito
+    pass
+</code></pre>
+<h3 id="link-documentazione-ufficiale">Link Documentazione Ufficiale</h3>
+<p><strong>PydanticAI Testing Documentation:</strong></p>
+<ul>
+<li>Main: https://ai.pydantic.dev/testing/</li>
+<li>TestModel: https://ai.pydantic.dev/api/models/test/#pydantic_ai.models.test.TestModel</li>
+<li>FunctionModel: https://ai.pydantic.dev/api/models/function/#pydantic_ai.models.function.FunctionModel</li>
+<li>Agent.override: https://ai.pydantic.dev/api/agent/#pydantic_ai.agent.Agent.override</li>
+<li>capture_run_messages: https://ai.pydantic.dev/api/messages/#pydantic_ai.capture_run_messages</li>
+<li>ALLOW_MODEL_REQUESTS: https://ai.pydantic.dev/api/models/#pydantic_ai.models.ALLOW_MODEL_REQUESTS</li>
+</ul>
+<p><strong>Testing Tools:</strong></p>
+<ul>
+<li>pytest: https://docs.pytest.org/en/stable/</li>
+<li>inline-snapshot: https://15r10nk.github.io/inline-snapshot/latest/</li>
+<li>dirty-equals: https://dirty-equals.helpmanual.io/latest/</li>
+<li>anyio: https://anyio.readthedocs.io/en/stable/</li>
+</ul>
+<hr />
+<h2 id="walkthrough-implementazione">Walkthrough Implementazione</h2>
+<h3 id="refactoring-e-implementazione-mcp-server">Refactoring e Implementazione MCP Server</h3>
+<p>Questo progetto è stato refactorizzato per supportare sia Streamlit che MCP (Model Context Protocol).</p>
+<h3 id="1-core-logic-decoupling">1. Core Logic Decoupling</h3>
+<p>La logica core RAG è stata estratta in un package <code>core</code> separato:</p>
+<ul>
+<li><strong><code>core/rag_service.py</code></strong>: Contiene la logica pura per la ricerca nella knowledge base, indipendente da qualsiasi framework agent.</li>
+<li><strong><code>core/agent.py</code></strong>: Wrappa il <code>rag_service</code> per uso con PydanticAI (usato da Streamlit).</li>
+</ul>
+<h3 id="2-mcp-server-implementation">2. MCP Server Implementation</h3>
+<p>Il modulo <strong><code>docling_mcp/</code></strong> usa la libreria <code>FastMCP</code>:</p>
+<ul>
+<li><code>docling_mcp/server.py</code>: FastMCP instance con tool registration</li>
+<li><code>docling_mcp/lifespan.py</code>: Gestisce il lifecycle delle risorse (DB pool, embedder)</li>
+<li><code>docling_mcp/tools/</code>: Tools organizzati per dominio (search.py, documents.py, overview.py)</li>
+</ul>
+<p>Tools disponibili:</p>
+<ul>
+<li><code>query_knowledge_base</code>: Ricerca semantica nella knowledge base</li>
+<li><code>ask_knowledge_base</code>: Domande con risposta formattata</li>
+<li><code>list_knowledge_base_documents</code>: Lista documenti</li>
+<li><code>get_knowledge_base_document</code>: Dettagli documento per ID</li>
+<li><code>get_knowledge_base_overview</code>: Statistiche knowledge base</li>
+</ul>
+<h3 id="3-application-updates">3. Application Updates</h3>
+<ul>
+<li><strong><code>app.py</code></strong>: Aggiornato per importare l'agent da <code>core.agent</code></li>
+<li><strong><code>pyproject.toml</code></strong>: Aggiunta dipendenza <code>fastmcp</code></li>
+<li><strong><code>rag_agent.py</code></strong>: Eliminato (sostituito da <code>core/agent.py</code>)</li>
+</ul>
+<h3 id="come-usare">Come Usare</h3>
+<h4 id="running-the-mcp-server-cursor-claude-desktop">Running the MCP Server (Cursor / Claude Desktop)</h4>
+<ol>
+<li>Assicurati di avere le dipendenze installate:</li>
+</ol>
+<p><code>bash
+   uv sync</code></p>
+<ol>
+<li>Configura il tuo editor.</li>
+</ol>
+<p><strong>Per Cursor</strong> (<code>~/.cursor/mcp.json</code> su Windows <code>%USERPROFILE%\.cursor\mcp.json</code>):</p>
+<p><code>json
+   {
+     "docling-rag": {
+       "command": "uv",
+       "args": [
+         "run",
+         "--project",
+         "C:/path/to/docling-rag-agent",
+         "python",
+         "C:/path/to/docling-rag-agent/mcp_server.py"
+       ]
+     }
+   }</code></p>
+<p><strong>Nota importante</strong>: Il parametro <code>--project</code> è <strong>obbligatorio</strong> per garantire che <code>uv</code> utilizzi il virtual environment corretto del progetto. Senza questo wrapper, l'MCP potrebbe fallire a trovare le dipendenze.</p>
+<p><strong>Per Claude Desktop</strong>: Copia la stessa configurazione nel file di configurazione di Claude Desktop.</p>
+<ol>
+<li><strong>Verifica Observability</strong>: Dopo l'avvio del server MCP, gli endpoint di osservabilità saranno disponibili:</li>
+<li>Health check: http://localhost:8080/health</li>
+<li>Prometheus metrics: http://localhost:8080/metrics</li>
+<li>API docs: http://localhost:8080/docs</li>
+</ol>
+<h4 id="running-the-streamlit-app">Running the Streamlit App</h4>
+<p>Il workflow esistente rimane invariato:</p>
+<pre><code class="language-bash">streamlit run app.py
+</code></pre>
+<h3 id="verifica">Verifica</h3>
+<ul>
+<li><strong>Streamlit</strong>: L'app dovrebbe funzionare esattamente come prima, poiché l'interfaccia <code>core.agent</code> corrisponde al vecchio <code>rag_agent</code>.</li>
+<li><strong>MCP</strong>: Il server espone <code>query_knowledge_base</code> che accetta <code>query</code>, <code>limit</code>, e <code>source_filter</code>.</li>
+</ul>
+<hr />
+<h2 id="best-practices-generali">Best Practices Generali</h2>
+<h3 id="code-quality">Code Quality</h3>
+<ol>
+<li><strong>Type Hints</strong>: Usa sempre type hints per parametri e return types</li>
+<li><strong>Docstrings</strong>: Documenta tutte le funzioni pubbliche con docstrings</li>
+<li><strong>Error Handling</strong>: Cattura eccezioni specifiche, non generiche</li>
+<li><strong>Logging</strong>: Usa logging strutturato per debug e monitoring</li>
+</ol>
+<h3 id="performance">Performance</h3>
+<ol>
+<li><strong>Connection Pooling</strong>: Usa il connection pool per database</li>
+<li><strong>Embedding Cache</strong>: L'embedder ha cache LRU per query frequenti</li>
+<li><strong>HNSW Index</strong>: Usa HNSW invece di IVFFlat per ricerche vettoriali</li>
+</ol>
+<h3 id="testing">Testing</h3>
+<ol>
+<li><strong>Unit Tests</strong>: Testa business logic con mock models</li>
+<li><strong>Integration Tests</strong>: Testa interazioni componenti con FunctionModel</li>
+<li><strong>ALLOW_MODEL_REQUESTS=False</strong>: Sempre attivo per evitare chiamate API accidentali</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "toc.integrate", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

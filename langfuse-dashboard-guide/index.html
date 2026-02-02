@@ -1,0 +1,1788 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Docling RAG Agent">
+      
+      
+        <meta name="author" content="Stefano">
+      
+      
+      
+        <link rel="prev" href="../troubleshooting-guide/">
+      
+      
+        <link rel="next" href="../api-reference/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>LangFuse Dashboard - Docling RAG Agent</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#guida-configurazione-langfuse-dashboard" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Docling RAG Agent" class="md-header__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Docling RAG Agent
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              LangFuse Dashboard
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting-started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../development-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Development Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../coding-standards/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Coding Standards
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../testing-strategy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Testing Strategy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../unified-project-structure.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Project Structure
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  LangFuse Dashboard
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api-reference/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Docling RAG Agent" class="md-nav__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Docling RAG Agent
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding-standards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unified-project-structure.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangFuse Dashboard
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangFuse Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisiti" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisiti
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#accesso-al-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accesso al Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-1-configurazione-dashboard-views-ac-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 1: Configurazione Dashboard Views (AC #1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 1: Configurazione Dashboard Views (AC #1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#metriche-chiave-disponibili" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metriche Chiave Disponibili
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configurazione-time-period-filters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configurazione Time Period Filters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#verifica-metriche" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Verifica Metriche
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-2-cost-trends-visualization-ac-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 2: Cost Trends Visualization (AC #2)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 2: Cost Trends Visualization (AC #2)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#visualizzazione-trend-costi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Visualizzazione Trend Costi
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#filtri-data-range" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtri Data Range
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#aggregazione-costi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Aggregazione Costi
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-3-trace-detail-view-ac-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 3: Trace Detail View (AC #3)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 3: Trace Detail View (AC #3)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#accesso-ai-dettagli-trace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Accesso ai Dettagli Trace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#informazioni-visualizzate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Informazioni Visualizzate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Informazioni Visualizzate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#input-query-text" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Input Query Text
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#output-response" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Output Response
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#timing-breakdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Timing Breakdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nested-spans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nested Spans
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#navigazione-spans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Navigazione Spans
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#task-4-custom-charts-configuration-ac-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Task 4: Custom Charts Configuration (AC #4)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Task 4: Custom Charts Configuration (AC #4)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creazione-custom-chart" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creazione Custom Chart
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Creazione Custom Chart">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#chart-per-cost-trends-raccomandato" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart per Cost Trends (Raccomandato)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#chart-per-latency-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Chart per Latency Distribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#salvataggio-custom-charts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Salvataggio Custom Charts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dimensioni-disponibili" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dimensioni Disponibili
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metriche-disponibili" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metriche Disponibili
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#integrazione-con-prometheus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integrazione con Prometheus
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Integrazione con Prometheus">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#langfuse-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LangFuse Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#prometheus-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prometheus Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoint-prometheus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoint Prometheus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#metriche-prometheus-correlate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Metriche Prometheus Correlate
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#trace-non-visibili" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Trace Non Visibili
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#costi-non-calcolati" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Costi Non Calcolati
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#span-timing-non-visibile" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Span Timing Non Visibile
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#riferimenti" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riferimenti
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/ingestion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="guida-configurazione-langfuse-dashboard">Guida Configurazione LangFuse Dashboard</h1>
+<p>Questa guida descrive come configurare e utilizzare il dashboard LangFuse per monitorare le performance e i costi del Docling RAG Agent MCP Server.</p>
+<h2 id="prerequisiti">Prerequisiti</h2>
+<ol>
+<li><strong>LangFuse Account</strong>: Cloud (cloud.langfuse.com) o self-hosted</li>
+<li><strong>Variabili d'ambiente configurate</strong>:
+   <code>env
+   LANGFUSE_PUBLIC_KEY=pk-lf-...
+   LANGFUSE_SECRET_KEY=sk-lf-...
+   LANGFUSE_BASE_URL=https://cloud.langfuse.com  # opzionale</code></li>
+<li><strong>MCP Server avviato</strong> con LangFuse abilitato</li>
+</ol>
+<h2 id="accesso-al-dashboard">Accesso al Dashboard</h2>
+<ol>
+<li>Accedi a <a href="https://cloud.langfuse.com">cloud.langfuse.com</a> o al tuo server self-hosted</li>
+<li>Seleziona il progetto "docling-rag-agent"</li>
+<li>Naviga alla sezione <strong>Dashboard</strong> nel menu laterale</li>
+</ol>
+<h2 id="task-1-configurazione-dashboard-views-ac-1">Task 1: Configurazione Dashboard Views (AC #1)</h2>
+<h3 id="metriche-chiave-disponibili">Metriche Chiave Disponibili</h3>
+<p>Il dashboard LangFuse mostra automaticamente le seguenti metriche:</p>
+<table>
+<thead>
+<tr>
+<th>Metrica</th>
+<th>Descrizione</th>
+<th>Fonte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Total Queries</strong></td>
+<td>Numero totale di trace create</td>
+<td>Conteggio automatico trace</td>
+</tr>
+<tr>
+<td><strong>Avg Latency</strong></td>
+<td>Latenza media delle richieste</td>
+<td>Campo <code>latency</code> del trace</td>
+</tr>
+<tr>
+<td><strong>Total Cost</strong></td>
+<td>Costo totale embedding + LLM</td>
+<td>Calcolato da token usage</td>
+</tr>
+</tbody>
+</table>
+<h3 id="configurazione-time-period-filters">Configurazione Time Period Filters</h3>
+<ol>
+<li>Nella barra superiore del dashboard, clicca sul selettore temporale</li>
+<li>Seleziona il periodo desiderato:</li>
+<li><strong>Today</strong>: Ultime 24 ore</li>
+<li><strong>Last 7 days</strong>: Ultima settimana</li>
+<li><strong>Last 30 days</strong>: Ultimo mese</li>
+<li><strong>Custom</strong>: Range personalizzato</li>
+</ol>
+<h3 id="verifica-metriche">Verifica Metriche</h3>
+<p>Le metriche sono calcolate automaticamente dai trace creati dal MCP server:</p>
+<pre><code>Tool chiamato → Trace creato → Metriche aggregate
+</code></pre>
+<p>Per ogni tool MCP (<code>query_knowledge_base</code>, <code>ask_knowledge_base</code>, etc.) viene creato un trace con:</p>
+<ul>
+<li><code>name</code>: Nome del tool (es. "query_knowledge_base")</li>
+<li><code>metadata</code>: { tool_name, query, limit, source_filter, source: "mcp" }</li>
+<li><code>latency</code>: Durata totale in millisecondi</li>
+<li><code>cost</code>: Calcolato automaticamente da token usage</li>
+</ul>
+<h2 id="task-2-cost-trends-visualization-ac-2">Task 2: Cost Trends Visualization (AC #2)</h2>
+<h3 id="visualizzazione-trend-costi">Visualizzazione Trend Costi</h3>
+<ol>
+<li>Vai a <strong>Dashboard</strong> → <strong>Analytics</strong></li>
+<li>Seleziona la visualizzazione <strong>Cost over Time</strong></li>
+<li>Configura il grafico:</li>
+<li><strong>X-axis</strong>: Time (daily/weekly/monthly aggregation)</li>
+<li><strong>Y-axis</strong>: Total Cost (USD)</li>
+<li><strong>Group by</strong>: Optional (tool_name per breakdown)</li>
+</ol>
+<h3 id="filtri-data-range">Filtri Data Range</h3>
+<p>Il filtro data range è disponibile in tutte le visualizzazioni:</p>
+<ol>
+<li>Clicca sul selettore data in alto a destra</li>
+<li>Seleziona range predefinito o personalizzato</li>
+<li>Il grafico si aggiorna automaticamente</li>
+</ol>
+<h3 id="aggregazione-costi">Aggregazione Costi</h3>
+<p>I costi sono aggregati da:</p>
+<ul>
+<li><strong>Embedding cost</strong>: Calcolato da <code>text-embedding-3-small</code> ($0.00002/1K tokens)</li>
+<li><strong>LLM generation cost</strong>: Calcolato da <code>gpt-4o-mini</code> ($0.00015/1K input, $0.0006/1K output)</li>
+</ul>
+<p>Il costo viene tracciato automaticamente tramite il wrapper <code>langfuse.openai</code> nell'embedder.</p>
+<h2 id="task-3-trace-detail-view-ac-3">Task 3: Trace Detail View (AC #3)</h2>
+<h3 id="accesso-ai-dettagli-trace">Accesso ai Dettagli Trace</h3>
+<ol>
+<li>Vai a <strong>Traces</strong> nel menu laterale</li>
+<li>Clicca su un trace per vedere i dettagli</li>
+</ol>
+<h3 id="informazioni-visualizzate">Informazioni Visualizzate</h3>
+<p>Ogni trace mostra:</p>
+<h4 id="input-query-text">Input Query Text</h4>
+<pre><code>metadata.query: &quot;Come configurare LangFuse?&quot;
+</code></pre>
+<h4 id="output-response">Output Response</h4>
+<pre><code>output: &quot;[Source: langfuse-docs/setup]\nPer configurare LangFuse...&quot;
+</code></pre>
+<h4 id="cost-breakdown">Cost Breakdown</h4>
+<pre><code>cost:
+  embedding_cost: $0.000012  (embedding-generation span)
+  llm_generation_cost: $0.000045  (se presente span llm-generation)
+  total: $0.000057
+</code></pre>
+<h4 id="timing-breakdown">Timing Breakdown</h4>
+<pre><code>latency: 1234ms (totale)
+spans:
+  - embedding-generation: 234ms (metadata.duration_ms)
+  - vector-search: 45ms (metadata.duration_ms)
+</code></pre>
+<h4 id="nested-spans">Nested Spans</h4>
+<p>I trace contengono span gerarchici:</p>
+<pre><code>query_knowledge_base (root trace)
+├── embedding-generation (span)
+│   ├── duration_ms: 234
+│   ├── model: text-embedding-3-small
+│   └── embedding_dim: 1536
+└── vector-search (span)
+    ├── duration_ms: 45
+    ├── limit: 5
+    └── results_count: 3
+</code></pre>
+<h3 id="navigazione-spans">Navigazione Spans</h3>
+<ol>
+<li>Nel detail view del trace, scorri verso il basso</li>
+<li>La sezione <strong>Observations</strong> mostra tutti gli span</li>
+<li>Clicca su uno span per vedere i dettagli specifici</li>
+</ol>
+<h2 id="task-4-custom-charts-configuration-ac-4">Task 4: Custom Charts Configuration (AC #4)</h2>
+<h3 id="creazione-custom-chart">Creazione Custom Chart</h3>
+<ol>
+<li>Vai a <strong>Dashboard</strong> → clicca <strong>+ Add Chart</strong></li>
+<li>Configura i parametri:</li>
+</ol>
+<h4 id="chart-per-cost-trends-raccomandato">Chart per Cost Trends (Raccomandato)</h4>
+<table>
+<thead>
+<tr>
+<th>Parametro</th>
+<th>Valore</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chart Type</strong></td>
+<td>Line Chart</td>
+</tr>
+<tr>
+<td><strong>Metric</strong></td>
+<td>Total Cost</td>
+</tr>
+<tr>
+<td><strong>Dimension</strong></td>
+<td>Time (day/week/month)</td>
+</tr>
+<tr>
+<td><strong>Filter</strong></td>
+<td>Optional: tool_name = "query_knowledge_base"</td>
+</tr>
+</tbody>
+</table>
+<h4 id="chart-per-latency-distribution">Chart per Latency Distribution</h4>
+<table>
+<thead>
+<tr>
+<th>Parametro</th>
+<th>Valore</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Chart Type</strong></td>
+<td>Bar Chart</td>
+</tr>
+<tr>
+<td><strong>Metric</strong></td>
+<td>Average Latency</td>
+</tr>
+<tr>
+<td><strong>Dimension</strong></td>
+<td>tool_name</td>
+</tr>
+<tr>
+<td><strong>Filter</strong></td>
+<td>Nessuno</td>
+</tr>
+</tbody>
+</table>
+<h3 id="salvataggio-custom-charts">Salvataggio Custom Charts</h3>
+<ol>
+<li>Dopo aver configurato il chart, clicca <strong>Save</strong></li>
+<li>Il chart viene aggiunto al dashboard</li>
+<li>I chart sono persistenti e accessibili in tutte le sessioni</li>
+</ol>
+<h3 id="dimensioni-disponibili">Dimensioni Disponibili</h3>
+<table>
+<thead>
+<tr>
+<th>Dimensione</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>time</code></td>
+<td>Aggregazione temporale</td>
+</tr>
+<tr>
+<td><code>name</code></td>
+<td>Nome del trace (tool_name)</td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td>ID utente (se configurato)</td>
+</tr>
+<tr>
+<td><code>session_id</code></td>
+<td>ID sessione (se configurato)</td>
+</tr>
+<tr>
+<td><code>metadata.source</code></td>
+<td>Filtro per "mcp"</td>
+</tr>
+<tr>
+<td><code>metadata.tool_name</code></td>
+<td>Filtro per tool specifico</td>
+</tr>
+</tbody>
+</table>
+<h3 id="metriche-disponibili">Metriche Disponibili</h3>
+<table>
+<thead>
+<tr>
+<th>Metrica</th>
+<th>Descrizione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>count</code></td>
+<td>Numero di trace</td>
+</tr>
+<tr>
+<td><code>totalCost</code></td>
+<td>Costo totale</td>
+</tr>
+<tr>
+<td><code>avgLatency</code></td>
+<td>Latenza media</td>
+</tr>
+<tr>
+<td><code>p50Latency</code></td>
+<td>Latenza percentile 50</td>
+</tr>
+<tr>
+<td><code>p95Latency</code></td>
+<td>Latenza percentile 95</td>
+</tr>
+<tr>
+<td><code>p99Latency</code></td>
+<td>Latenza percentile 99</td>
+</tr>
+</tbody>
+</table>
+<h2 id="integrazione-con-prometheus">Integrazione con Prometheus</h2>
+<p>Per un monitoring completo, combina LangFuse con Prometheus:</p>
+<h3 id="langfuse-dashboard">LangFuse Dashboard</h3>
+<ul>
+<li>Business metrics: costi, query trends, qualità</li>
+<li>Trace details: debugging, analisi</li>
+</ul>
+<h3 id="prometheus-metrics">Prometheus Metrics</h3>
+<ul>
+<li>Infrastructure metrics: latenza, throughput, errori</li>
+<li>Alerting: SLO violations</li>
+</ul>
+<h3 id="endpoint-prometheus">Endpoint Prometheus</h3>
+<pre><code class="language-bash"># Avvia HTTP server per metriche
+uv run python -m docling_mcp.http_server
+
+# Scrape metriche
+curl http://localhost:8080/metrics
+</code></pre>
+<h3 id="metriche-prometheus-correlate">Metriche Prometheus Correlate</h3>
+<table>
+<thead>
+<tr>
+<th>LangFuse</th>
+<th>Prometheus</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total Cost</td>
+<td>- (solo LangFuse)</td>
+</tr>
+<tr>
+<td>Avg Latency</td>
+<td><code>mcp_request_duration_seconds</code></td>
+</tr>
+<tr>
+<td>Embedding Time</td>
+<td><code>rag_embedding_time_seconds</code></td>
+</tr>
+<tr>
+<td>DB Search Time</td>
+<td><code>rag_db_search_time_seconds</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="trace-non-visibili">Trace Non Visibili</h3>
+<ol>
+<li>Verifica variabili d'ambiente <code>LANGFUSE_PUBLIC_KEY</code> e <code>LANGFUSE_SECRET_KEY</code></li>
+<li>Controlla che il server MCP sia avviato</li>
+<li>Esegui una query di test e attendi 1-2 minuti per la propagazione</li>
+</ol>
+<h3 id="costi-non-calcolati">Costi Non Calcolati</h3>
+<ol>
+<li>Verifica che l'embedder usi <code>langfuse.openai</code> wrapper</li>
+<li>Controlla che il modello sia supportato per il pricing (text-embedding-3-small, gpt-4o-mini)</li>
+<li>Verifica che i trace abbiano token usage popolato</li>
+</ol>
+<h3 id="span-timing-non-visibile">Span Timing Non Visibile</h3>
+<ol>
+<li>Verifica che gli span abbiano <code>metadata.duration_ms</code> popolato</li>
+<li>Controlla i log del server MCP per errori span creation</li>
+<li>Usa LangFuse debug mode per dettagli aggiuntivi</li>
+</ol>
+<h2 id="riferimenti">Riferimenti</h2>
+<ul>
+<li><a href="https://langfuse.com/docs">LangFuse Documentation</a></li>
+<li><a href="https://langfuse.com/docs/analytics/custom-dashboards">LangFuse Custom Dashboards</a></li>
+<li><a href="../architecture/#ADR-001">Architecture ADR-001</a></li>
+<li><a href="../docling_mcp/server.py">MCP Server Implementation</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "toc.integrate", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

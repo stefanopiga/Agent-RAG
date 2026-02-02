@@ -1,0 +1,2656 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Docling RAG Agent">
+      
+      
+        <meta name="author" content="Stefano">
+      
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Getting Started - Docling RAG Agent</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#docling-rag-agent" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Docling RAG Agent" class="md-header__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Docling RAG Agent
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Getting Started
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../development-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Development Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../coding-standards/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Coding Standards
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../testing-strategy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Testing Strategy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../unified-project-structure.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Project Structure
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../langfuse-dashboard-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  LangFuse Dashboard
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api-reference/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Docling RAG Agent" class="md-nav__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Docling RAG Agent
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#nuovo-a-docling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎓 Nuovo a Docling?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#funzionalita" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Funzionalità
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#prerequisiti" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisiti
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-clona-e-installa-dipendenze-30-secondi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Clona e Installa Dipendenze (~30 secondi)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-configura-le-variabili-dambiente-30-secondi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Configura le Variabili d'Ambiente (~30 secondi)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-configura-il-database-1-minuto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Configura il Database (~1 minuto)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-ingerisci-i-documenti-1-2-minuti-per-setup-iniziale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Ingerisci i Documenti (~1-2 minuti per setup iniziale)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-esegui-lapplicazione-10-secondi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Esegui l'Applicazione (~10 secondi)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architettura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architettura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#componenti-chiave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Componenti Chiave
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Componenti Chiave">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#rag-agent" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        RAG Agent
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tool-search_knowledge_base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool search_knowledge_base
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#schema-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Schema Database
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mcp-server-per-cursor-ide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 MCP Server per Cursor IDE
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#code-quality-cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🤖 Code Quality &amp; CI/CD
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🤖 Code Quality &amp; CI/CD">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#github-mcp-server-development-standard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub MCP Server (Development Standard)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coderabbit-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CodeRabbit Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI/CD Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#developer-resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Developer Resources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📚 Developer Resources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Links
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#langfuse-observability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 LangFuse Observability
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 LangFuse Observability">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup-langfuse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup LangFuse
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#funzionalita-tracing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Funzionalità Tracing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cost-tracking-story-22" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cost Tracking (Story 2.2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-metrics-story-23" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Metrics (Story 2.3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visualizzazione-tracce" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Visualizzazione Tracce
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#langfuse-dashboard-story-24" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LangFuse Dashboard (Story 2.4)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#ottimizzazione-delle-prestazioni" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ottimizzazione delle Prestazioni
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Ottimizzazione delle Prestazioni">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#performance-optimizations-2025-11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Performance Optimizations (2025-11)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cache-embedding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cache Embedding
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risposte-in-streaming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risposte in Streaming
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#funzionalita-avanzate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Funzionalità Avanzate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Funzionalità Avanzate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#filtraggio-per-fonte-documentale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filtraggio per Fonte Documentale
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deploy-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deploy Docker
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deploy Docker">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisiti-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisiti Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#quick-start-docker-2-minuti" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start Docker (~2 minuti)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#problemi-comuni" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Problemi Comuni
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connessione-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connessione Database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#reset-ambiente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Reset Ambiente
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#riferimento-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riferimento API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Riferimento API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tool-search_knowledge_base_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tool search_knowledge_base
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#funzioni-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Funzioni Database
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#documentazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Documentazione
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📚 Documentazione">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#visualizzazione-locale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Visualizzazione Locale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#generazione-statica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Generazione Statica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#github-pages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GitHub Pages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#struttura-progetto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Struttura Progetto
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding-standards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unified-project-structure.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../langfuse-dashboard-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangFuse Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/ingestion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="docling-rag-agent">Docling RAG Agent</h1>
+<p><a href="https://github.com/stefanopiga/Agent-RAG/actions"><img alt="Build Status" src="https://img.shields.io/github/actions/workflow/status/stefanopiga/Agent-RAG/ci.yml?branch=main&amp;label=build" /></a>
+<a href="https://codecov.io/gh/stefanopiga/Agent-RAG"><img alt="Coverage" src="https://img.shields.io/codecov/c/github/stefanopiga/Agent-RAG?label=coverage" /></a>
+<a href="https://github.com/stefanopiga/Agent-RAG/releases"><img alt="Version" src="https://img.shields.io/badge/version-0.1.0-blue" /></a>
+<a href="https://www.python.org/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-brightgreen" /></a></p>
+<p>Un agente intelligente basato su Streamlit che fornisce accesso conversazionale a una knowledge base archiviata in PostgreSQL con PGVector. Utilizza RAG (Retrieval Augmented Generation) per cercare nei documenti embedded e fornire risposte contestuali e accurate con citazioni delle fonti. Supporta molteplici formati di documenti.</p>
+<h2 id="nuovo-a-docling">🎓 Nuovo a Docling?</h2>
+<p><strong>Inizia dai tutorial!</strong> Consulta la cartella <code>docling_basics/</code> nella root del progetto per esempi progressivi che insegnano i fondamenti di Docling:</p>
+<ol>
+<li><strong>Conversione PDF Semplice</strong> - Elaborazione base dei documenti</li>
+<li><strong>Supporto Formati Multipli</strong> - Gestione PDF, Word, PowerPoint</li>
+<li><strong>Chunking Ibrido</strong> - Chunking intelligente per sistemi RAG</li>
+</ol>
+<p>Questi tutorial forniscono le basi per comprendere come funziona questo agente RAG completo.</p>
+<h2 id="funzionalita">Funzionalità</h2>
+<ul>
+<li>💬 Interfaccia chat web interattiva con Streamlit</li>
+<li>🔍 Ricerca semantica attraverso documenti vettoriali embedded</li>
+<li>📚 Risposte context-aware usando pipeline RAG</li>
+<li>🎯 Citazione delle fonti per tutte le informazioni fornite</li>
+<li>🔄 Output di testo in streaming real-time mentre arrivano i token</li>
+<li>💾 PostgreSQL/PGVector per storage scalabile della conoscenza</li>
+<li>🧠 Cronologia conversazione mantenuta tra i turni</li>
+</ul>
+<h2 id="prerequisiti">Prerequisiti</h2>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Versione</th>
+<th>Link Installazione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Python</strong></td>
+<td>3.10+ (3.11 raccomandato)</td>
+<td><a href="https://www.python.org/downloads/">python.org/downloads</a></td>
+</tr>
+<tr>
+<td><strong>UV</strong></td>
+<td>0.9.13+ (latest raccomandato)</td>
+<td><a href="https://docs.astral.sh/uv/getting-started/installation/">docs.astral.sh/uv</a></td>
+</tr>
+<tr>
+<td><strong>PostgreSQL</strong></td>
+<td>16+ con PGVector</td>
+<td><a href="https://www.postgresql.org/download/">postgresql.org</a></td>
+</tr>
+<tr>
+<td><strong>Docker</strong></td>
+<td>latest (opzionale)</td>
+<td><a href="https://www.docker.com/products/docker-desktop/">docker.com</a></td>
+</tr>
+</tbody>
+</table>
+<p><strong>API Keys richieste:</strong></p>
+<ul>
+<li><code>OPENAI_API_KEY</code> - OpenAI API key per embeddings e LLM (<a href="https://platform.openai.com/api-keys">ottienila qui</a>)</li>
+</ul>
+<p><strong>Provider Database supportati:</strong></p>
+<ul>
+<li>PostgreSQL self-hosted con estensione PGVector</li>
+<li>Supabase (managed PostgreSQL)</li>
+<li>Neon (serverless PostgreSQL)</li>
+</ul>
+<h2 id="quick-start">Quick Start</h2>
+<blockquote>
+<p><strong>Tempo totale stimato: ~3-4 minuti</strong> (esclusa installazione prerequisiti)</p>
+</blockquote>
+<h3 id="1-clona-e-installa-dipendenze-30-secondi">1. Clona e Installa Dipendenze (~30 secondi)</h3>
+<pre><code class="language-bash"># Clona il repository
+git clone https://github.com/stefanopiga/Agent-RAG.git
+cd Agent-RAG
+
+# Installa le dipendenze usando UV
+uv sync
+</code></pre>
+<h3 id="2-configura-le-variabili-dambiente-30-secondi">2. Configura le Variabili d'Ambiente (~30 secondi)</h3>
+<pre><code class="language-bash">cp .env.example .env
+</code></pre>
+<p>Modifica <code>.env</code> con le tue credenziali:</p>
+<pre><code class="language-env"># RICHIESTO: Connessione database PostgreSQL con PGVector
+DATABASE_URL=postgresql://user:password@localhost:5432/dbname
+
+# RICHIESTO: OpenAI API key
+OPENAI_API_KEY=sk-...
+
+# OPZIONALE: Modello LLM (default: gpt-4o-mini)
+LLM_CHOICE=gpt-4o-mini
+
+# OPZIONALE: Modello embedding (default: text-embedding-3-small)
+EMBEDDING_MODEL=text-embedding-3-small
+
+# OPZIONALE: LangFuse per observability/tracing (MCP server)
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_BASE_URL=https://cloud.langfuse.com
+</code></pre>
+<p><strong>Esempi DATABASE_URL per provider:</strong></p>
+<ul>
+<li><strong>Self-hosted</strong>: <code>postgresql://user:password@localhost:5432/dbname</code></li>
+<li><strong>Supabase</strong>: <code>postgresql://postgres.[project-ref]:[password]@aws-0-[region].pooler.supabase.com:5432/postgres</code></li>
+<li><strong>Neon</strong>: <code>postgresql://[user]:[password]@[endpoint].neon.tech/[dbname]</code></li>
+</ul>
+<h3 id="3-configura-il-database-1-minuto">3. Configura il Database (~1 minuto)</h3>
+<p><strong>Fresh install:</strong></p>
+<pre><code class="language-bash"># Esegui lo schema completo (include HNSW index ottimizzato)
+psql $DATABASE_URL &lt; sql/optimize_index.sql
+</code></pre>
+<p><strong>Per Supabase/Neon:</strong> Usa l'editor SQL integrato e incolla il contenuto di <code>sql/optimize_index.sql</code>.</p>
+<p><strong>Upgrade database esistente:</strong></p>
+<pre><code class="language-bash">python scripts/optimize_database.py --apply
+</code></pre>
+<p>Il file SQL (<code>sql/optimize_index.sql</code>) crea:</p>
+<ul>
+<li>✅ Estensioni richieste (<code>vector</code>, <code>uuid-ossp</code>, <code>pg_trgm</code>)</li>
+<li>✅ Tabella <code>documents</code> per memorizzare documenti originali con metadati</li>
+<li>✅ Tabella <code>chunks</code> per chunk di testo con embeddings a 1536 dimensioni</li>
+<li>✅ Funzione <code>match_chunks()</code> per ricerca di similarità vettoriale</li>
+<li>✅ <strong>HNSW index ottimizzato</strong> (10-100x più veloce del vecchio IVFFlat)</li>
+<li>✅ Performance indexes per filtering e source queries</li>
+</ul>
+<p><strong>Epic 3 - Session Tracking (Opzionale):</strong></p>
+<p>Per abilitare session tracking e cost visibility nella Streamlit UI:</p>
+<pre><code class="language-bash"># Esegui schema Epic 3 (crea tabelle sessions e query_logs)
+# Per Supabase: Usa SQL Editor e incolla contenuto di sql/epic-3-sessions-schema.sql
+psql $DATABASE_URL &lt; sql/epic-3-sessions-schema.sql
+</code></pre>
+<p>Questo crea:</p>
+<ul>
+<li>✅ Tabella <code>sessions</code> per session tracking con statistiche (query_count, total_cost, avg_latency)</li>
+<li>✅ Tabella <code>query_logs</code> per logging query con costi e timing</li>
+<li>✅ RLS policies <code>service_role</code> only (protezione completa)</li>
+<li>✅ Indexes per performance (session_id, timestamp lookups)</li>
+</ul>
+<p><strong>Vantaggi HNSW:</strong></p>
+<ul>
+<li>🚀 50-80% più veloce nelle ricerche vettoriali</li>
+<li>📈 Performance consistente al crescere del dataset</li>
+<li>🎯 Ottimale per &lt;1M vectors (case d'uso RAG tipici)</li>
+</ul>
+<h3 id="4-ingerisci-i-documenti-1-2-minuti-per-setup-iniziale">4. Ingerisci i Documenti (~1-2 minuti per setup iniziale)</h3>
+<p>Aggiungi i tuoi documenti nella cartella <code>documents/</code>. <strong>Supportati molteplici formati tramite Docling</strong>:</p>
+<p><strong>Formati Supportati:</strong></p>
+<ul>
+<li>📄 <strong>PDF</strong> (<code>.pdf</code>)</li>
+<li>📝 <strong>Word</strong> (<code>.docx</code>, <code>.doc</code>)</li>
+<li>📊 <strong>PowerPoint</strong> (<code>.pptx</code>, <code>.ppt</code>)</li>
+<li>📈 <strong>Excel</strong> (<code>.xlsx</code>, <code>.xls</code>)</li>
+<li>🌐 <strong>HTML</strong> (<code>.html</code>, <code>.htm</code>)</li>
+<li>📋 <strong>Markdown</strong> (<code>.md</code>, <code>.markdown</code>)</li>
+<li>📃 <strong>Testo</strong> (<code>.txt</code>)</li>
+</ul>
+<pre><code class="language-bash"># Ingerisci tutti i documenti supportati nella cartella documents/
+# NOTA: Di default, questo CANCELLA i dati esistenti prima dell'ingestione
+uv run python -m ingestion.ingest --documents documents/
+
+# Regola la dimensione dei chunk (default: 1000)
+uv run python -m ingestion.ingest --documents documents/ --chunk-size 800
+</code></pre>
+<p><strong>⚠️ Importante:</strong> Il processo di ingestione <strong>cancella automaticamente tutti i documenti e chunk esistenti</strong> dal database prima di aggiungere nuovi documenti. Questo assicura uno stato pulito e previene duplicati.</p>
+<p>La pipeline di ingestione:</p>
+<ol>
+<li><strong>Auto-rileva il tipo di file</strong> e usa Docling per PDF, documenti Office e HTML</li>
+<li><strong>Converte in Markdown</strong> per elaborazione consistente</li>
+<li><strong>Divide in chunk semantici</strong> con dimensione configurabile</li>
+<li><strong>Genera embeddings</strong> usando OpenAI</li>
+<li><strong>Memorizza in PostgreSQL</strong> con PGVector per ricerca di similarità</li>
+</ol>
+<p><strong>💡 Best Practice - Organizzazione Documenti:</strong></p>
+<p>Organizza i documenti in sottocartelle per sfruttare il filtraggio per fonte:</p>
+<pre><code>documents/
+├── docling/
+│   ├── docs/
+│   │   ├── getting-started.md
+│   │   └── architecture.md
+│   └── README.md
+├── langfuse-docs/
+│   ├── deployment/
+│   │   ├── cloud.md
+│   │   └── docker.md
+│   ├── api/
+│   │   └── tracing.md
+│   └── guides/
+└── company-docs/
+    ├── policies.pdf
+    └── procedures.docx
+</code></pre>
+<p><strong>Vantaggi:</strong></p>
+<ul>
+<li>✅ Citazioni precise con percorso completo</li>
+<li>✅ Filtraggio per documentazione specifica ("cerca solo in Docling docs")</li>
+<li>✅ Facile manutenzione e aggiornamenti</li>
+<li>✅ Separazione logica tra diverse fonti di conoscenza</li>
+</ul>
+<h3 id="5-esegui-lapplicazione-10-secondi">5. Esegui l'Applicazione (~10 secondi)</h3>
+<pre><code class="language-bash">streamlit run app.py
+</code></pre>
+<p>L'applicazione si aprirà automaticamente nel browser: <code>http://localhost:8501</code></p>
+<p><strong>Funzionalità:</strong></p>
+<ul>
+<li>💬 <strong>Interfaccia chat</strong> con cronologia messaggi</li>
+<li>📊 <strong>Pulsante cancella chat</strong> per resettare la conversazione</li>
+<li>🎨 <strong>UI moderna</strong> costruita con Streamlit</li>
+<li>🔍 <strong>Streaming real-time</strong> delle risposte</li>
+<li>📚 <strong>Stato della knowledge base</strong> nella sidebar</li>
+</ul>
+<p><strong>Esempio di interazione:</strong></p>
+<pre><code>Tu: Quali argomenti sono trattati nella knowledge base?
+Assistant: Sulla base della knowledge base, gli argomenti principali includono...
+
+[Fonte: company-overview.md]
+Contenuto dal documento...
+</code></pre>
+<h2 id="architettura">Architettura</h2>
+<pre><code>┌─────────────┐     ┌──────────────┐     ┌─────────────┐
+│  Streamlit  │────▶│  RAG Agent   │────▶│ PostgreSQL  │
+│     UI      │     │ (PydanticAI) │     │  PGVector   │
+└─────────────┘     └──────────────┘     └─────────────┘
+                           │
+                    ┌──────┴──────┐
+                    │             │
+              ┌─────▼────┐  ┌────▼─────┐
+              │  OpenAI  │  │  OpenAI  │
+              │   LLM    │  │Embeddings│
+              └──────────┘  └──────────┘
+</code></pre>
+<h2 id="componenti-chiave">Componenti Chiave</h2>
+<h3 id="rag-agent">RAG Agent</h3>
+<p>L'agente principale (<code>rag_agent.py</code>) che:</p>
+<ul>
+<li>Gestisce le connessioni al database con connection pooling</li>
+<li>Fornisce il tool search_knowledge_base per operazioni RAG</li>
+<li>Si integra con l'interfaccia Streamlit tramite app.py</li>
+<li>Traccia la cronologia della conversazione per il contesto</li>
+</ul>
+<h3 id="tool-search_knowledge_base">Tool search_knowledge_base</h3>
+<p>Funzione tool registrata con l'agente che:</p>
+<ul>
+<li>Genera query embeddings usando OpenAI</li>
+<li>Effettua ricerche usando similarità coseno PGVector</li>
+<li>Restituisce i top-k chunk più rilevanti</li>
+<li>Formatta i risultati con citazioni delle fonti</li>
+<li><strong>Supporta filtraggio per fonte</strong> per ricerche mirate in documentazioni specifiche</li>
+</ul>
+<p><strong>Capacità di Filtraggio Avanzato:</strong>
+L'agente può filtrare automaticamente le ricerche per fonte specifica quando richiesto dall'utente.</p>
+<p>Esempi di query con filtraggio:</p>
+<ul>
+<li>"Come fare il deploy di Docling usando solo la documentazione Docling?"</li>
+<li>"Spiega il tracing secondo Langfuse docs, non guardare altre fonti"</li>
+<li>"Deployment in Langfuse" → filtra automaticamente su <code>langfuse-docs</code></li>
+</ul>
+<p>Esempio definizione tool:</p>
+<pre><code class="language-python">async def search_knowledge_base(
+    ctx: RunContext[None],
+    query: str,
+    limit: int = 5,
+    source_filter: str | None = None  # Filtro opzionale per fonte
+) -&gt; str:
+    &quot;&quot;&quot;Cerca nella knowledge base usando similarità semantica.
+
+    Args:
+        query: Query di ricerca
+        limit: Numero massimo risultati
+        source_filter: Filtro opzionale (es: &quot;docling&quot;, &quot;langfuse-docs&quot;)
+    &quot;&quot;&quot;
+    # Genera embedding per la query
+    # Cerca in PostgreSQL con PGVector
+    # Applica filtro fonte se specificato
+    # Formatta e restituisce i risultati
+</code></pre>
+<h3 id="schema-database">Schema Database</h3>
+<ul>
+<li>
+<p><code>documents</code>: Memorizza documenti originali con metadati</p>
+</li>
+<li>
+<p><code>id</code>, <code>title</code>, <code>source</code>, <code>content</code>, <code>metadata</code>, <code>created_at</code>, <code>updated_at</code></p>
+</li>
+<li>
+<p><code>chunks</code>: Memorizza chunk di testo con embeddings vettoriali</p>
+</li>
+<li>
+<p><code>id</code>, <code>document_id</code>, <code>content</code>, <code>embedding</code> (vector(1536)), <code>chunk_index</code>, <code>metadata</code>, <code>token_count</code></p>
+</li>
+<li>
+<p><code>match_chunks()</code>: Funzione PostgreSQL per ricerca similarità vettoriale</p>
+</li>
+<li>Usa similarità coseno (<code>1 - (embedding &lt;=&gt; query_embedding)</code>)</li>
+<li>Restituisce chunk con punteggi di similarità sopra la soglia</li>
+</ul>
+<h2 id="mcp-server-per-cursor-ide">🚀 MCP Server per Cursor IDE</h2>
+<p>Il progetto include un <strong>Model Context Protocol (MCP) server</strong> ottimizzato per integrazione con Cursor IDE.</p>
+<p><strong>Setup MCP:</strong></p>
+<ol>
+<li><strong>Configura <code>.cursor/mcp.json</code>:</strong></li>
+</ol>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;docling-rag&quot;: {
+      &quot;command&quot;: &quot;uv&quot;,
+      &quot;args&quot;: [
+        &quot;run&quot;,
+        &quot;--project&quot;,
+        &quot;/path/to/docling-rag-agent&quot;,
+        &quot;python&quot;,
+        &quot;-m&quot;,
+        &quot;docling_mcp.server&quot;
+      ],
+      &quot;env&quot;: {
+        &quot;PYTHONPATH&quot;: &quot;/path/to/docling-rag-agent&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<ol>
+<li>
+<p><strong>Restart Cursor</strong> - MCP server si avvia automaticamente</p>
+</li>
+<li>
+<p><strong>Usa il tool</strong> in Cursor:</p>
+</li>
+</ol>
+<pre><code>Chiedi: &quot;What is Docling?&quot;
+Il MCP tool cercherà nella knowledge base e risponderà con context
+</code></pre>
+<p><strong>Performance MCP:</strong></p>
+<ul>
+<li>✅ Global embedder instance: -70% latency (eliminato overhead 300-500ms)</li>
+<li>✅ HNSW index: -61% query time (1395ms avg, 237ms con cache)</li>
+<li>✅ Connection pool ottimizzato: -20% overhead</li>
+<li>✅ Timing instrumentation per monitoring</li>
+</ul>
+<p><strong>Documentazione completa:</strong></p>
+<ul>
+<li><code>docs/performance-optimization-guide.md</code> - Guida tecnica dettagliata</li>
+<li><code>docs/optimization-summary.md</code> - Analisi risultati</li>
+<li><code>docs/optimization-deployment.md</code> - Deploy guide</li>
+</ul>
+<h2 id="code-quality-cicd">🤖 Code Quality &amp; CI/CD</h2>
+<h3 id="github-mcp-server-development-standard">GitHub MCP Server (Development Standard)</h3>
+<p>Il progetto utilizza il <strong>GitHub MCP Server</strong> come standard per operazioni GitHub automatizzate in Cursor IDE.</p>
+<p><strong>Configurazione <code>.cursor/mcp.json</code>:</strong></p>
+<pre><code class="language-json">{
+  &quot;mcpServers&quot;: {
+    &quot;github&quot;: {
+      &quot;command&quot;: &quot;npx&quot;,
+      &quot;args&quot;: [&quot;-y&quot;, &quot;@modelcontextprotocol/server-github&quot;],
+      &quot;env&quot;: {
+        &quot;GITHUB_PERSONAL_ACCESS_TOKEN&quot;: &quot;&lt;your-token&gt;&quot;
+      }
+    }
+  }
+}
+</code></pre>
+<p><strong>Funzionalità disponibili:</strong></p>
+<ul>
+<li>Branch management: <code>create_branch</code>, <code>list_branches</code></li>
+<li>File operations: <code>push_files</code>, <code>create_or_update_file</code></li>
+<li>Pull requests: <code>create_pull_request</code>, <code>merge_pull_request</code></li>
+<li>Issues: <code>list_issues</code>, <code>issue_write</code>, <code>add_issue_comment</code></li>
+<li>Code search: <code>search_code</code>, <code>search_repositories</code></li>
+</ul>
+<h3 id="coderabbit-integration">CodeRabbit Integration</h3>
+<p>Il repository utilizza <a href="https://coderabbit.ai">CodeRabbit</a> per code review AI-powered automatica su ogni pull request.</p>
+<p><strong>Funzionalità:</strong></p>
+<ul>
+<li>✅ Review automatica su ogni PR</li>
+<li>📝 Suggerimenti inline e best practices</li>
+<li>🔒 Security analysis automatica</li>
+<li>📊 High-level summary delle modifiche</li>
+</ul>
+<h3 id="cicd-pipeline">CI/CD Pipeline</h3>
+<p>GitHub Actions esegue automaticamente su ogni PR e push a <code>main</code>/<code>develop</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Descrizione</th>
+<th>Tool</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>lint</strong></td>
+<td>Linting e format check</td>
+<td>Ruff</td>
+</tr>
+<tr>
+<td><strong>type-check</strong></td>
+<td>Type checking statico</td>
+<td>Mypy</td>
+</tr>
+<tr>
+<td><strong>test</strong></td>
+<td>Unit/integration tests con coverage &gt;70%</td>
+<td>Pytest</td>
+</tr>
+<tr>
+<td><strong>build</strong></td>
+<td>Docker image build validation (&lt;500MB)</td>
+<td>Docker Buildx</td>
+</tr>
+<tr>
+<td><strong>secret-scan</strong></td>
+<td>Secret scanning preventivo</td>
+<td>TruffleHog OSS</td>
+</tr>
+</tbody>
+</table>
+<h2 id="developer-resources">📚 Developer Resources</h2>
+<h3 id="documentation">Documentation</h3>
+<ul>
+<li><strong><a href="../architecture/">Architecture</a></strong>: Complete system architecture, design decisions, and component descriptions</li>
+<li><strong><a href="../coding-standards/">Coding Standards</a></strong>: Code style guide, naming conventions, documentation standards, and best practices</li>
+<li><strong><a href="../testing-strategy/">Testing Strategy</a></strong>: TDD workflow, test organization, RAGAS evaluation, and CI/CD integration</li>
+<li><strong><a href="../development-guide/">Development Guide</a></strong>: Setup instructions, development workflow, and troubleshooting</li>
+<li><strong><a href="../">Documentation Index</a></strong>: Complete documentation index with quick links and navigation</li>
+</ul>
+<h3 id="quick-links">Quick Links</h3>
+<ul>
+<li><strong>Code Style</strong>: See <a href="../coding-standards/">Coding Standards</a> for Python style guide, type hints, error handling patterns</li>
+<li><strong>Writing Tests</strong>: See <a href="../testing-strategy/">Testing Strategy</a> for TDD approach, test organization, coverage requirements</li>
+<li><strong>Project Structure</strong>: See <a href="unified-project-structure.md">Unified Project Structure</a> for directory organization, file placement rules, epic mapping</li>
+<li><strong>Architecture Patterns</strong>: See <a href="../architecture/">Architecture</a> for design decisions, integration patterns, observability</li>
+</ul>
+<hr />
+<h2 id="langfuse-observability">📊 LangFuse Observability</h2>
+<p>Il MCP server include integrazione con <strong>LangFuse</strong> per tracciamento e osservabilità delle chiamate AI.</p>
+<h3 id="setup-langfuse">Setup LangFuse</h3>
+<ol>
+<li>
+<p><strong>Crea un account LangFuse:</strong></p>
+</li>
+<li>
+<p>Cloud: <a href="https://cloud.langfuse.com">cloud.langfuse.com</a></p>
+</li>
+<li>
+<p>Self-hosted: <a href="https://langfuse.com/self-hosting">docs.langfuse.com/self-hosting</a></p>
+</li>
+<li>
+<p><strong>Configura le variabili d'ambiente:</strong></p>
+</li>
+</ol>
+<pre><code class="language-env"># LangFuse Configuration (opzionale)
+LANGFUSE_PUBLIC_KEY=pk-lf-...
+LANGFUSE_SECRET_KEY=sk-lf-...
+LANGFUSE_BASE_URL=https://cloud.langfuse.com  # Default, oppure URL self-hosted
+</code></pre>
+<ol>
+<li><strong>Restart il server MCP</strong> - Le tracce appariranno automaticamente in LangFuse</li>
+</ol>
+<h3 id="funzionalita-tracing">Funzionalità Tracing</h3>
+<ul>
+<li>🔍 <strong>Tracciamento automatico</strong> di tutte le chiamate MCP tools</li>
+<li>📊 <strong>Metadata dettagliati</strong>: tool_name, query, limit, source</li>
+<li>⏱️ <strong>Timing e performance</strong> per ogni operazione</li>
+<li>🔄 <strong>Graceful degradation</strong>: il sistema funziona anche senza LangFuse</li>
+</ul>
+<h3 id="cost-tracking-story-22">Cost Tracking (Story 2.2)</h3>
+<p>Il sistema traccia automaticamente i costi di utilizzo API OpenAI:</p>
+<ul>
+<li>💰 <strong>Embedding cost tracking</strong>: Costo per generazione embedding via <code>langfuse.openai</code> wrapper</li>
+<li>📈 <strong>Token counting automatico</strong>: Input tokens per embedding, input/output tokens per LLM</li>
+<li>💵 <strong>Pricing aggiornato</strong>: LangFuse SDK aggiorna automaticamente i prezzi OpenAI</li>
+<li>📊 <strong>Cost breakdown</strong>: Visualizzazione costi separati per embedding e LLM generation</li>
+</ul>
+<p><strong>Modelli e Pricing Tracciati:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Modello</th>
+<th>Tipo</th>
+<th>Costo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>text-embedding-3-small</code></td>
+<td>Embedding</td>
+<td>$0.00002/1K tokens</td>
+</tr>
+<tr>
+<td><code>gpt-4o-mini</code></td>
+<td>LLM (input)</td>
+<td>$0.00015/1K tokens</td>
+</tr>
+<tr>
+<td><code>gpt-4o-mini</code></td>
+<td>LLM (output)</td>
+<td>$0.0006/1K tokens</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Come funziona:</strong></p>
+<ol>
+<li>Il wrapper <code>langfuse.openai</code> sostituisce il client OpenAI diretto</li>
+<li>Ogni chiamata API viene automaticamente tracciata con token count</li>
+<li>I costi vengono calcolati usando i prezzi OpenAI correnti</li>
+<li>Il cost breakdown è visibile nel dashboard LangFuse per ogni trace</li>
+</ol>
+<p><strong>Nota:</strong> Il cost tracking è automatico e non richiede codice aggiuntivo. Se LangFuse non è configurato, il sistema funziona normalmente senza tracking (graceful degradation).</p>
+<h3 id="performance-metrics-story-23">Performance Metrics (Story 2.3)</h3>
+<p>Il sistema espone metriche Prometheus per il monitoraggio delle performance tramite un server HTTP dedicato.</p>
+<p><strong>Endpoint disponibili:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Formato</th>
+<th>Descrizione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/metrics</code></td>
+<td>Prometheus</td>
+<td>Metriche in formato OpenMetrics (text/plain)</td>
+</tr>
+<tr>
+<td><code>/health</code></td>
+<td>JSON</td>
+<td>Health check con status servizi (ok/degraded/down)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Metriche Prometheus:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metrica</th>
+<th>Tipo</th>
+<th>Descrizione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mcp_requests_total</code></td>
+<td>Counter</td>
+<td>Totale richieste MCP (label: tool, status)</td>
+</tr>
+<tr>
+<td><code>mcp_request_duration_seconds</code></td>
+<td>Histogram</td>
+<td>Latenza richieste (buckets SLO-aligned)</td>
+</tr>
+<tr>
+<td><code>rag_embedding_time_seconds</code></td>
+<td>Histogram</td>
+<td>Tempo generazione embedding</td>
+</tr>
+<tr>
+<td><code>rag_db_search_time_seconds</code></td>
+<td>Histogram</td>
+<td>Tempo ricerca database</td>
+</tr>
+<tr>
+<td><code>rag_llm_generation_time_seconds</code></td>
+<td>Histogram</td>
+<td>Tempo generazione LLM</td>
+</tr>
+<tr>
+<td><code>mcp_active_requests</code></td>
+<td>Gauge</td>
+<td>Richieste attive concorrenti</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Configurazione Prometheus (<code>prometheus.yml</code>):</strong></p>
+<pre><code class="language-yaml">scrape_configs:
+  - job_name: &quot;docling-rag-agent&quot;
+    scrape_interval: 15s # Default raccomandato (60s per cost-sensitive)
+    static_configs:
+      - targets: [&quot;localhost:8080&quot;]
+</code></pre>
+<p><strong>Avvio server metriche:</strong></p>
+<pre><code class="language-bash"># Avvia il server HTTP per metriche e health check (porta 8080)
+uv run python -m docling_mcp.http_server
+
+# Oppure con porta personalizzata
+METRICS_PORT=9090 uv run python -m docling_mcp.http_server
+</code></pre>
+<p><strong>Health Check Response:</strong></p>
+<pre><code class="language-json">{
+  &quot;status&quot;: &quot;ok&quot;,
+  &quot;timestamp&quot;: 1732700400.123,
+  &quot;services&quot;: {
+    &quot;database&quot;: {
+      &quot;status&quot;: &quot;up&quot;,
+      &quot;message&quot;: &quot;PostgreSQL connection successful&quot;,
+      &quot;latency_ms&quot;: 5.2
+    },
+    &quot;langfuse&quot;: {
+      &quot;status&quot;: &quot;up&quot;,
+      &quot;message&quot;: &quot;LangFuse client initialized&quot;,
+      &quot;latency_ms&quot;: 0.1
+    },
+    &quot;embedder&quot;: {
+      &quot;status&quot;: &quot;up&quot;,
+      &quot;message&quot;: &quot;Embedder initialized and ready&quot;,
+      &quot;latency_ms&quot;: 0.5
+    }
+  }
+}
+</code></pre>
+<p><strong>Status Logic:</strong></p>
+<ul>
+<li><code>ok</code>: Tutti i servizi operativi</li>
+<li><code>degraded</code>: LangFuse non disponibile (graceful degradation, MCP funziona)</li>
+<li><code>down</code>: Database o embedder non disponibili (servizi critici)</li>
+</ul>
+<h3 id="visualizzazione-tracce">Visualizzazione Tracce</h3>
+<p>Nel dashboard LangFuse vedrai tracce per ogni chiamata tool:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Metadata Tracciati</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>query_knowledge_base</code></td>
+<td>query, limit, source_filter, source="mcp"</td>
+</tr>
+<tr>
+<td><code>ask_knowledge_base</code></td>
+<td>question, limit, source="mcp"</td>
+</tr>
+<tr>
+<td><code>list_knowledge_base_documents</code></td>
+<td>limit, offset, source="mcp"</td>
+</tr>
+<tr>
+<td><code>get_knowledge_base_document</code></td>
+<td>document_id, source="mcp"</td>
+</tr>
+<tr>
+<td><code>get_knowledge_base_overview</code></td>
+<td>source="mcp"</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nota:</strong> Se le variabili LangFuse non sono configurate, il server funziona normalmente senza tracing (graceful degradation).</p>
+<h3 id="langfuse-dashboard-story-24">LangFuse Dashboard (Story 2.4)</h3>
+<p>Il dashboard LangFuse fornisce una visualizzazione real-time delle performance e dei costi del MCP server.</p>
+<p><strong>Metriche Dashboard:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metrica</th>
+<th>Descrizione</th>
+<th>Fonte</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total Queries</td>
+<td>Numero totale richieste</td>
+<td>Conteggio trace</td>
+</tr>
+<tr>
+<td>Avg Latency</td>
+<td>Latenza media</td>
+<td>Campo <code>latency</code> trace</td>
+</tr>
+<tr>
+<td>Total Cost</td>
+<td>Costo totale (embedding + LLM)</td>
+<td>Token usage automatico</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Visualizzazioni Disponibili:</strong></p>
+<ul>
+<li><strong>Cost Trends</strong>: Grafico costi nel tempo (daily/weekly/monthly)</li>
+<li><strong>Latency Distribution</strong>: Distribuzione latenza per tool</li>
+<li><strong>Trace Detail View</strong>: Input, output, cost breakdown, timing breakdown, nested spans</li>
+</ul>
+<p><strong>Trace Detail View:</strong></p>
+<p>Ogni trace mostra:</p>
+<ul>
+<li>Input query text</li>
+<li>Output response</li>
+<li>Cost breakdown: <code>embedding_cost</code> + <code>llm_generation_cost</code></li>
+<li>Timing breakdown: <code>embedding_time</code>, <code>db_search_time</code>, <code>llm_generation_time</code></li>
+<li>Nested spans: <code>embedding-generation</code>, <code>vector-search</code>, <code>llm-generation</code></li>
+</ul>
+<p><strong>Custom Charts:</strong></p>
+<p>LangFuse supporta chart personalizzati configurabili con:</p>
+<ul>
+<li>Dimensioni: <code>time</code>, <code>tool_name</code>, <code>metadata.source</code></li>
+<li>Metriche: <code>count</code>, <code>totalCost</code>, <code>avgLatency</code>, <code>p95Latency</code></li>
+</ul>
+<p><strong>Guida Completa:</strong> Consulta <a href="../langfuse-dashboard-guide/">LangFuse Dashboard Guide</a> per la configurazione dettagliata del dashboard.</p>
+<h2 id="ottimizzazione-delle-prestazioni">Ottimizzazione delle Prestazioni</h2>
+<h3 id="performance-optimizations-2025-11">🎯 Performance Optimizations (2025-11)</h3>
+<p>Il sistema è stato ottimizzato per performance reattive:</p>
+<p><strong>Ottimizzazioni Applicate:</strong></p>
+<ol>
+<li><strong>HNSW Vector Index</strong> (Critical)</li>
+<li>Upgrade da IVFFlat (<code>lists=1</code>) a HNSW</li>
+<li>10-100x più veloce per ricerche vettoriali</li>
+<li>Performance consistente al crescere del dataset</li>
+<li>
+<p><strong>Global Embedder Instance</strong></p>
+</li>
+<li>
+<p>Embedder singleton con cache persistente</p>
+</li>
+<li>Eliminato overhead 300-500ms per query</li>
+<li>
+<p>Cache hit rate: 66%</p>
+</li>
+<li>
+<p><strong>Connection Pool Ottimizzato</strong></p>
+</li>
+</ol>
+<p><code>python
+   db_pool = await asyncpg.create_pool(
+       DATABASE_URL,
+       min_size=2,              # Ottimizzato per MCP burst traffic
+       max_size=10,             # Sufficient per concurrent queries
+       statement_cache_size=100 # Prepared statements abilitati
+   )</code></p>
+<ol>
+<li><strong>Performance Instrumentation</strong></li>
+<li>Timing breakdown dettagliato per componente</li>
+<li>Monitoring logs: <code>embedding_ms | db_ms | total_ms</code></li>
+</ol>
+<p><strong>Performance Baseline:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Metrica</th>
+<th>Before</th>
+<th>After</th>
+<th>Improvement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Avg Query</td>
+<td>3563ms</td>
+<td>1395ms</td>
+<td><strong>-61%</strong></td>
+</tr>
+<tr>
+<td>Cached Query</td>
+<td>298ms</td>
+<td>237ms</td>
+<td><strong>-20%</strong></td>
+</tr>
+<tr>
+<td>DB Search</td>
+<td>100-300ms</td>
+<td>20-60ms</td>
+<td><strong>-75%</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Performance Tools:</strong></p>
+<pre><code class="language-bash"># Verifica status DB index
+python scripts/optimize_database.py --check
+
+# Applica ottimizzazioni (upgrade HNSW index)
+python scripts/optimize_database.py --apply
+
+# Test performance
+python scripts/test_mcp_performance.py
+</code></pre>
+<h3 id="cache-embedding">Cache Embedding</h3>
+<p>L'embedder include caching LRU (2000 entries) per query frequenti, riducendo chiamate OpenAI API del 60-70%.</p>
+<h3 id="risposte-in-streaming">Risposte in Streaming</h3>
+<p>Lo streaming token-per-token fornisce feedback immediato:</p>
+<pre><code class="language-python">async with agent.run_stream(user_input, message_history=history) as result:
+    async for text in result.stream_text(delta=False):
+        print(f&quot;\rAssistant: {text}&quot;, end=&quot;&quot;, flush=True)
+</code></pre>
+<h2 id="funzionalita-avanzate">Funzionalità Avanzate</h2>
+<h3 id="filtraggio-per-fonte-documentale">Filtraggio per Fonte Documentale</h3>
+<p>L'agente supporta il <strong>filtraggio intelligente</strong> delle ricerche per fonte specifica, permettendo di isolare documentazioni diverse.</p>
+<p><strong>Come funziona:</strong>
+L'utente può richiedere informazioni da fonti specifiche e l'agente applica automaticamente il filtro appropriato.</p>
+<p><strong>Esempi di query:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Query Utente</th>
+<th>Comportamento Agente</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Come fare il deploy?"</td>
+<td>Cerca in tutta la knowledge base</td>
+</tr>
+<tr>
+<td>"Come fare il deploy di Docling usando solo Docling docs?"</td>
+<td>Filtra automaticamente su <code>source_filter="docling"</code></td>
+</tr>
+<tr>
+<td>"Spiega il tracing in Langfuse, non guardare altre fonti"</td>
+<td>Filtra su <code>source_filter="langfuse-docs"</code></td>
+</tr>
+<tr>
+<td>"Deployment secondo Langfuse deployment docs"</td>
+<td>Filtra su <code>source_filter="langfuse-docs/deployment"</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Vantaggi:</strong></p>
+<ul>
+<li>🎯 <strong>Risposte precise</strong> da fonti specifiche</li>
+<li>🚫 <strong>Zero contaminazione</strong> tra documentazioni diverse</li>
+<li>🤖 <strong>Completamente automatico</strong> - l'agente riconosce l'intento</li>
+<li>📁 <strong>Pattern flessibile</strong> - supporta percorsi parziali</li>
+</ul>
+<p><strong>Query SQL con filtro:</strong></p>
+<pre><code class="language-sql">SELECT c.content, d.title, d.source
+FROM chunks c
+JOIN documents d ON c.document_id = d.id
+WHERE d.source ILIKE '%docling%'  -- Filtro applicato
+ORDER BY c.embedding &lt;=&gt; query_embedding
+</code></pre>
+<h2 id="deploy-docker">Deploy Docker</h2>
+<h3 id="prerequisiti-docker">Prerequisiti Docker</h3>
+<ul>
+<li>Docker Desktop 24.0+ (<a href="https://www.docker.com/products/docker-desktop/">download</a>)</li>
+<li>Docker Compose v2.0+ (incluso in Docker Desktop)</li>
+</ul>
+<h3 id="quick-start-docker-2-minuti">Quick Start Docker (~2 minuti)</h3>
+<p><strong>Avviare l'applicazione completa:</strong></p>
+<pre><code class="language-bash"># Avvia tutti i servizi
+docker-compose up --build -d
+
+# Visualizza i log
+docker-compose logs -f rag-agent
+</code></pre>
+<p>L'applicazione sarà disponibile su <code>http://localhost:8501</code></p>
+<p><strong>Ingestione documenti con Docker:</strong></p>
+<pre><code class="language-bash"># Default: CANCELLA il DB e reingerisce tutto (raccomandato)
+docker-compose --profile ingestion up ingestion
+
+# AGGIUNGERE documenti senza cancellare (può creare duplicati)
+# Usa il doppio slash per Windows + Git Bash
+docker-compose run --rm ingestion uv run python -m ingestion.ingest --documents //app/documents --no-clean
+
+# Con opzioni personalizzate
+docker-compose run --rm ingestion uv run python -m ingestion.ingest \
+  --documents /app/documents \
+  --chunk-size 800 \
+  --verbose
+</code></pre>
+<p><strong>⚠️ Nota:</strong> Il comando default <strong>cancella automaticamente</strong> tutti i dati esistenti prima dell'ingestione per evitare duplicati. Usa <code>--no-clean</code> solo se vuoi aggiungere nuovi documenti senza toccare quelli esistenti.</p>
+<p><strong>Comandi utili:</strong></p>
+<pre><code class="language-bash"># Ferma tutti i servizi
+docker-compose down
+
+# Ricostruisci le immagini dopo modifiche al codice
+docker-compose build
+
+# Visualizza i container attivi
+docker-compose ps
+
+# Accedi al container per debugging
+docker-compose exec rag-agent bash
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="problemi-comuni">Problemi Comuni</h3>
+<table>
+<thead>
+<tr>
+<th>Problema</th>
+<th>Causa</th>
+<th>Soluzione</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>connection refused</code></td>
+<td>Database non raggiungibile</td>
+<td>Verifica <code>DATABASE_URL</code> e che PostgreSQL sia attivo</td>
+</tr>
+<tr>
+<td><code>extension "vector" not found</code></td>
+<td>PGVector non installato</td>
+<td>Esegui <code>CREATE EXTENSION vector;</code> o usa immagine Docker <code>pgvector/pgvector:pg16</code></td>
+</tr>
+<tr>
+<td><code>OPENAI_API_KEY not set</code></td>
+<td>Variabile mancante</td>
+<td>Aggiungi <code>OPENAI_API_KEY</code> nel file <code>.env</code></td>
+</tr>
+<tr>
+<td><code>uv: command not found</code></td>
+<td>UV non installato</td>
+<td>Installa: <code>curl -LsSf https://astral.sh/uv/install.sh \| sh</code></td>
+</tr>
+<tr>
+<td><code>Python version mismatch</code></td>
+<td>Python &lt; 3.10</td>
+<td>Aggiorna Python a 3.10+</td>
+</tr>
+<tr>
+<td><code>ImportError: docling</code></td>
+<td>Dipendenze mancanti</td>
+<td>Esegui <code>uv sync</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="connessione-database">Connessione Database</h3>
+<pre><code class="language-bash"># Verifica connessione
+psql $DATABASE_URL -c &quot;SELECT 1&quot;
+
+# Verifica estensione PGVector
+psql $DATABASE_URL -c &quot;SELECT * FROM pg_extension WHERE extname = 'vector'&quot;
+
+# Test performance index
+python scripts/optimize_database.py --check
+</code></pre>
+<h3 id="reset-ambiente">Reset Ambiente</h3>
+<pre><code class="language-bash"># Rimuovi cache e reinstalla
+rm -rf .venv
+uv sync
+
+# Reset database (ATTENZIONE: cancella tutti i dati)
+psql $DATABASE_URL &lt; sql/optimize_index.sql
+</code></pre>
+<h2 id="riferimento-api">Riferimento API</h2>
+<h3 id="tool-search_knowledge_base_1">Tool search_knowledge_base</h3>
+<pre><code class="language-python">async def search_knowledge_base(
+    ctx: RunContext[None],
+    query: str,
+    limit: int = 5,
+    source_filter: str | None = None
+) -&gt; str:
+    &quot;&quot;&quot;
+    Cerca nella knowledge base usando similarità semantica.
+
+    Args:
+        query: La query di ricerca per trovare informazioni rilevanti
+        limit: Numero massimo di risultati da restituire (default: 5)
+        source_filter: Filtro opzionale per cercare solo in fonti specifiche
+                      Esempi: &quot;docling&quot;, &quot;langfuse-docs&quot;, &quot;langfuse-docs/deployment&quot;
+                      Se fornito, verranno cercati solo documenti il cui percorso
+                      sorgente contiene questa stringa
+
+    Returns:
+        Risultati di ricerca formattati con citazioni delle fonti
+    &quot;&quot;&quot;
+</code></pre>
+<p><strong>Esempi di utilizzo del filtro:</strong></p>
+<pre><code class="language-python"># Cerca in tutta la knowledge base
+await search_knowledge_base(query=&quot;come fare il deploy&quot;)
+
+# Cerca solo nella documentazione Docling
+await search_knowledge_base(
+    query=&quot;come fare il deploy&quot;,
+    source_filter=&quot;docling&quot;
+)
+
+# Cerca solo nella sezione deployment di Langfuse
+await search_knowledge_base(
+    query=&quot;deployment cloud&quot;,
+    source_filter=&quot;langfuse-docs/deployment&quot;
+)
+</code></pre>
+<p><strong>Come funziona il filtro:</strong></p>
+<ul>
+<li>L'agente riconosce automaticamente quando l'utente specifica una fonte</li>
+<li>Applica il filtro usando pattern matching case-insensitive</li>
+<li>Utile per separare documentazioni diverse (Docling, Langfuse, ecc.)</li>
+<li>Previene contaminazione cross-documentazione nelle risposte</li>
+</ul>
+<h3 id="funzioni-database">Funzioni Database</h3>
+<pre><code class="language-sql">-- Ricerca similarità vettoriale
+SELECT * FROM match_chunks(
+    query_embedding::vector(1536),
+    match_count INT,
+    similarity_threshold FLOAT DEFAULT 0.7
+)
+</code></pre>
+<p>Restituisce chunk con:</p>
+<ul>
+<li><code>id</code>: UUID del chunk</li>
+<li><code>content</code>: Contenuto testuale</li>
+<li><code>embedding</code>: Embedding vettoriale</li>
+<li><code>similarity</code>: Punteggio similarità coseno (0-1)</li>
+<li><code>document_title</code>: Titolo documento sorgente</li>
+<li><code>document_source</code>: Percorso documento sorgente</li>
+</ul>
+<h2 id="documentazione">📚 Documentazione</h2>
+<p>La documentazione completa del progetto, inclusa l'API reference, è disponibile in <code>guide/</code>.</p>
+<h3 id="visualizzazione-locale">Visualizzazione Locale</h3>
+<p>Puoi avviare un server locale per navigare la documentazione:</p>
+<pre><code class="language-bash"># Avvia il server di documentazione
+uv run mkdocs serve
+</code></pre>
+<p>La documentazione sarà accessibile a <code>http://127.0.0.1:8000</code>.</p>
+<h3 id="generazione-statica">Generazione Statica</h3>
+<p>Per generare la documentazione statica (HTML):</p>
+<pre><code class="language-bash"># Genera la documentazione in site/
+uv run mkdocs build
+</code></pre>
+<h3 id="github-pages">GitHub Pages</h3>
+<p>La documentazione viene automaticamente pubblicata su GitHub Pages ad ogni push sul branch <code>main</code>.</p>
+<h2 id="struttura-progetto">Struttura Progetto</h2>
+<pre><code>docling-rag-agent/
+├── app.py                         # Interfaccia web Streamlit
+├── docling_mcp/                   # MCP server per Cursor IDE (standalone)
+├── core/
+│   ├── agent.py                   # PydanticAI agent wrapper
+│   └── rag_service.py             # Core RAG logic (decoupled)
+├── ingestion/
+│   ├── ingest.py                  # Pipeline ingestione documenti
+│   ├── embedder.py                # Generazione embedding con caching
+│   └── chunker.py                 # Chunking intelligente (Docling HybridChunker)
+├── utils/
+│   ├── providers.py               # Configurazione modelli/client OpenAI
+│   ├── db_utils.py                # Connection pooling ottimizzato
+│   └── models.py                  # Modelli Pydantic per validazione
+├── sql/
+│   └── optimize_index.sql         # Schema completo + HNSW index ottimizzato
+├── scripts/
+│   ├── optimize_database.py       # Tool gestione index e performance
+│   └── test_mcp_performance.py    # Performance test suite
+├── docs/
+│   ├── optimization-summary.md    # Analisi performance optimization
+│   ├── performance-optimization-guide.md
+│   └── optimization-deployment.md
+├── documents/                     # Documenti per ingestione
+├── pyproject.toml                 # Dipendenze progetto (uv)
+├── .env.example                   # Template variabili d'ambiente
+└── README.md                      # Questo file
+</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "toc.integrate", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

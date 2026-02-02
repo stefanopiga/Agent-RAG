@@ -1,0 +1,1472 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Docling RAG Agent">
+      
+      
+        <meta name="author" content="Stefano">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>docling-rag-agent - Epic Breakdown - Docling RAG Agent</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#docling-rag-agent-epic-breakdown" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Docling RAG Agent" class="md-header__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Docling RAG Agent
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              docling-rag-agent - Epic Breakdown
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting-started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../development-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Development Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../coding-standards/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Coding Standards
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../testing-strategy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Testing Strategy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../unified-project-structure.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Project Structure
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../langfuse-dashboard-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  LangFuse Dashboard
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api-reference/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Docling RAG Agent" class="md-nav__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Docling RAG Agent
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding-standards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unified-project-structure.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../langfuse-dashboard-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangFuse Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/ingestion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="docling-rag-agent-epic-breakdown">docling-rag-agent - Epic Breakdown</h1>
+<p><strong>Author:</strong> Stefano<br />
+<strong>Date:</strong> 2025-11-24<br />
+<strong>Updated:</strong> 2025-11-26<br />
+<strong>Project Level:</strong> Brownfield Enhancement<br />
+<strong>Target Scale:</strong> Production-Ready MVP</p>
+<hr />
+<h2 id="overview">Overview</h2>
+<p>This document provides the complete epic and story breakdown for <code>docling-rag-agent</code>, decomposing the requirements from the <a href="../prd/">PRD</a> into implementable stories. The primary goal is to transform the system into a production-ready RAG agent with comprehensive LangFuse monitoring, cost tracking, and GitHub deployment readiness.</p>
+<p><strong>Living Document Notice:</strong> This is the initial version. It will be updated after Architecture workflow adds technical implementation details.</p>
+<hr />
+<h2 id="functional-requirements-inventory">Functional Requirements Inventory</h2>
+<h3 id="core-rag-capabilities">Core RAG Capabilities</h3>
+<ul>
+<li><strong>FR1:</strong> Ingestione documenti multi-formato via Docling</li>
+<li><strong>FR2:</strong> Generazione embeddings vettoriali (1536 dim)</li>
+<li><strong>FR3:</strong> Storage PostgreSQL + PGVector</li>
+<li><strong>FR4:</strong> Ricerca semantica (cosine similarity)</li>
+<li><strong>FR5:</strong> Risposte RAG con citazioni fonti</li>
+<li><strong>FR6:</strong> Filtraggio per fonte documentale</li>
+</ul>
+<h3 id="mcp-server-observability">MCP Server Observability</h3>
+<ul>
+<li><strong>FR7:</strong> Tracking chiamate <code>query_knowledge_base</code></li>
+<li><strong>FR8:</strong> Calcolo costo per query</li>
+<li><strong>FR9:</strong> Trace LangFuse per operazioni MCP</li>
+<li><strong>FR10:</strong> Breakdown timing (embedding, DB, LLM)</li>
+<li><strong>FR11:</strong> Endpoint <code>/metrics</code> real-time</li>
+<li><strong>FR12:</strong> Logging errori con stack trace</li>
+</ul>
+<h3 id="mcp-server-architecture-fix">MCP Server Architecture &amp; Fix</h3>
+<ul>
+<li><strong>FR12.1:</strong> MCP server usa direttamente <code>core/rag_service.py</code> senza dipendenza API esterna</li>
+<li><strong>FR12.2:</strong> MCP server standalone senza <code>api/main.py</code> richiesto</li>
+<li><strong>FR12.3:</strong> MCP server organizzato in modulo <code>mcp/</code> con tools separati per dominio</li>
+<li><strong>FR12.4:</strong> MCP server implementa pattern FastMCP nativi (lifespan, context injection)</li>
+<li><strong>FR12.5:</strong> Tutti i tool e prompt MCP funzionano correttamente senza errori</li>
+<li><strong>FR12.6:</strong> Gestione errori con messaggi informativi e graceful degradation</li>
+</ul>
+<h3 id="streamlit-ui-observability">Streamlit UI Observability</h3>
+<ul>
+<li><strong>FR13:</strong> Session tracking con session_id</li>
+<li><strong>FR14:</strong> Registrazione query utente</li>
+<li><strong>FR15:</strong> Calcolo costi per sessione</li>
+<li><strong>FR16:</strong> Statistiche sidebar</li>
+</ul>
+<h3 id="cost-tracking-analytics">Cost Tracking &amp; Analytics</h3>
+<ul>
+<li><strong>FR17:</strong> Calcolo costo per token</li>
+<li><strong>FR18:</strong> Aggregazione costi (daily/monthly)</li>
+<li><strong>FR19:</strong> Export report CSV/JSON</li>
+<li><strong>FR20:</strong> Dashboard LangFuse</li>
+</ul>
+<h3 id="production-infrastructure">Production Infrastructure</h3>
+<ul>
+<li><strong>FR21:</strong> Linting (ruff) senza warning</li>
+<li><strong>FR22:</strong> Type checking (mypy) senza errori</li>
+<li><strong>FR23:</strong> Health check endpoints</li>
+<li><strong>FR24:</strong> Docker deployment</li>
+<li><strong>FR25:</strong> GitHub Actions CI/CD</li>
+</ul>
+<h3 id="documentation-developer-experience">Documentation &amp; Developer Experience</h3>
+<ul>
+<li><strong>FR26:</strong> README con setup &lt; 5 min</li>
+<li><strong>FR27:</strong> API documentation auto-generata</li>
+<li><strong>FR28:</strong> Guida monitoring setup</li>
+<li><strong>FR29:</strong> Esempi query con costi</li>
+<li><strong>FR30:</strong> Badge GitHub</li>
+<li><strong>FR30.1:</strong> Documentazione centralizzata in <code>docs/</code> senza file markdown sparsi</li>
+<li><strong>FR30.2:</strong> Troubleshooting guide completa per MCP server</li>
+<li><strong>FR30.3:</strong> Guida struttura progetto e organizzazione codice</li>
+</ul>
+<h3 id="testing-quality-assurance-tdd">Testing &amp; Quality Assurance (TDD)</h3>
+<ul>
+<li><strong>FR31:</strong> Unit tests con coverage &gt; 70%</li>
+<li><strong>FR32:</strong> PydanticAI TestModel per LLM mocking</li>
+<li><strong>FR33:</strong> RAGAS evaluation suite</li>
+<li><strong>FR34:</strong> Playwright E2E tests</li>
+<li><strong>FR35:</strong> Integration tests MCP</li>
+<li><strong>FR36:</strong> Tests in CI/CD</li>
+<li><strong>FR37:</strong> Coverage report pubblicato</li>
+<li><strong>FR38:</strong> Test fixtures database</li>
+<li><strong>FR39:</strong> Golden dataset RAGAS (20+ pairs)</li>
+<li><strong>FR40:</strong> Test results in LangFuse</li>
+</ul>
+<h3 id="tdd-structure-organization">TDD Structure &amp; Organization</h3>
+<ul>
+<li><strong>FR41:</strong> Test suite organizzata rigorosamente in <code>tests/unit/</code>, <code>tests/integration/</code>, <code>tests/e2e/</code></li>
+<li><strong>FR42:</strong> Test fixtures in <code>tests/fixtures/</code> con golden dataset per RAGAS</li>
+<li><strong>FR43:</strong> Test seguono pattern Red-Green-Refactor rigoroso (test prima del codice)</li>
+<li><strong>FR44:</strong> Coverage report generato automaticamente in CI/CD con threshold &gt; 70%</li>
+</ul>
+<h3 id="project-structure-organization">Project Structure &amp; Organization</h3>
+<ul>
+<li><strong>FR45:</strong> Progetto segue struttura directory rigorosa senza file sparsi in root</li>
+<li><strong>FR46:</strong> Tutti i file markdown in <code>docs/</code> (eccetto README.md root)</li>
+<li><strong>FR47:</strong> Tutti gli script organizzati in <code>scripts/</code> con sottodirectory per categoria</li>
+<li><strong>FR48:</strong> Codice organizzato per responsabilità (mcp/, core/, ingestion/, utils/, api/)</li>
+<li><strong>FR49:</strong> Zero file temporanei o di debug in root directory</li>
+</ul>
+<hr />
+<h2 id="fr-coverage-map">FR Coverage Map</h2>
+<table>
+<thead>
+<tr>
+<th>Epic</th>
+<th>Stories</th>
+<th>FRs Covered</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Epic 1</td>
+<td>1.1, 1.2, 1.3, 1.4</td>
+<td>FR1-FR6, FR26-FR30, FR30.1-FR30.3</td>
+</tr>
+<tr>
+<td>Epic 2</td>
+<td>2.1, 2.2, 2.3, 2.4, 2.5</td>
+<td>FR7-FR12, FR12.1-FR12.6, FR17-FR20</td>
+</tr>
+<tr>
+<td>Epic 3</td>
+<td>3.1, 3.2</td>
+<td>FR13-FR16</td>
+</tr>
+<tr>
+<td>Epic 4</td>
+<td>4.1, 4.2, 4.3</td>
+<td>FR21-FR25</td>
+</tr>
+<tr>
+<td>Epic 5</td>
+<td>5.1, 5.2, 5.3, 5.4</td>
+<td>FR31-FR40, FR41-FR44</td>
+</tr>
+<tr>
+<td>Epic 6</td>
+<td>6.1, 6.2</td>
+<td>FR45-FR49</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="epic-1-core-rag-baseline-documentation">Epic 1: Core RAG Baseline &amp; Documentation</h2>
+<p><strong>Goal:</strong> Stabilire la baseline documentale del sistema esistente e creare fondamenta per monitoring. Questo epic fornisce l'infrastruttura di base (documentazione + API reference) necessaria per gli epic successivi.</p>
+<p><strong>Why Foundation:</strong> Senza documentazione completa e API reference, l'implementazione di monitoring (Epic 2) sarebbe difficile da validare. Questo epic crea la "single source of truth" per il sistema.</p>
+<h3 id="story-11-document-current-architecture">Story 1.1: Document Current Architecture</h3>
+<p>As a developer,<br />
+I want comprehensive documentation of the existing RAG architecture,<br />
+So that I can understand the system before adding monitoring.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> the current codebase, <strong>When</strong> I read <code>docs/architecture.md</code>, <strong>Then</strong> it accurately reflects all components (core, ingestion, utils, MCP, Streamlit)</li>
+<li><strong>Given</strong> the architecture doc, <strong>When</strong> I review data flows, <strong>Then</strong> I see complete diagrams for ingestion and query pipelines</li>
+<li><strong>Given</strong> the architecture doc, <strong>When</strong> I check component descriptions, <strong>Then</strong> each module has clear responsibilities documented</li>
+</ul>
+<p><strong>Prerequisites:</strong> None (foundation story)</p>
+<p><strong>Technical Notes:</strong> Update existing <code>docs/architecture.md</code> to reflect current state post-audio removal. Include MCP server architecture.</p>
+<hr />
+<h3 id="story-12-generate-api-reference-documentation">Story 1.2: Generate API Reference Documentation</h3>
+<p>As a developer,<br />
+I want auto-generated API documentation for all public functions,<br />
+So that I can quickly understand how to use and extend the system.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> the codebase, <strong>When</strong> I run documentation generation, <strong>Then</strong> all public functions in <code>core/</code>, <code>ingestion/</code>, <code>utils/</code> have docstrings</li>
+<li><strong>Given</strong> the generated docs, <strong>When</strong> I search for a function, <strong>Then</strong> I find parameters, return types, and usage examples</li>
+<li><strong>Given</strong> the API docs, <strong>When</strong> I deploy them, <strong>Then</strong> they are accessible via GitHub Pages or local server</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 1.1 (architecture understanding)</p>
+<p><strong>Technical Notes:</strong> Use Sphinx or MkDocs. Configure auto-build in GitHub Actions.</p>
+<hr />
+<h3 id="story-13-create-production-ready-readme">Story 1.3: Create Production-Ready README</h3>
+<p>As a new developer,<br />
+I want to setup the project locally in &lt; 5 minutes,<br />
+So that I can start contributing immediately.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> the README, <strong>When</strong> I follow setup instructions, <strong>Then</strong> I have a working local environment in &lt; 5 minutes</li>
+<li><strong>Given</strong> the README, <strong>When</strong> I check prerequisites, <strong>Then</strong> all required tools are listed with version numbers</li>
+<li><strong>Given</strong> the README, <strong>When</strong> I view the top, <strong>Then</strong> I see GitHub badges (build status, coverage, version)</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 1.1, 1.2 (docs complete)</p>
+<p><strong>Technical Notes:</strong> Include quick start, Docker setup, troubleshooting section. Add shields.io badges.</p>
+<hr />
+<h3 id="story-14-centralize-documentation-and-add-troubleshooting-guide">Story 1.4: Centralize Documentation and Add Troubleshooting Guide</h3>
+<p>As a developer,<br />
+I want all documentation centralized in <code>docs/</code> with a complete troubleshooting guide,<br />
+So that I can quickly find information and resolve issues.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> the project root, <strong>When</strong> I check for markdown files, <strong>Then</strong> all <code>.md</code> files are in <code>docs/</code> (except README.md)</li>
+<li><strong>Given</strong> the documentation, <strong>When</strong> I look for troubleshooting, <strong>Then</strong> I find complete troubleshooting guide for MCP server issues</li>
+<li><strong>Given</strong> the documentation, <strong>When</strong> I check project structure, <strong>Then</strong> I find guide explaining directory organization and code structure</li>
+<li><strong>Given</strong> scattered documentation files, <strong>When</strong> I review them, <strong>Then</strong> they are integrated into appropriate guides in <code>docs/</code></li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 1.1, 1.2, 1.3 (baseline docs complete)</p>
+<p><strong>Technical Notes:</strong></p>
+<ul>
+<li>Move all root-level <code>.md</code> files (except README.md) to <code>guide/</code></li>
+<li>Integrate content from: <code>flusso-mcp-tool.md</code>, <code>mat-FastMCP-e-architecture.md</code>, <code>MCP_TROUBLESHOOTING.md</code>, <code>pydantic_ai_testing_reference.md</code>, <code>walkthrough.md</code></li>
+<li>Create <code>guide/troubleshooting-guide.md</code> with MCP server troubleshooting section</li>
+<li>Add project structure guide to <code>guide/development-guide.md</code></li>
+<li><strong>Note:</strong> <code>docs/</code> directory is reserved for BMAD workflow documentation</li>
+</ul>
+<p><strong>FRs Covered:</strong> FR30.1, FR30.2, FR30.3</p>
+<hr />
+<h2 id="epic-2-mcp-server-observability-langfuse">Epic 2: MCP Server Observability (LangFuse)</h2>
+<p><strong>Goal:</strong> Implementare monitoring completo per MCP server usando LangFuse, con cost tracking granulare e performance metrics real-time.</p>
+<p><strong>Why Critical:</strong> MCP server è l'interfaccia primaria per workflow production. Senza monitoring, impossibile ottimizzare costi o diagnosticare problemi.</p>
+<h3 id="story-21-integrate-langfuse-sdk">Story 2.1: Integrate LangFuse SDK</h3>
+<p>As a developer,<br />
+I want LangFuse integrated in the MCP server,<br />
+So that all operations are automatically traced.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> <code>mcp_server.py</code>, <strong>When</strong> I start the server, <strong>Then</strong> LangFuse client is initialized with API key from env</li>
+<li><strong>Given</strong> a query, <strong>When</strong> <code>query_knowledge_base</code> is called, <strong>Then</strong> a new trace is created in LangFuse</li>
+<li><strong>Given</strong> LangFuse dashboard, <strong>When</strong> I view traces, <strong>Then</strong> I see all MCP queries with timestamps</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 1.1 (architecture understanding)</p>
+<p><strong>Technical Notes:</strong> Use <code>langfuse</code> Python SDK. Configure via <code>LANGFUSE_PUBLIC_KEY</code>, <code>LANGFUSE_SECRET_KEY</code>, <code>LANGFUSE_HOST</code> env vars.</p>
+<hr />
+<h3 id="story-22-implement-cost-tracking">Story 2.2: Implement Cost Tracking</h3>
+<p>As a product owner,<br />
+I want to know the exact cost of each MCP query,<br />
+So that I can budget and optimize spending.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> a query, <strong>When</strong> embeddings are generated, <strong>Then</strong> input tokens are counted and cost calculated</li>
+<li><strong>Given</strong> a query, <strong>When</strong> LLM generates response, <strong>Then</strong> input/output tokens are counted and cost calculated</li>
+<li><strong>Given</strong> LangFuse trace, <strong>When</strong> I view it, <strong>Then</strong> I see total cost breakdown (embedding + generation)</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 2.1 (LangFuse integrated)</p>
+<p><strong>Technical Notes:</strong> Use OpenAI pricing: <code>text-embedding-3-small</code> = $0.00002/1K tokens, <code>gpt-4o-mini</code> = $0.00015/1K input, $0.0006/1K output.</p>
+<hr />
+<h3 id="story-23-add-performance-metrics">Story 2.3: Add Performance Metrics</h3>
+<p>As a developer,<br />
+I want detailed timing breakdown for each query,<br />
+So that I can identify performance bottlenecks.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> a query, <strong>When</strong> it completes, <strong>Then</strong> I see timing for: embedding_time, db_search_time, llm_generation_time</li>
+<li><strong>Given</strong> LangFuse trace, <strong>When</strong> I view spans, <strong>Then</strong> each component (embedder, DB, LLM) has separate span with duration</li>
+<li><strong>Given</strong> metrics endpoint, <strong>When</strong> I query <code>/metrics</code>, <strong>Then</strong> I see Prometheus-format metrics (latency histograms, request count)</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 2.1 (LangFuse integrated)</p>
+<p><strong>Technical Notes:</strong> Use LangFuse spans for hierarchical timing. Add <code>prometheus_client</code> for <code>/metrics</code> endpoint.</p>
+<hr />
+<h3 id="story-24-create-langfuse-dashboard">Story 2.4: Create LangFuse Dashboard</h3>
+<p>As a product owner,<br />
+I want a real-time dashboard showing MCP performance and costs,<br />
+So that I can monitor the system without technical knowledge.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> LangFuse UI, <strong>When</strong> I open the dashboard, <strong>Then</strong> I see: total queries, avg latency, total cost (today/week/month)</li>
+<li><strong>Given</strong> the dashboard, <strong>When</strong> I filter by date range, <strong>Then</strong> I see cost trends over time</li>
+<li><strong>Given</strong> the dashboard, <strong>When</strong> I click a trace, <strong>Then</strong> I see full query details (input, output, cost, timing)</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 2.1, 2.2, 2.3 (all monitoring implemented)</p>
+<p><strong>Technical Notes:</strong> Configure LangFuse dashboard views. Create custom charts for cost trends.</p>
+<hr />
+<h3 id="story-25-refactor-mcp-server-architecture-standalone">Story 2.5: Refactor MCP Server Architecture (Standalone)</h3>
+<p>As a developer,<br />
+I want the MCP server to work standalone without requiring an external API server,<br />
+So that it's simpler to deploy and debug.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> the MCP server, <strong>When</strong> I start it, <strong>Then</strong> it works without <code>api/main.py</code> running</li>
+<li><strong>Given</strong> the codebase, <strong>When</strong> I check MCP server structure, <strong>Then</strong> it's organized in <code>mcp/</code> module with tools separated by domain (search, documents, overview)</li>
+<li><strong>Given</strong> the MCP server, <strong>When</strong> I inspect it, <strong>Then</strong> it uses <code>core/rag_service.py</code> directly instead of <code>client/api_client.py</code></li>
+<li><strong>Given</strong> the MCP server, <strong>When</strong> I check implementation, <strong>Then</strong> it uses FastMCP native patterns (lifespan management, context injection)</li>
+<li><strong>Given</strong> all MCP tools, <strong>When</strong> I test them, <strong>Then</strong> <code>query_knowledge_base</code>, <code>list_knowledge_base_documents</code>, <code>get_knowledge_base_document</code>, <code>get_knowledge_base_overview</code>, and <code>ask_knowledge_base</code> all work correctly without errors</li>
+<li><strong>Given</strong> an error occurs, <strong>When</strong> the MCP server handles it, <strong>Then</strong> it provides informative error messages and graceful degradation</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 1.1 (architecture understanding), Story 2.1 (LangFuse integration for tracing refactoring)</p>
+<p><strong>Technical Notes:</strong></p>
+<ul>
+<li>Create <code>mcp/</code> directory structure:</li>
+<li><code>mcp/server.py</code> - FastMCP instance</li>
+<li><code>mcp/tools/search.py</code> - query_knowledge_base, ask_knowledge_base</li>
+<li><code>mcp/tools/documents.py</code> - list_knowledge_base_documents, get_knowledge_base_document</li>
+<li><code>mcp/tools/overview.py</code> - get_knowledge_base_overview</li>
+<li><code>mcp/lifespan.py</code> - Server lifecycle management</li>
+<li>Remove dependency on <code>client/api_client.py</code></li>
+<li>Use direct calls to <code>core/rag_service.py</code> functions</li>
+<li>Implement FastMCP lifespan pattern for resource initialization</li>
+<li>Add comprehensive error handling with informative messages</li>
+</ul>
+<p><strong>FRs Covered:</strong> FR12.1, FR12.2, FR12.3, FR12.4, FR12.5, FR12.6</p>
+<hr />
+<h2 id="epic-3-streamlit-ui-observability">Epic 3: Streamlit UI Observability</h2>
+<p><strong>Goal:</strong> Estendere monitoring a Streamlit UI con session tracking e cost visibility per utenti. Include security hardening opzionale per prevenire cost explosion e abuse.</p>
+<p><strong>Security Hardening:</strong> Epic 3 include protezioni multi-layer documentate in <code>docs/stories/3/epic-3-security-hardening-guide.md</code>:</p>
+<ul>
+<li>Cost protection con threshold enforcement (priorità ALTA)</li>
+<li>Rate limiting per prevenzione abuse (priorità MEDIA)</li>
+<li>Network security (VPN/IP whitelist) (priorità ALTA)</li>
+<li>Streamlit authentication opzionale (priorità BASSA)</li>
+</ul>
+<p><strong>Documentazione Completa:</strong></p>
+<ul>
+<li>Tech Spec: <code>docs/stories/3/tech-spec-epic-3.md</code></li>
+<li>Security Hardening Guide: <code>docs/stories/3/epic-3-security-hardening-guide.md</code></li>
+<li>Setup Guide: <code>docs/stories/3/epic-3-setup-guide.md</code></li>
+</ul>
+<h3 id="story-31-implement-session-tracking">Story 3.1: Implement Session Tracking</h3>
+<p>As a Streamlit user,<br />
+I want to see my session statistics in the sidebar,<br />
+So that I know how many queries I've made and their total cost.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> a Streamlit session, <strong>When</strong> I open the app, <strong>Then</strong> a unique session_id is generated</li>
+<li><strong>Given</strong> a query, <strong>When</strong> I submit it, <strong>Then</strong> it's logged with session_id, timestamp, and cost</li>
+<li><strong>Given</strong> the sidebar, <strong>When</strong> I view it, <strong>Then</strong> I see: query count, total cost, avg latency for current session</li>
+<li><strong>Given</strong> PostgreSQL, <strong>When</strong> session is initialized, <strong>Then</strong> record is created in <code>sessions</code> table with RLS protection</li>
+<li><strong>Given</strong> a query, <strong>When</strong> it's processed, <strong>Then</strong> it's logged in <code>query_logs</code> table with cost and latency</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 2.2 (cost tracking logic)</p>
+<p><strong>Technical Notes:</strong></p>
+<ul>
+<li>Use <code>st.session_state</code> for session_id persistence</li>
+<li>Store session data in PostgreSQL (<code>sessions</code> and <code>query_logs</code> tables)</li>
+<li>RLS enabled on all tables (service_role only access)</li>
+<li>Modules: <code>utils/session_manager.py</code> for session management</li>
+</ul>
+<p><strong>Security Considerations:</strong></p>
+<ul>
+<li>RLS Supabase protects database access</li>
+<li>Cost monitoring optional via <code>utils/cost_monitor.py</code> (see Security Hardening Guide)</li>
+</ul>
+<hr />
+<h3 id="story-32-add-langfuse-tracing-to-streamlit">Story 3.2: Add LangFuse Tracing to Streamlit</h3>
+<p>As a developer,<br />
+I want Streamlit queries traced in LangFuse,<br />
+So that I can compare MCP and UI performance.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> a Streamlit query, <strong>When</strong> it's processed, <strong>Then</strong> a LangFuse trace is created with session_id</li>
+<li><strong>Given</strong> LangFuse dashboard, <strong>When</strong> I filter by source, <strong>Then</strong> I can separate MCP vs Streamlit queries</li>
+<li><strong>Given</strong> a trace, <strong>When</strong> I view metadata, <strong>Then</strong> I see: user_agent, session_id, query_text</li>
+<li><strong>Given</strong> LangFuse context injection, <strong>When</strong> trace is created, <strong>Then</strong> session_id propagates to all nested spans</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 2.1 (LangFuse SDK), Story 3.1 (session tracking)</p>
+<p><strong>Technical Notes:</strong></p>
+<ul>
+<li>Tag traces with <code>source: streamlit</code> metadata</li>
+<li>Module: <code>utils/langfuse_streamlit.py</code> for context injection</li>
+<li>Graceful degradation if LangFuse unavailable</li>
+</ul>
+<hr />
+<h2 id="epic-4-production-infrastructure-cicd">Epic 4: Production Infrastructure &amp; CI/CD</h2>
+<p><strong>Goal:</strong> Preparare il sistema per deployment GitHub con CI/CD, health checks, e quality gates.</p>
+<h3 id="story-41-setup-github-actions-cicd">Story 4.1: Setup GitHub Actions CI/CD</h3>
+<p>As a developer,<br />
+I want automated testing and linting on every push,<br />
+So that code quality is maintained automatically.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> a push to main, <strong>When</strong> GitHub Actions runs, <strong>Then</strong> all tests pass</li>
+<li><strong>Given</strong> the CI pipeline, <strong>When</strong> it runs, <strong>Then</strong> ruff linting passes with zero warnings</li>
+<li><strong>Given</strong> the CI pipeline, <strong>When</strong> it runs, <strong>Then</strong> mypy type checking passes with zero errors</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 1.3 (README with setup)</p>
+<p><strong>Technical Notes:</strong> Create <code>.github/workflows/ci.yml</code>. Run: <code>ruff check</code>, <code>mypy</code>, <code>pytest</code>.</p>
+<hr />
+<h3 id="story-42-add-health-check-endpoints">Story 4.2: Add Health Check Endpoints</h3>
+<p>As a DevOps engineer,<br />
+I want health check endpoints for all services,<br />
+So that I can monitor system status in production.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> MCP server, <strong>When</strong> I query <code>/health</code>, <strong>Then</strong> I get JSON response with status: ok/degraded/down</li>
+<li><strong>Given</strong> Streamlit app, <strong>When</strong> I query <code>/_stcore/health</code>, <strong>Then</strong> I get 200 OK</li>
+<li><strong>Given</strong> PostgreSQL, <strong>When</strong> health check runs, <strong>Then</strong> connection is verified</li>
+</ul>
+<p><strong>Prerequisites:</strong> None (infrastructure story)</p>
+<p><strong>Technical Notes:</strong> Add FastAPI <code>/health</code> endpoint to MCP server. Check DB connection, LangFuse connectivity.</p>
+<hr />
+<h3 id="story-43-optimize-docker-images">Story 4.3: Optimize Docker Images</h3>
+<p>As a DevOps engineer,<br />
+I want Docker images &lt; 500MB,<br />
+So that deployment is fast and cost-effective.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> Dockerfile, <strong>When</strong> I build it, <strong>Then</strong> final image size is &lt; 500MB</li>
+<li><strong>Given</strong> docker-compose, <strong>When</strong> I run it, <strong>Then</strong> all services start in &lt; 30 seconds</li>
+<li><strong>Given</strong> the images, <strong>When</strong> I inspect layers, <strong>Then</strong> I see multi-stage build optimization</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 4.2 (health checks for validation)</p>
+<p><strong>Technical Notes:</strong> Use multi-stage builds. Base image: <code>python:3.11-slim</code>. Remove build dependencies in final stage.</p>
+<hr />
+<h2 id="epic-5-testing-quality-assurance-tdd">Epic 5: Testing &amp; Quality Assurance (TDD)</h2>
+<p><strong>Goal:</strong> Implementare Test-Driven Development con suite completa di unit tests, RAG evaluation, e E2E tests per garantire qualità production-ready.</p>
+<p><strong>Why Critical:</strong> Senza testing robusto, impossibile validare monitoring accuracy, prevent regressions, o garantire RAG quality. TDD assicura che ogni feature sia testabile e testata.</p>
+<h3 id="story-51-setup-testing-infrastructure-with-tdd-structure">Story 5.1: Setup Testing Infrastructure with TDD Structure</h3>
+<p>As a developer,<br />
+I want a complete testing infrastructure with rigorous TDD structure and pytest fixtures,<br />
+So that I can write and run tests efficiently following Red-Green-Refactor pattern.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> the project, <strong>When</strong> I run <code>pytest</code>, <strong>Then</strong> all tests are discovered and executed</li>
+<li><strong>Given</strong> <code>tests/</code> directory, <strong>When</strong> I inspect it, <strong>Then</strong> I see rigorous organization: <code>tests/unit/</code>, <code>tests/integration/</code>, <code>tests/e2e/</code>, <code>tests/fixtures/</code></li>
+<li><strong>Given</strong> <code>tests/fixtures/</code>, <strong>When</strong> I check it, <strong>Then</strong> I see golden dataset for RAGAS evaluation (20+ query-answer pairs)</li>
+<li><strong>Given</strong> pytest config, <strong>When</strong> I check it, <strong>Then</strong> I see async support, coverage tracking with threshold &gt; 70%, and markers configured</li>
+<li><strong>Given</strong> CI/CD pipeline, <strong>When</strong> it runs, <strong>Then</strong> coverage report is generated automatically and build fails if coverage &lt; 70%</li>
+<li><strong>Given</strong> test workflow, <strong>When</strong> I follow TDD, <strong>Then</strong> I write test first (Red), implement code (Green), then refactor (Refactor)</li>
+</ul>
+<p><strong>Prerequisites:</strong> None (foundation story)</p>
+<p><strong>Technical Notes:</strong></p>
+<ul>
+<li>Install <code>pytest</code>, <code>pytest-asyncio</code>, <code>pytest-cov</code>, <code>pytest-mock</code></li>
+<li>Create <code>conftest.py</code> with shared fixtures</li>
+<li>Organize tests rigorously: <code>tests/unit/</code>, <code>tests/integration/</code>, <code>tests/e2e/</code>, <code>tests/fixtures/</code></li>
+<li>Create <code>tests/fixtures/golden_dataset.json</code> with 20+ query-answer pairs for RAGAS</li>
+<li>Configure pytest.ini with coverage threshold &gt; 70%</li>
+<li>Setup CI/CD to generate coverage report and fail build if threshold not met</li>
+</ul>
+<p><strong>FRs Covered:</strong> FR31, FR38, FR39, FR41, FR42, FR43, FR44</p>
+<hr />
+<h3 id="story-52-implement-unit-tests-with-tdd">Story 5.2: Implement Unit Tests with TDD</h3>
+<p>As a developer,<br />
+I want unit tests for all core modules using PydanticAI TestModel,<br />
+So that I can validate logic without API costs.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> <code>core/rag_service.py</code>, <strong>When</strong> I run unit tests, <strong>Then</strong> all functions are tested with mocked LLM</li>
+<li><strong>Given</strong> <code>ingestion/embedder.py</code>, <strong>When</strong> I run tests, <strong>Then</strong> embedding logic is validated with TestModel</li>
+<li><strong>Given</strong> coverage report, <strong>When</strong> I check it, <strong>Then</strong> core modules have &gt; 70% coverage</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 5.1 (testing infrastructure)</p>
+<p><strong>Technical Notes:</strong> Use <code>PydanticAI.TestModel</code> for LLM mocking. Set <code>ALLOW_MODEL_REQUESTS=False</code> in tests.</p>
+<hr />
+<h3 id="story-53-implement-ragas-evaluation-suite">Story 5.3: Implement RAGAS Evaluation Suite</h3>
+<p>As a product owner,<br />
+I want RAGAS metrics to validate RAG quality,<br />
+So that I can ensure high-quality responses.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> golden dataset (20+ query-answer pairs), <strong>When</strong> I run RAGAS eval, <strong>Then</strong> I see faithfulness, relevancy, precision, recall scores</li>
+<li><strong>Given</strong> RAGAS results, <strong>When</strong> I check thresholds, <strong>Then</strong> faithfulness &gt; 0.85 and relevancy &gt; 0.80</li>
+<li><strong>Given</strong> LangFuse, <strong>When</strong> I view eval results, <strong>Then</strong> I see RAGAS metrics tracked over time</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 2.1 (LangFuse integration)</p>
+<p><strong>Technical Notes:</strong> Install <code>ragas</code>. Create <code>tests/golden_dataset.json</code>. Integrate with LangFuse for tracking.</p>
+<hr />
+<h3 id="story-54-implement-playwright-e2e-tests">Story 5.4: Implement Playwright E2E Tests</h3>
+<p>As a QA engineer,<br />
+I want E2E tests for critical Streamlit workflows,<br />
+So that I can validate user experience.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> Streamlit app running, <strong>When</strong> Playwright test runs, <strong>Then</strong> it simulates user query and validates response</li>
+<li><strong>Given</strong> E2E test, <strong>When</strong> it completes, <strong>Then</strong> I see screenshot/video recording for debugging</li>
+<li><strong>Given</strong> CI/CD, <strong>When</strong> tests run, <strong>Then</strong> E2E tests execute in headless mode</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 3.1 (Streamlit session tracking)</p>
+<p><strong>Technical Notes:</strong> Install <code>playwright</code>. Create <code>tests/e2e/test_streamlit_workflow.py</code>. Use <code>data-testid</code> selectors.</p>
+<hr />
+<h2 id="epic-6-project-structure-refactoring-organization">Epic 6: Project Structure Refactoring &amp; Organization</h2>
+<p><strong>Goal:</strong> Implementare struttura directory rigorosa eliminando file sparsi e organizzando codice per responsabilità, seguendo best practices FastMCP e TDD.</p>
+<p><strong>Why Critical:</strong> Struttura rigorosa è fondamentale per mantenibilità, testabilità, e scalabilità. File sparsi creano confusione e rendono difficile onboarding nuovi sviluppatori.</p>
+<h3 id="story-61-reorganize-project-structure">Story 6.1: Reorganize Project Structure</h3>
+<p>As a developer,<br />
+I want a rigorous directory structure without scattered files in root,<br />
+So that the project is maintainable and easy to navigate.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> the project root, <strong>When</strong> I check for files, <strong>Then</strong> no markdown files exist except README.md</li>
+<li><strong>Given</strong> the project root, <strong>When</strong> I check for Python files, <strong>Then</strong> no temporary or debug files exist (temp_query.py, debug_mcp_tools.py removed or moved)</li>
+<li><strong>Given</strong> the scripts directory, <strong>When</strong> I inspect it, <strong>Then</strong> scripts are organized in subdirectories: <code>scripts/verification/</code>, <code>scripts/debug/</code></li>
+<li><strong>Given</strong> the codebase, <strong>When</strong> I check organization, <strong>Then</strong> code is organized by responsibility: <code>mcp/</code>, <code>core/</code>, <code>ingestion/</code>, <code>utils/</code>, <code>api/</code></li>
+<li><strong>Given</strong> the MCP server, <strong>When</strong> I check location, <strong>Then</strong> it's in <code>mcp/</code> module, not root</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 1.4 (documentation centralized), Story 2.5 (MCP server refactored)</p>
+<p><strong>Technical Notes:</strong></p>
+<ul>
+<li>Remove <code>temp_query.py</code> from root</li>
+<li>Move <code>debug_mcp_tools.py</code> to <code>scripts/debug/</code> or remove</li>
+<li>Move <code>mcp_server.py</code> to <code>mcp/server.py</code> (if not already done in Story 2.5)</li>
+<li>Reorganize scripts: <code>scripts/verify_*.py</code> → <code>scripts/verification/</code></li>
+<li>Move <code>scripts/test_mcp_performance.py</code> to <code>tests/performance/</code> or keep in scripts if it's a utility</li>
+<li>Ensure zero temporary files in root</li>
+</ul>
+<p><strong>FRs Covered:</strong> FR45, FR46, FR47, FR48, FR49</p>
+<hr />
+<h3 id="story-62-clean-up-and-validate-structure">Story 6.2: Clean Up and Validate Structure</h3>
+<p>As a developer,<br />
+I want to verify that the project structure is rigorous and complete,<br />
+So that I can confidently proceed with implementation.</p>
+<p><strong>Acceptance Criteria:</strong></p>
+<ul>
+<li><strong>Given</strong> the project structure, <strong>When</strong> I validate it, <strong>Then</strong> all files are in appropriate directories</li>
+<li><strong>Given</strong> the root directory, <strong>When</strong> I check it, <strong>Then</strong> only essential files exist (README.md, pyproject.toml, docker-compose.yml, app.py entry point)</li>
+<li><strong>Given</strong> the documentation, <strong>When</strong> I check structure guide, <strong>Then</strong> it accurately reflects the new organization</li>
+<li><strong>Given</strong> the codebase, <strong>When</strong> I check imports, <strong>Then</strong> all imports work correctly after reorganization</li>
+</ul>
+<p><strong>Prerequisites:</strong> Story 6.1 (structure reorganized)</p>
+<p><strong>Technical Notes:</strong></p>
+<ul>
+<li>Run import validation: <code>python -m py_compile</code> on all modules</li>
+<li>Update any hardcoded paths in scripts/docs</li>
+<li>Verify Docker builds still work</li>
+<li>Update CI/CD paths if needed</li>
+</ul>
+<p><strong>FRs Covered:</strong> FR45, FR48, FR49</p>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>This breakdown defines <strong>6 Epics</strong> and <strong>20 Stories</strong> to execute the production-ready transformation.</p>
+<p><strong>Epic Sequence:</strong></p>
+<ol>
+<li><strong>Epic 1</strong> (Foundation) → Establishes documentation baseline</li>
+<li><strong>Epic 2</strong> (MCP Monitoring + Architecture Fix) → Core observability + standalone MCP server</li>
+<li><strong>Epic 3</strong> (Streamlit Monitoring) → Extends monitoring to UI</li>
+<li><strong>Epic 4</strong> (Production Infra) → Deployment readiness</li>
+<li><strong>Epic 5</strong> (Testing &amp; QA) → TDD implementation with rigorous structure</li>
+<li><strong>Epic 6</strong> (Project Structure) → Rigorous organization and cleanup</li>
+</ol>
+<p><strong>Total FRs Covered:</strong> 49/49 (100%)</p>
+<p><strong>Estimated Timeline:</strong> 7-9 weeks (assuming 1 developer, part-time)</p>
+<hr />
+<p><em>For implementation: Use the <code>create-story</code> workflow to generate individual story implementation plans from this epic breakdown.</em></p>
+<p><em>This document will be updated after Architecture workflow to incorporate technical design decisions.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "toc.integrate", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

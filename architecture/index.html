@@ -1,0 +1,3100 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Docling RAG Agent">
+      
+      
+        <meta name="author" content="Stefano">
+      
+      
+      
+        <link rel="prev" href="../getting-started/">
+      
+      
+        <link rel="next" href="../development-guide/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Architecture - Docling RAG Agent</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#architecture-docling-rag-agent" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Docling RAG Agent" class="md-header__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Docling RAG Agent
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Architecture
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting-started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../development-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Development Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../coding-standards/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Coding Standards
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../testing-strategy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Testing Strategy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../unified-project-structure.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Project Structure
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../langfuse-dashboard-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  LangFuse Dashboard
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api-reference/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Docling RAG Agent" class="md-nav__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Docling RAG Agent
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#decision-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Decision Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#project-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Project Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#epic-to-architecture-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Epic to Architecture Mapping
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#technology-stack-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Technology Stack Details
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Technology Stack Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#core-technologies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Core Technologies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#implementation-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Implementation Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#naming-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Naming Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#structure-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Structure Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#format-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Format Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#communication-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Communication Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#location-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Location Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consistency-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consistency Patterns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#consistency-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consistency Rules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Consistency Rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#naming-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Naming Conventions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#code-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Code Organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#logging-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging Strategy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#data-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Data Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#database-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database Schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Models
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-contracts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Contracts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Contracts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#search-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Search Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documents-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documents Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#overview-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#health-check" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Health Check
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#security-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Security Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#authentication-authorization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication &amp; Authorization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Protection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#security-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security Best Practices
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#latency-targets-from-nfrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Latency Targets (from NFRs)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#optimization-strategies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Optimization Strategies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#scalability" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scalability
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#deployment-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Deployment Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#docker-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Docker Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#environment-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Environment Configuration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cicd-pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI/CD Pipeline
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Development Environment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Development Environment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#prerequisites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Prerequisites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#setup-commands" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup Commands
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#git-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Git Workflow
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#versionamento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versionamento
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#architecture-decision-records-adrs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Decision Records (ADRs)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Decision Records (ADRs)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#adr-001-langfuse-integration-pattern" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-001: LangFuse Integration Pattern
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-002-mcp-server-standalone-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-002: MCP Server Standalone Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-003-tdd-structure-rigorosa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-003: TDD Structure Rigorosa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-004-git-workflow-cicd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-004: Git Workflow &amp; CI/CD
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#adr-005-prometheus-metrics-and-health-check-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ADR-005: Prometheus Metrics and Health Check Endpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#related-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Related Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External References
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../coding-standards/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unified-project-structure.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../langfuse-dashboard-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangFuse Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/ingestion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="architecture-docling-rag-agent">Architecture - docling-rag-agent</h1>
+<h2 id="executive-summary">Executive Summary</h2>
+<p><strong>docling-rag-agent</strong> è un sistema RAG (Retrieval Augmented Generation) production-ready che fornisce accesso conversazionale a knowledge base documentali tramite Streamlit UI e MCP Server. L'architettura è basata su <strong>Service-Oriented Architecture (SOA)</strong> con core business logic decoupled, LangFuse observability integrata, e MCP server standalone. Il sistema è progettato per prevenire conflitti tra agenti AI attraverso decisioni architetturali esplicite e pattern di implementazione rigorosi.</p>
+<h2 id="decision-summary">Decision Summary</h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Decision</th>
+<th>Version</th>
+<th>Verified</th>
+<th>Affects Epics</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Observability Integration</strong></td>
+<td>LangFuse decorator-based (<code>@observe()</code>)</td>
+<td>LangFuse Python SDK v3.0.0+</td>
+<td>2025-11-26</td>
+<td>Epic 2, Epic 3</td>
+<td>Trace gerarchici automatici, cost tracking integrato, graceful degradation</td>
+</tr>
+<tr>
+<td><strong>Cost Tracking</strong></td>
+<td>LangFuse auto-tracking con <code>langfuse.openai</code> wrapper</td>
+<td>OpenAI SDK 2.8.1+</td>
+<td>2025-11-26</td>
+<td>Epic 2, Epic 3</td>
+<td>Zero codice aggiuntivo, pricing sempre aggiornato, breakdown automatico</td>
+</tr>
+<tr>
+<td><strong>MCP Server Architecture</strong></td>
+<td>Modulo <code>mcp/</code> con tools separati per dominio</td>
+<td>FastMCP 0.4.x+</td>
+<td>2025-11-26</td>
+<td>Epic 2</td>
+<td>Standalone, direct service integration, pattern FastMCP nativi</td>
+</tr>
+<tr>
+<td><strong>Error Handling</strong></td>
+<td>FastMCP <code>ToolError</code> Pattern</td>
+<td>FastMCP 0.4.x+</td>
+<td>2025-11-26</td>
+<td>Epic 2, Epic 4</td>
+<td>Messaggi informativi, logging strutturato, <code>mask_error_details=True</code> in produzione</td>
+</tr>
+<tr>
+<td><strong>Logging Pattern</strong></td>
+<td>JSON Structured Logging</td>
+<td>python-json-logger 4.0.0+</td>
+<td>2025-11-26</td>
+<td>Epic 2, Epic 4</td>
+<td>Facile parsing, integrazione monitoring, ricerca efficiente</td>
+</tr>
+<tr>
+<td><strong>API Response Format</strong></td>
+<td>Direct Pydantic Models</td>
+<td>Pydantic 2.x</td>
+<td>2025-11-26</td>
+<td>Epic 4</td>
+<td>Type-safe, semplice, già implementato</td>
+</tr>
+<tr>
+<td><strong>Testing Infrastructure</strong></td>
+<td>TDD Structure Rigorosa</td>
+<td>pytest 8.x+</td>
+<td>2025-11-26</td>
+<td>Epic 5</td>
+<td>Coverage &gt;70% enforcement, RAGAS evaluation, Playwright E2E</td>
+</tr>
+<tr>
+<td><strong>Project Structure</strong></td>
+<td>Mapping epics → directories con convenzioni</td>
+<td>-</td>
+<td>-</td>
+<td>Epic 6</td>
+<td>Organizzazione per responsabilità, zero file sparsi</td>
+</tr>
+<tr>
+<td><strong>Date/Time Handling</strong></td>
+<td>ISO 8601 strings, UTC storage</td>
+<td>datetime standard</td>
+<td>-</td>
+<td>All Epics</td>
+<td>Standard internazionale, parsing facile</td>
+</tr>
+<tr>
+<td><strong>Retry Pattern</strong></td>
+<td>Exponential backoff, max 3 tentativi</td>
+<td>tenacity 9.1.2+</td>
+<td>2025-11-26</td>
+<td>Epic 2, Epic 4</td>
+<td>Resilienza per transient errors</td>
+</tr>
+<tr>
+<td><strong>Git Workflow</strong></td>
+<td>Git Flow semplificato + Conventional Commits</td>
+<td>-</td>
+<td>-</td>
+<td>Epic 4</td>
+<td>Branch protection, commit standardization</td>
+</tr>
+<tr>
+<td><strong>CI/CD Pipeline</strong></td>
+<td>GitHub Actions: lint, type-check, test, secret scan</td>
+<td>GitHub Actions</td>
+<td>-</td>
+<td>Epic 4</td>
+<td>Quality gates automatici, security scanning</td>
+</tr>
+<tr>
+<td><strong>Secret Scanning</strong></td>
+<td>TruffleHog OSS su ogni PR</td>
+<td>TruffleHog OSS</td>
+<td>-</td>
+<td>Epic 4</td>
+<td>Prevenzione leak secrets, fail build se rilevati</td>
+</tr>
+<tr>
+<td><strong>Code Review</strong></td>
+<td>CodeRabbit AI su ogni PR</td>
+<td>CodeRabbit</td>
+<td>-</td>
+<td>Epic 4</td>
+<td>Code quality, best practices, security</td>
+</tr>
+<tr>
+<td><strong>Versionamento</strong></td>
+<td>Semantic Versioning + CHANGELOG.md</td>
+<td>SemVer</td>
+<td>-</td>
+<td>Epic 4</td>
+<td>Standard industry, tracciabilità</td>
+</tr>
+</tbody>
+</table>
+<h2 id="project-structure">Project Structure</h2>
+<pre><code>docling-rag-agent/
+├── docling_mcp/                      # Epic 2: MCP Server (standalone)
+│   ├── __init__.py                   # Module exports
+│   ├── server.py                     # FastMCP instance + tool definitions
+│   ├── lifespan.py                   # Server lifecycle (DB init, embedder init)
+│   ├── metrics.py                    # Prometheus metrics definitions (Story 2.3)
+│   ├── health.py                     # Health check logic (Story 2.3)
+│   ├── http_server.py                # FastAPI /metrics and /health endpoints (Story 2.3)
+│   └── tools/                        # Tool modules (for reference/documentation)
+│       ├── __init__.py
+│       ├── search.py                 # query_knowledge_base, ask_knowledge_base
+│       ├── documents.py              # list_knowledge_base_documents, get_knowledge_base_document
+│       └── overview.py               # get_knowledge_base_overview
+│   # Note: Directory named docling_mcp/ to avoid conflict with FastMCP's mcp package
+│
+├── core/                             # Epic 2: RAG Business Logic
+│   ├── __init__.py
+│   ├── agent.py                      # PydanticAI agent wrapper (Streamlit)
+│   └── rag_service.py                # Pure RAG logic (decoupled)
+│
+├── ingestion/                        # Epic 1: Document Processing
+│   ├── __init__.py
+│   ├── ingest.py                     # DocumentIngestionPipeline
+│   ├── chunker.py                    # HybridChunker, SimpleChunker
+│   └── embedder.py                   # EmbeddingGenerator (OpenAI)
+│
+├── utils/                            # Shared Utilities
+│   ├── __init__.py
+│   ├── db_utils.py                   # AsyncPG connection pooling
+│   ├── models.py                     # Pydantic data models
+│   ├── providers.py                  # OpenAI provider config
+│   ├── session_manager.py            # Epic 3: Session tracking and persistence
+│   ├── langfuse_streamlit.py        # Epic 3: LangFuse context injection for Streamlit
+│   ├── cost_monitor.py               # Epic 3: Cost monitoring and enforcement (optional, security)
+│   ├── rate_limiter.py               # Epic 3: Rate limiting (optional, security)
+│   └── streamlit_auth.py            # Epic 3: Simple authentication (optional, security)
+│
+├── api/                              # Epic 4: FastAPI Service (optional)
+│   ├── __init__.py
+│   ├── main.py                       # FastAPI app + endpoints
+│   └── models.py                     # API request/response models
+│
+├── tests/                            # Epic 5: Testing Infrastructure
+│   ├── __init__.py
+│   ├── conftest.py                   # Shared fixtures
+│   ├── unit/                         # Unit tests (&gt;70% coverage)
+│   │   ├── test_rag_service.py
+│   │   ├── test_embedder.py
+│   │   └── test_chunker.py
+│   ├── integration/                 # Integration tests
+│   │   ├── test_mcp_server.py
+│   │   └── test_api_endpoints.py
+│   ├── e2e/                         # E2E tests (Playwright)
+│   │   └── test_streamlit_workflow.py
+│   └── fixtures/                    # Test fixtures + golden dataset
+│       └── golden_dataset.json      # 20+ query-answer pairs (RAGAS)
+│
+├── scripts/                          # Epic 4: Utility Scripts
+│   ├── verification/                 # Verification scripts
+│   │   ├── verify_api_endpoints.py
+│   │   ├── verify_mcp_setup.py
+│   │   └── verify_client_integration.py
+│   └── debug/                        # Debug utilities
+│       └── debug_mcp_tools.py
+│
+├── docs/                            # Epic 1: Documentation
+│   ├── index.md
+│   ├── architecture.md              # This file
+│   ├── prd.md
+│   ├── epics.md
+│   ├── development-guide.md
+│   └── ...
+│
+├── sql/                             # Database Schema
+│   ├── schema.sql                   # PostgreSQL + PGVector schema
+│   ├── optimize_index.sql
+│   └── removeDocuments.sql
+│
+├── .github/                         # Epic 4: CI/CD Workflows
+│   └── workflows/
+│       ├── ci.yml                   # Lint, type-check, test, build
+│       └── release.yml              # Release automation
+│
+├── app.py                           # Epic 3: Streamlit UI entry point
+├── pyproject.toml                   # Project configuration (UV)
+├── uv.lock                          # Dependency lock file
+├── docker-compose.yml               # Docker orchestration
+├── Dockerfile                       # Streamlit container
+├── Dockerfile.api                   # API container (optional)
+├── .env.example                     # Environment variables template
+├── coderabbit.yaml                  # CodeRabbit configuration
+├── CHANGELOG.md                     # Semantic versioning changelog
+├── .gitignore
+└── README.md                        # Project documentation
+</code></pre>
+<h2 id="epic-to-architecture-mapping">Epic to Architecture Mapping</h2>
+<table>
+<thead>
+<tr>
+<th>Epic</th>
+<th>Stories</th>
+<th>Directory/Component</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Epic 1: Core RAG Baseline</strong></td>
+<td>1.1-1.4</td>
+<td><code>docs/</code>, <code>ingestion/</code></td>
+<td>Documentation + ingestion pipeline</td>
+</tr>
+<tr>
+<td><strong>Epic 2: MCP Observability</strong></td>
+<td>2.1-2.5</td>
+<td><code>mcp/</code>, <code>core/rag_service.py</code></td>
+<td>LangFuse integration + MCP standalone</td>
+</tr>
+<tr>
+<td><strong>Epic 3: Streamlit Observability</strong></td>
+<td>3.1-3.2</td>
+<td><code>app.py</code>, <code>utils/session_manager.py</code>, <code>utils/langfuse_streamlit.py</code>, <code>utils/cost_monitor.py</code> (optional), <code>utils/rate_limiter.py</code> (optional), <code>utils/streamlit_auth.py</code> (optional)</td>
+<td>Session tracking + LangFuse tracing + Security hardening</td>
+</tr>
+<tr>
+<td><strong>Epic 4: Production Infrastructure</strong></td>
+<td>4.1-4.3</td>
+<td><code>api/</code>, <code>scripts/</code>, <code>.github/workflows/</code></td>
+<td>CI/CD, health checks, Docker optimization</td>
+</tr>
+<tr>
+<td><strong>Epic 5: Testing &amp; QA</strong></td>
+<td>5.1-5.4</td>
+<td><code>tests/</code></td>
+<td>TDD infrastructure, unit/integration/E2E tests</td>
+</tr>
+<tr>
+<td><strong>Epic 6: Project Structure</strong></td>
+<td>6.1-6.2</td>
+<td>All directories</td>
+<td>Cleanup + validation</td>
+</tr>
+</tbody>
+</table>
+<h2 id="technology-stack-details">Technology Stack Details</h2>
+<h3 id="core-technologies">Core Technologies</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Technology</th>
+<th>Version</th>
+<th>Verified</th>
+<th>Purpose</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Language</strong></td>
+<td>Python</td>
+<td>3.11</td>
+<td>2025-11-26</td>
+<td>Runtime</td>
+<td>Requires &gt;=3.10</td>
+</tr>
+<tr>
+<td><strong>Package Manager</strong></td>
+<td>UV</td>
+<td>0.9.13+</td>
+<td>2025-11-26</td>
+<td>Dependency Management</td>
+<td>Fast, reliable</td>
+</tr>
+<tr>
+<td><strong>Vector Database</strong></td>
+<td>PostgreSQL</td>
+<td>16+</td>
+<td>2025-11-26</td>
+<td>Storage</td>
+<td>With PGVector extension</td>
+</tr>
+<tr>
+<td><strong>Vector Extension</strong></td>
+<td>PGVector</td>
+<td>0.8.0+</td>
+<td>2025-11-26</td>
+<td>Vector Search</td>
+<td>HNSW index for performance</td>
+</tr>
+<tr>
+<td><strong>LLM Provider</strong></td>
+<td>OpenAI</td>
+<td>2.8.1+</td>
+<td>2025-11-26</td>
+<td>Generation</td>
+<td>GPT-4o-mini</td>
+</tr>
+<tr>
+<td><strong>Embeddings</strong></td>
+<td>OpenAI</td>
+<td>2.8.1+</td>
+<td>2025-11-26</td>
+<td>Vectors</td>
+<td>text-embedding-3-small (1536 dims)</td>
+</tr>
+<tr>
+<td><strong>UI Framework</strong></td>
+<td>Streamlit</td>
+<td>1.31+</td>
+<td>2025-11-26</td>
+<td>Web Interface</td>
+<td>Chat interface</td>
+</tr>
+<tr>
+<td><strong>MCP Framework</strong></td>
+<td>FastMCP</td>
+<td>0.4.x+</td>
+<td>2025-11-26</td>
+<td>MCP Server</td>
+<td>Standalone server. Breaking changes: lifespan pattern, ToolError handling</td>
+</tr>
+<tr>
+<td><strong>API Framework</strong></td>
+<td>FastAPI</td>
+<td>0.109+</td>
+<td>2025-11-26</td>
+<td>API Service</td>
+<td>Optional, for scaling</td>
+</tr>
+<tr>
+<td><strong>Agent Framework</strong></td>
+<td>PydanticAI</td>
+<td>0.7.4+</td>
+<td>2025-11-26</td>
+<td>LLM Agent</td>
+<td>Streamlit integration</td>
+</tr>
+<tr>
+<td><strong>Document Processing</strong></td>
+<td>Docling</td>
+<td>2.55+</td>
+<td>2025-11-26</td>
+<td>Multi-format</td>
+<td>PDF, DOCX, PPTX, XLSX, HTML, MD, TXT</td>
+</tr>
+<tr>
+<td><strong>Observability</strong></td>
+<td>LangFuse</td>
+<td>3.0.0+</td>
+<td>2025-11-26</td>
+<td>Tracing &amp; Monitoring</td>
+<td>Python SDK v3 (OTel-based)</td>
+</tr>
+<tr>
+<td><strong>Testing Framework</strong></td>
+<td>pytest</td>
+<td>8.x+</td>
+<td>2025-11-26</td>
+<td>Testing</td>
+<td>With pytest-asyncio, pytest-cov</td>
+</tr>
+<tr>
+<td><strong>E2E Testing</strong></td>
+<td>Playwright</td>
+<td>1.40.0+</td>
+<td>2025-11-26</td>
+<td>E2E Tests</td>
+<td>Streamlit workflow testing</td>
+</tr>
+<tr>
+<td><strong>RAG Evaluation</strong></td>
+<td>RAGAS</td>
+<td>0.1.0+</td>
+<td>2025-11-26</td>
+<td>Quality Metrics</td>
+<td>Faithfulness, relevancy scores</td>
+</tr>
+<tr>
+<td><strong>Logging</strong></td>
+<td>python-json-logger</td>
+<td>4.0.0+</td>
+<td>2025-11-26</td>
+<td>Structured Logging</td>
+<td>JSON format for production</td>
+</tr>
+<tr>
+<td><strong>Retry Logic</strong></td>
+<td>tenacity</td>
+<td>9.1.2+</td>
+<td>2025-11-26</td>
+<td>Resilience</td>
+<td>Exponential backoff</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Note on Version Verification:</strong> All versions listed above were verified via WebSearch on 2025-11-26. Version numbers use minimum version format (e.g., "0.4.x+") to allow flexibility while ensuring compatibility. Breaking changes are documented in ADRs where relevant (e.g., FastMCP 0.4.x+ breaking changes documented in ADR-002). Versions should be re-verified periodically, especially before major releases or when upgrading dependencies.</p>
+<h3 id="integration-points">Integration Points</h3>
+<p><strong>1. MCP Server → Core RAG Service</strong> (Pattern: Direct Service Integration)</p>
+<ul>
+<li><strong>Pattern Name</strong>: Direct Service Integration Pattern</li>
+<li><strong>Implementation</strong>: Direct import <code>from core.rag_service import search_knowledge_base_structured</code></li>
+<li><strong>Communication</strong>: Function calls (no HTTP overhead)</li>
+<li><strong>Lifecycle</strong>: FastMCP lifespan initializes DB pool + embedder at startup</li>
+<li><strong>Error Handling</strong>: <code>ToolError</code> for user-facing errors, exception wrapping for unexpected errors</li>
+<li><strong>Implementation Guide</strong>:</li>
+</ul>
+<p>```python
+  # mcp/server.py
+  from fastmcp import FastMCP
+  from core.rag_service import search_knowledge_base_structured</p>
+<p>mcp = FastMCP("docling-rag-agent")</p>
+<p>@mcp.tool
+  async def query_knowledge_base(query: str, limit: int = 5):
+      # Direct function call, no HTTP overhead
+      return await search_knowledge_base_structured(query, limit)
+  ```</p>
+<p><strong>2. Streamlit → Core Agent</strong> (Pattern: Agent Wrapper Integration)</p>
+<ul>
+<li><strong>Pattern Name</strong>: Agent Wrapper Integration Pattern</li>
+<li><strong>Implementation</strong>: <code>from core.agent import RAGAgent</code></li>
+<li><strong>Communication</strong>: PydanticAI agent wrapper</li>
+<li><strong>Lifecycle</strong>: Streamlit session manages agent instance</li>
+<li><strong>Session Tracking</strong>: <code>st.session_state</code> for session_id, LangFuse context injection</li>
+</ul>
+<p><strong>3. Core RAG Service → Utils</strong> (Pattern: Shared Resource Pattern)</p>
+<ul>
+<li><strong>Pattern Name</strong>: Shared Resource Pattern</li>
+<li><strong>Implementation</strong>: <code>from utils.db_utils import db_pool</code>, <code>from utils.providers import get_provider_config</code></li>
+<li><strong>Communication</strong>: Shared connection pool + config</li>
+<li><strong>Lifecycle</strong>: Global singleton pattern for embedder, connection pool per process</li>
+</ul>
+<p><strong>4. Ingestion → Database</strong> (Pattern: Direct Database Access)</p>
+<ul>
+<li><strong>Pattern Name</strong>: Direct Database Access Pattern</li>
+<li><strong>Implementation</strong>: Direct DB connection via <code>utils.db_utils</code></li>
+<li><strong>Communication</strong>: AsyncPG connection pool</li>
+<li><strong>Lifecycle</strong>: Per-ingestion connection, cleanup on completion</li>
+</ul>
+<p><strong>5. LangFuse Integration</strong> (Pattern: Decorator-Based Observability)</p>
+<ul>
+<li><strong>Pattern Name</strong>: Decorator-Based Observability Pattern</li>
+<li><strong>Implementation</strong>: <code>@observe()</code> decorator on critical functions</li>
+<li><strong>Communication</strong>: LangFuse SDK v3 (async HTTP, OpenTelemetry-based)</li>
+<li><strong>Lifecycle</strong>: Initialized at startup via env vars, graceful degradation if unavailable</li>
+<li><strong>Cost Tracking</strong>: Automatic via <code>langfuse.openai</code> wrapper (Story 2.2)</li>
+<li>Embedding cost: Tracked via <code>langfuse.openai.AsyncOpenAI</code> in <code>ingestion/embedder.py</code></li>
+<li>LLM cost: Tracked via <code>langfuse.openai.chat.completions.create()</code> (future LLM integration)</li>
+<li>Nested spans: <code>embedding-generation</code> span in <code>docling_mcp/server.py</code> for cost breakdown visibility</li>
+<li><strong>Implementation Guide</strong>:</li>
+</ul>
+<p>```python
+  # core/rag_service.py
+  from langfuse import observe, get_client</p>
+<p>langfuse = get_client()</p>
+<p>@observe(name="search_knowledge_base")
+  async def search_knowledge_base_structured(query: str, limit: int = 5):
+      """
+      LangFuse automatically captures:
+      - Function inputs/outputs
+      - Execution time
+      - Errors (if any)
+      - Nested spans for child operations
+      """
+      # Embedding generation (nested span)
+      with langfuse.start_as_current_observation(
+          as_type="span", name="embedding-generation"
+      ) as embedding_span:
+          embedding = await generate_embedding(query)
+          embedding_span.update(output={"embedding_dim": len(embedding)})</p>
+<pre><code>  # DB search (nested span)
+  with langfuse.start_as_current_observation(
+      as_type="span", name="vector-search"
+  ) as search_span:
+      results = await search_vector_db(embedding, limit)
+      search_span.update(output={"results_count": len(results)})
+
+  return results
+</code></pre>
+<p># For LLM calls, use generation type:
+  @observe(name="llm-generation", as_type="generation")
+  async def generate_response(context: str, query: str):
+      from langfuse.openai import openai</p>
+<pre><code>  response = await openai.chat.completions.create(
+      model="gpt-4o-mini",
+      messages=[
+          {"role": "system", "content": f"Context: {context}"},
+          {"role": "user", "content": query}
+      ]
+  )
+  # Cost tracking automatic via langfuse.openai wrapper
+  return response.choices[0].message.content
+</code></pre>
+<p>```</p>
+<p><strong>Key Points</strong>:</p>
+<ul>
+<li>Use <code>@observe()</code> for automatic tracing of function calls</li>
+<li>Use <code>langfuse.start_as_current_observation()</code> for nested spans</li>
+<li>Use <code>as_type="generation"</code> for LLM calls to enable cost tracking</li>
+<li>Use <code>langfuse.openai</code> wrapper instead of direct <code>openai</code> import for automatic cost tracking</li>
+<li>Trace attributes (user_id, session_id) can be set via <code>propagate_attributes()</code> context manager</li>
+</ul>
+<p><strong>6b. LangFuse Streamlit Context Injection</strong> (Pattern: Context Manager Integration - Story 3.2)</p>
+<ul>
+<li><strong>Pattern Name</strong>: Streamlit Context Injection Pattern</li>
+<li><strong>Implementation</strong>: <code>utils/langfuse_streamlit.py</code> module with <code>with_streamlit_context()</code> context manager</li>
+<li><strong>Communication</strong>: LangFuse SDK v3 context propagation via <code>propagate_attributes()</code></li>
+<li><strong>Purpose</strong>: Create root trace for Streamlit queries with session_id propagation to all nested spans</li>
+<li><strong>Implementation Guide</strong>:</li>
+</ul>
+<p>```python
+  # utils/langfuse_streamlit.py
+  from langfuse import get_client, propagate_attributes
+  from contextlib import contextmanager
+  from uuid import UUID</p>
+<p>@contextmanager
+  def with_streamlit_context(session_id: UUID, query: str):
+      """
+      Context manager for LangFuse tracing in Streamlit.
+      Creates root span 'streamlit_query' with session_id propagation.
+      Implements graceful degradation if LangFuse unavailable.
+      """
+      langfuse = get_client()</p>
+<pre><code>  with langfuse.start_as_current_observation(
+      as_type="span",
+      name="streamlit_query",
+      input={"query": query}
+  ) as root_span:
+      with propagate_attributes(
+          session_id=str(session_id),
+          metadata={"source": "streamlit", "query_text": query}
+      ):
+          ctx = StreamlitTraceContext(trace_id=root_span.trace_id)
+          yield ctx
+</code></pre>
+<p># Usage in app.py
+  from utils.langfuse_streamlit import with_streamlit_context</p>
+<p>with with_streamlit_context(session_id, query) as ctx:
+      response = await run_agent(query)
+      # Nested spans (embedding, DB, LLM) automatically inherit session_id
+      trace_id = ctx.trace_id  # For cost extraction
+  ```</p>
+<p><strong>Key Points</strong>:</p>
+<ul>
+<li>Root span named <code>streamlit_query</code> separates Streamlit traces from MCP traces</li>
+<li><code>metadata={"source": "streamlit"}</code> enables dashboard filtering by source</li>
+<li><code>session_id</code> propagated to all child observations via <code>propagate_attributes()</code></li>
+<li>Graceful degradation: if LangFuse unavailable, continues without tracing</li>
+<li>Trace ID returned for post-execution cost extraction via <code>extract_cost_from_langfuse()</code></li>
+</ul>
+<p><strong>6. Prometheus Metrics Integration</strong> (Pattern: Metrics Instrumentation)</p>
+<ul>
+<li><strong>Pattern Name</strong>: Metrics Instrumentation Pattern</li>
+<li><strong>Implementation</strong>: <code>prometheus_client</code> library with Counter, Histogram, Gauge types</li>
+<li><strong>Communication</strong>: HTTP <code>/metrics</code> endpoint in Prometheus format</li>
+<li><strong>Lifecycle</strong>: Metrics initialized lazily on first use, graceful degradation if unavailable</li>
+<li><strong>Components</strong>:</li>
+<li><code>docling_mcp/metrics.py</code>: Metric definitions and recording functions</li>
+<li><code>docling_mcp/health.py</code>: Health check logic for database, langfuse, embedder</li>
+<li><code>docling_mcp/http_server.py</code>: FastAPI server for <code>/metrics</code> and <code>/health</code> endpoints</li>
+<li><strong>Implementation Guide</strong>:</li>
+</ul>
+<p>```python
+  # docling_mcp/server.py - Instrument MCP tools
+  from docling_mcp.metrics import record_request_start, record_request_end</p>
+<p>@mcp.tool()
+  @observe(name="query_knowledge_base")
+  async def query_knowledge_base(query: str, limit: int = 5):
+      tool_name = "query_knowledge_base"
+      request_start = record_request_start(tool_name)
+      status = "success"</p>
+<pre><code>  try:
+      # ... tool logic ...
+      return results
+  except Exception as e:
+      status = "error"
+      raise
+  finally:
+      record_request_end(tool_name, request_start, status)
+</code></pre>
+<p>```</p>
+<p><strong>Metrics Exposed</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Type</th>
+<th>Labels</th>
+<th>SLO Alignment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mcp_requests_total</code></td>
+<td>Counter</td>
+<td>tool_name, status</td>
+<td>Request tracking</td>
+</tr>
+<tr>
+<td><code>mcp_request_duration_seconds</code></td>
+<td>Histogram</td>
+<td>tool_name</td>
+<td>&lt;2s p95</td>
+</tr>
+<tr>
+<td><code>rag_embedding_time_seconds</code></td>
+<td>Histogram</td>
+<td>-</td>
+<td>&lt;500ms</td>
+</tr>
+<tr>
+<td><code>rag_db_search_time_seconds</code></td>
+<td>Histogram</td>
+<td>-</td>
+<td>&lt;100ms</td>
+</tr>
+<tr>
+<td><code>rag_llm_generation_time_seconds</code></td>
+<td>Histogram</td>
+<td>-</td>
+<td>&lt;1.5s</td>
+</tr>
+<tr>
+<td><code>mcp_active_requests</code></td>
+<td>Gauge</td>
+<td>-</td>
+<td>Concurrency monitoring</td>
+</tr>
+</tbody>
+</table>
+<h2 id="implementation-patterns">Implementation Patterns</h2>
+<p>These patterns ensure consistent implementation across all AI agents:</p>
+<h3 id="naming-patterns">Naming Patterns</h3>
+<p><strong>File Naming:</strong></p>
+<ul>
+<li>Python files: <code>snake_case.py</code> (es. <code>rag_service.py</code>, <code>mcp_server.py</code>)</li>
+<li>Directories: <code>snake_case/</code> (es. <code>mcp/</code>, <code>core/</code>, <code>ingestion/</code>)</li>
+<li>Test files: <code>test_*.py</code> o <code>*_test.py</code> (es. <code>test_rag_service.py</code>)</li>
+</ul>
+<p><strong>Code Naming:</strong></p>
+<ul>
+<li>Classes: <code>PascalCase</code> (es. <code>RAGService</code>, <code>EmbeddingGenerator</code>)</li>
+<li>Functions: <code>snake_case</code> (es. <code>query_knowledge_base</code>, <code>search_knowledge_base_structured</code>)</li>
+<li>Constants: <code>UPPER_SNAKE_CASE</code> (es. <code>MAX_RETRIES</code>, <code>DEFAULT_LIMIT</code>)</li>
+<li>Variables: <code>snake_case</code> (es. <code>query_embedding</code>, <code>search_results</code>)</li>
+</ul>
+<p><strong>API Endpoints:</strong></p>
+<ul>
+<li>REST routes: Plural nouns, lowercase (es. <code>/v1/documents</code>, <code>/v1/search</code>)</li>
+<li>Route parameters: <code>{document_id}</code> format</li>
+<li>Query parameters: <code>snake_case</code> (es. <code>source_filter</code>, <code>limit</code>)</li>
+</ul>
+<p><strong>Database:</strong></p>
+<ul>
+<li>Tables: <code>snake_case</code>, plural (es. <code>documents</code>, <code>chunks</code>)</li>
+<li>Columns: <code>snake_case</code> (es. <code>document_id</code>, <code>chunk_content</code>)</li>
+<li>Indexes: <code>idx_&lt;table&gt;_&lt;column&gt;_&lt;type&gt;</code> (es. <code>idx_chunks_embedding_hnsw</code>)</li>
+</ul>
+<h3 id="structure-patterns">Structure Patterns</h3>
+<p><strong>Test Organization:</strong></p>
+<ul>
+<li>Unit tests: <code>tests/unit/</code> - Isolated, fast, mocked dependencies</li>
+<li>Integration tests: <code>tests/integration/</code> - With mocked DB/API, no real external services</li>
+<li>E2E tests: <code>tests/e2e/</code> - Full system tests with Playwright</li>
+<li>Fixtures: <code>tests/fixtures/</code> - Shared test data, golden dataset for RAGAS</li>
+</ul>
+<p><strong>Component Organization:</strong></p>
+<ul>
+<li>By responsibility: <code>mcp/</code> (MCP server), <code>core/</code> (business logic), <code>ingestion/</code> (processing)</li>
+<li>Shared utilities: <code>utils/</code> (DB, models, providers)</li>
+<li>Entry points: Root level (<code>app.py</code> for Streamlit, <code>mcp/server.py</code> for MCP)</li>
+</ul>
+<p><strong>Script Organization:</strong></p>
+<ul>
+<li>Verification: <code>scripts/verification/</code> - Setup/health check scripts</li>
+<li>Debug: <code>scripts/debug/</code> - Debug utilities</li>
+<li>Performance: <code>scripts/</code> or <code>tests/performance/</code> - Performance testing</li>
+</ul>
+<h3 id="format-patterns">Format Patterns</h3>
+<p><strong>API Responses:</strong></p>
+<ul>
+<li>Format: Direct Pydantic models (no wrapper)</li>
+<li>Success: Pydantic model instance (es. <code>SearchResponse</code>, <code>IngestResponse</code>)</li>
+<li>Errors: <code>HTTPException</code> with status codes (400, 404, 500)</li>
+<li>Date format: ISO 8601 strings (<code>2025-11-26T10:30:00Z</code>)</li>
+</ul>
+<p><strong>Error Format:</strong></p>
+<ul>
+<li>MCP: <code>ToolError("User-friendly message")</code> for handled errors</li>
+<li>API: <code>HTTPException(status_code=500, detail="Error message")</code></li>
+<li>Logging: JSON structured with <code>{"error": str, "context": dict, "stack_trace": str}</code></li>
+</ul>
+<p><strong>Date/Time:</strong></p>
+<ul>
+<li>Storage: UTC, ISO 8601 format (<code>2025-11-26T10:30:00Z</code>)</li>
+<li>Display: Locale-aware formatting in UI</li>
+<li>Library: Standard <code>datetime</code> (no additional dependencies)</li>
+</ul>
+<h3 id="communication-patterns">Communication Patterns</h3>
+<p><strong>MCP Tools:</strong></p>
+<ul>
+<li>Tool naming: <code>verb_noun</code> pattern (es. <code>query_knowledge_base</code>, <code>list_knowledge_base_documents</code>)</li>
+<li>Parameters: <code>snake_case</code>, descriptive names</li>
+<li>Return: String (formatted) or structured dict for complex data</li>
+</ul>
+<p><strong>API Endpoints:</strong></p>
+<ul>
+<li>RESTful: Resource-based URLs (<code>/v1/documents</code>, <code>/v1/documents/{id}</code>)</li>
+<li>Methods: GET (read), POST (create/search), PUT/PATCH (update), DELETE (delete)</li>
+<li>Status codes: 200 (success), 400 (bad request), 404 (not found), 500 (server error)</li>
+</ul>
+<p><strong>LangFuse Tracing:</strong></p>
+<ul>
+<li>Decorator: <code>@observe()</code> on critical functions</li>
+<li>Context: Session ID, metadata via LangFuse context injection</li>
+<li>Spans: Hierarchical (query → embedding → retrieval → generation)</li>
+</ul>
+<h3 id="lifecycle-patterns">Lifecycle Patterns</h3>
+<p><strong>Loading States:</strong></p>
+<ul>
+<li>Pattern: Async initialization with <code>asyncio.Event</code> for readiness</li>
+<li>Example: Global embedder initialization with <code>_embedder_ready</code> event</li>
+<li>Error handling: Timeout after 60s, clear error messages</li>
+</ul>
+<p><strong>Error Recovery:</strong></p>
+<ul>
+<li>Pattern: Exponential backoff with <code>tenacity</code> (max 3 retries)</li>
+<li>Applicable to: OpenAI API calls, DB connections</li>
+<li>Non-retryable: HTTP 4xx errors, validation errors</li>
+</ul>
+<p><strong>Retry Logic:</strong></p>
+<ul>
+<li>Pattern: <code>@retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=1, max=5))</code></li>
+<li>Scope: Transient errors only (timeout, network errors)</li>
+<li>Logging: Retry attempts logged with attempt number</li>
+</ul>
+<p><strong>Session Management:</strong></p>
+<ul>
+<li>Streamlit: <code>st.session_state</code> for session_id persistence</li>
+<li>MCP: Session ID from LangFuse context injection</li>
+<li>Storage: PostgreSQL or in-memory (per session)</li>
+</ul>
+<h3 id="location-patterns">Location Patterns</h3>
+<p><strong>API Route Structure:</strong></p>
+<ul>
+<li>Base: <code>/v1/</code> prefix for versioning</li>
+<li>Resources: <code>/v1/documents</code>, <code>/v1/search</code>, <code>/v1/ingest</code></li>
+<li>Health: <code>/health</code> (no version prefix)</li>
+</ul>
+<p><strong>Static Assets:</strong></p>
+<ul>
+<li>Documentation: <code>docs/</code> directory</li>
+<li>SQL scripts: <code>sql/</code> directory</li>
+<li>Config files: Root level (<code>.env.example</code>, <code>pyproject.toml</code>)</li>
+</ul>
+<p><strong>Config File Locations:</strong></p>
+<ul>
+<li>Environment: <code>.env</code> (gitignored), <code>.env.example</code> (template)</li>
+<li>Project config: <code>pyproject.toml</code> (UV/Python)</li>
+<li>Docker: <code>docker-compose.yml</code>, <code>Dockerfile</code></li>
+<li>CI/CD: <code>.github/workflows/</code></li>
+</ul>
+<h3 id="consistency-patterns">Consistency Patterns</h3>
+<p><strong>Date Formatting:</strong></p>
+<ul>
+<li>UI: Locale-aware, human-readable (es. "26 Nov 2025, 10:30")</li>
+<li>API: ISO 8601 strings</li>
+<li>Logs: ISO 8601 strings for parsing</li>
+</ul>
+<p><strong>Logging Format:</strong></p>
+<ul>
+<li>Production: JSON structured (<code>{"timestamp": "...", "level": "INFO", "module": "...", "message": "...", "context": {...}}</code>)</li>
+<li>Development: Text format (readable)</li>
+<li>Levels: DEBUG (dev), INFO (production), WARNING, ERROR, CRITICAL</li>
+</ul>
+<p><strong>User-Facing Errors:</strong></p>
+<ul>
+<li>Format: Clear, actionable messages (no stack traces)</li>
+<li>Context: What went wrong, what user can do</li>
+<li>Example: "RAG API Service is unavailable. Please check if the service is running."</li>
+</ul>
+<h2 id="consistency-rules">Consistency Rules</h2>
+<h3 id="naming-conventions">Naming Conventions</h3>
+<ul>
+<li><strong>Files</strong>: <code>snake_case.py</code></li>
+<li><strong>Directories</strong>: <code>snake_case/</code></li>
+<li><strong>Classes</strong>: <code>PascalCase</code></li>
+<li><strong>Functions</strong>: <code>snake_case</code></li>
+<li><strong>Constants</strong>: <code>UPPER_SNAKE_CASE</code></li>
+<li><strong>API endpoints</strong>: Plural nouns, lowercase</li>
+<li><strong>Database tables</strong>: Plural, <code>snake_case</code></li>
+</ul>
+<h3 id="code-organization">Code Organization</h3>
+<ul>
+<li><strong>By responsibility</strong>: <code>mcp/</code>, <code>core/</code>, <code>ingestion/</code>, <code>utils/</code>, <code>api/</code></li>
+<li><strong>Tests</strong>: <code>tests/unit/</code>, <code>tests/integration/</code>, <code>tests/e2e/</code></li>
+<li><strong>Scripts</strong>: <code>scripts/verification/</code>, <code>scripts/debug/</code></li>
+<li><strong>Documentation</strong>: <code>docs/</code> (centralized)</li>
+</ul>
+<h3 id="error-handling">Error Handling</h3>
+<ul>
+<li><strong>MCP</strong>: <code>ToolError</code> for handled errors, exception wrapping for unexpected</li>
+<li><strong>API</strong>: <code>HTTPException</code> with appropriate status codes</li>
+<li><strong>Logging</strong>: JSON structured with full context</li>
+<li><strong>User messages</strong>: Clear, actionable, no technical jargon</li>
+</ul>
+<h3 id="logging-strategy">Logging Strategy</h3>
+<ul>
+<li><strong>Format</strong>: JSON structured (production), text (development)</li>
+<li><strong>Levels</strong>: DEBUG (dev), INFO (production), WARNING, ERROR, CRITICAL</li>
+<li><strong>Destination</strong>: stdout (Docker-friendly)</li>
+<li><strong>Context</strong>: Include request_id, session_id, user_id when available</li>
+</ul>
+<h2 id="data-architecture">Data Architecture</h2>
+<h3 id="database-schema">Database Schema</h3>
+<p><strong>Tables:</strong></p>
+<ul>
+<li><code>documents</code>: Document metadata (id, title, source, created_at, updated_at)</li>
+<li><code>chunks</code>: Document chunks with embeddings (id, document_id, content, embedding, metadata)</li>
+<li><code>sessions</code>: Streamlit session tracking (Epic 3) - session_id, query_count, total_cost, total_latency_ms</li>
+<li><code>query_logs</code>: Query logging per sessione (Epic 3) - session_id, query_text, cost, latency_ms, langfuse_trace_id</li>
+</ul>
+<p><strong>Indexes:</strong></p>
+<ul>
+<li><code>idx_chunks_embedding_hnsw</code>: HNSW index for vector similarity search (m=16, ef_construction=64)</li>
+<li><code>idx_documents_source</code>: B-tree index for source filtering</li>
+<li><code>idx_chunks_document_id</code>: B-tree index for document-chunk relationships</li>
+<li><code>idx_query_logs_session_id</code>: B-tree index for session query lookups (Epic 3)</li>
+<li><code>idx_query_logs_timestamp</code>: B-tree index for time-based queries (Epic 3)</li>
+<li><code>idx_sessions_last_activity</code>: B-tree index for session activity tracking (Epic 3)</li>
+</ul>
+<p><strong>Row Level Security (RLS):</strong></p>
+<ul>
+<li>All tables in <code>public</code> schema have RLS enabled</li>
+<li><code>sessions</code> and <code>query_logs</code>: Policies restrict access to <code>service_role</code> only (backend access)</li>
+<li><code>documents</code> and <code>chunks</code>: RLS enabled, no policies (protected by default, backend access only)</li>
+</ul>
+<p><strong>Connection Pool:</strong></p>
+<ul>
+<li><code>min_size</code>: 2 (reduced idle overhead)</li>
+<li><code>max_size</code>: 10 (right-sized for MCP workload)</li>
+<li><code>statement_cache_size</code>: 100 (prepared statements)</li>
+<li><code>max_queries</code>: 50000 (connection recycling)</li>
+</ul>
+<h3 id="data-models">Data Models</h3>
+<p><strong>Pydantic Models (<code>utils/models.py</code>):</strong></p>
+<ul>
+<li><code>Document</code>: Document metadata</li>
+<li><code>Chunk</code>: Chunk with embedding</li>
+<li><code>Session</code>: Session model (generic, Epic 3 uses custom SessionStats model)</li>
+<li>Request/Response models in <code>api/models.py</code></li>
+</ul>
+<p><strong>Epic 3 Models (to be added to <code>utils/models.py</code>):</strong></p>
+<ul>
+<li><code>SessionStats</code>: Session statistics (session_id, query_count, total_cost, avg_latency_ms)</li>
+<li><code>QueryLog</code>: Query log entry (session_id, query_text, cost, latency_ms, langfuse_trace_id)</li>
+</ul>
+<p><strong>API Models (<code>api/models.py</code>):</strong></p>
+<ul>
+<li><code>SearchRequest</code>: Query, limit, source_filter</li>
+<li><code>SearchResponse</code>: Results list, count, processing_time_ms</li>
+<li><code>SearchResult</code>: Content, similarity, source, title, metadata</li>
+<li><code>IngestRequest</code>: Documents folder, clean flag, fast mode</li>
+<li><code>IngestResponse</code>: Status, message, task_id</li>
+</ul>
+<h2 id="api-contracts">API Contracts</h2>
+<h3 id="search-endpoint">Search Endpoint</h3>
+<p><strong>POST <code>/v1/search</code></strong></p>
+<ul>
+<li><strong>Request</strong>: <code>SearchRequest</code> (query: str, limit: int, source_filter: Optional[str])</li>
+<li><strong>Response</strong>: <code>SearchResponse</code> (results: List[SearchResult], count: int, processing_time_ms: float)</li>
+<li><strong>Errors</strong>: 400 (bad request), 500 (server error)</li>
+<li><strong>Timing</strong>: Breakdown in response (embedding_ms, db_ms, total_ms)</li>
+</ul>
+<h3 id="documents-endpoint">Documents Endpoint</h3>
+<p><strong>GET <code>/v1/documents</code></strong></p>
+<ul>
+<li><strong>Query Params</strong>: <code>limit</code> (default: 100), <code>offset</code> (default: 0)</li>
+<li><strong>Response</strong>: <code>{"documents": [...], "count": int}</code></li>
+<li><strong>Errors</strong>: 500 (server error)</li>
+</ul>
+<p><strong>GET <code>/v1/documents/{document_id}</code></strong></p>
+<ul>
+<li><strong>Path Params</strong>: <code>document_id</code> (UUID)</li>
+<li><strong>Response</strong>: Document object with full content</li>
+<li><strong>Errors</strong>: 404 (not found), 500 (server error)</li>
+</ul>
+<h3 id="overview-endpoint">Overview Endpoint</h3>
+<p><strong>GET <code>/v1/overview</code></strong></p>
+<ul>
+<li><strong>Response</strong>: <code>{"total_documents": int, "total_chunks": int, "unique_sources": int, "sources": [...], "documents": [...]}</code></li>
+<li><strong>Errors</strong>: 500 (server error)</li>
+</ul>
+<h3 id="health-check">Health Check</h3>
+<p><strong>GET <code>/health</code></strong></p>
+<ul>
+<li><strong>Response</strong>: <code>{"status": "ok", "timestamp": float}</code></li>
+<li><strong>Purpose</strong>: Service availability check</li>
+</ul>
+<h2 id="security-architecture">Security Architecture</h2>
+<h3 id="authentication-authorization">Authentication &amp; Authorization</h3>
+<ul>
+<li><strong>Pattern</strong>: No user authentication (RAG system, no user management)</li>
+<li><strong>API Keys</strong>: Environment variables (<code>OPENAI_API_KEY</code>, <code>LANGFUSE_SECRET_KEY</code>)</li>
+<li><strong>Protection</strong>: Keys never logged, never committed to git</li>
+<li><strong>Validation</strong>: Secret scanning in CI/CD (TruffleHog)</li>
+</ul>
+<h3 id="data-protection">Data Protection</h3>
+<ul>
+<li><strong>Encryption</strong>: PostgreSQL connection string encrypted in production</li>
+<li><strong>Secrets Management</strong>: Environment variables, <code>.env</code> file (gitignored)</li>
+<li><strong>Logging</strong>: No secrets in logs, masking enabled for sensitive data</li>
+</ul>
+<h3 id="security-best-practices">Security Best Practices</h3>
+<ul>
+<li><strong>Secret Scanning</strong>: TruffleHog OSS on every PR</li>
+<li><strong>Dependency Scanning</strong>: Regular dependency updates, security advisories</li>
+<li><strong>Input Validation</strong>: Pydantic models for all API inputs</li>
+<li><strong>Error Messages</strong>: No sensitive information in user-facing errors</li>
+</ul>
+<h2 id="performance-considerations">Performance Considerations</h2>
+<h3 id="latency-targets-from-nfrs">Latency Targets (from NFRs)</h3>
+<ul>
+<li><strong>MCP Query</strong>: &lt; 2s (95th percentile)</li>
+<li><strong>Embedding Generation</strong>: &lt; 500ms per batch (100 chunks)</li>
+<li><strong>DB Vector Search</strong>: &lt; 100ms per query (with HNSW index)</li>
+<li><strong>Throughput</strong>: 50 queries/second with &lt;10% degradation</li>
+</ul>
+<h3 id="optimization-strategies">Optimization Strategies</h3>
+<p><strong>Global Embedder:</strong></p>
+<ul>
+<li>Singleton pattern, initialized once at startup</li>
+<li>Persistent cache (2000 entries) across requests</li>
+<li>Eliminates 300-500ms overhead per query</li>
+</ul>
+<p><strong>Database:</strong></p>
+<ul>
+<li>HNSW index for vector similarity (10-100x faster than IVFFlat)</li>
+<li>Connection pooling (2-10 connections, right-sized)</li>
+<li>Prepared statements caching (100 statements)</li>
+</ul>
+<p><strong>Caching:</strong></p>
+<ul>
+<li>Embedding cache: LRU cache, 2000 entries</li>
+<li>Query results: Not cached (always fresh, semantic search)</li>
+</ul>
+<h3 id="scalability">Scalability</h3>
+<ul>
+<li><strong>Horizontal Scaling</strong>: Supported via load balancer (future)</li>
+<li><strong>Connection Pool</strong>: Dynamic (2-10 connections)</li>
+<li><strong>Database</strong>: PostgreSQL with PGVector (scales with hardware)</li>
+</ul>
+<h2 id="deployment-architecture">Deployment Architecture</h2>
+<h3 id="docker-configuration">Docker Configuration</h3>
+<p><strong>Streamlit Container (<code>Dockerfile</code>):</strong></p>
+<ul>
+<li>Base: <code>python:3.11-slim-bookworm</code></li>
+<li>UV: Copied from official image</li>
+<li>Multi-stage: Dependency installation → code copy → final image</li>
+<li>Size: &lt; 500MB target</li>
+<li>Health check: <code>/_stcore/health</code> endpoint</li>
+</ul>
+<p><strong>API Container (<code>Dockerfile.api</code>):</strong></p>
+<ul>
+<li>Base: <code>python:3.11-slim-bookworm</code></li>
+<li>FastAPI + Uvicorn</li>
+<li>Health check: <code>/health</code> endpoint</li>
+</ul>
+<p><strong>Docker Compose:</strong></p>
+<ul>
+<li>Services: Streamlit app, PostgreSQL (optional), LangFuse (optional)</li>
+<li>Networks: Internal network for service communication</li>
+<li>Volumes: Document storage, database persistence</li>
+</ul>
+<h3 id="environment-configuration">Environment Configuration</h3>
+<p><strong>Required Variables:</strong></p>
+<ul>
+<li><code>OPENAI_API_KEY</code>: OpenAI API key</li>
+<li><code>DATABASE_URL</code>: PostgreSQL connection string</li>
+<li><code>LANGFUSE_PUBLIC_KEY</code>: LangFuse public key (optional)</li>
+<li><code>LANGFUSE_SECRET_KEY</code>: LangFuse secret key (optional)</li>
+<li><code>LANGFUSE_BASE_URL</code>: LangFuse server URL (optional, defaults to cloud)</li>
+</ul>
+<p><strong>Optional Variables:</strong></p>
+<ul>
+<li><code>LLM_CHOICE</code>: LLM model (default: <code>gpt-4o-mini</code>)</li>
+<li><code>EMBEDDING_MODEL</code>: Embedding model (default: <code>text-embedding-3-small</code>)</li>
+<li><code>DEBUG_MODE</code>: Enable debug logging (default: <code>false</code>)</li>
+</ul>
+<p><strong>Epic 3 Security Hardening (Optional):</strong></p>
+<ul>
+<li><code>COST_DAILY_LIMIT</code>: Daily cost limit in USD (default: <code>10.00</code>)</li>
+<li><code>COST_HOURLY_LIMIT</code>: Hourly cost limit in USD (default: <code>2.00</code>)</li>
+<li><code>COST_ALERT_THRESHOLD</code>: Cost alert threshold in USD (default: <code>5.00</code>)</li>
+<li><code>STREAMLIT_PASSWORD_HASH</code>: SHA256 hash for Streamlit authentication (optional)</li>
+<li><code>REDIS_URL</code>: Redis connection URL for persistent rate limiting (optional, default: <code>redis://localhost:6379</code>)</li>
+</ul>
+<h3 id="cicd-pipeline">CI/CD Pipeline</h3>
+<p><strong>GitHub Actions Workflow (<code>.github/workflows/ci.yml</code>):</strong></p>
+<p>Il CI/CD pipeline completo è documentato in dettaglio in:
+- <strong>Technical Specification</strong>: <code>docs/stories/4/tech-spec-epic-4.md</code>
+- <strong>Setup Guide</strong>: <code>docs/stories/4/epic-4-setup-guide.md</code></p>
+<p><strong>Pipeline Components:</strong></p>
+<pre><code class="language-yaml">name: CI
+
+on:
+  pull_request:
+    branches: [main, develop]
+  push:
+    branches: [main, develop]
+
+jobs:
+  lint:
+    - ruff check (zero warnings)
+    - ruff format check
+  type-check:
+    - mypy (zero errors)
+  test:
+    - pytest with coverage &gt;70%
+    - Fail build if coverage &lt;70%
+    - Upload coverage report artifacts
+  build:
+    - Docker build test (Streamlit + API)
+    - Verify image sizes &lt;500MB
+  secret-scan:
+    - TruffleHog OSS scan (full git history)
+    - Fail build if secrets detected
+</code></pre>
+<p><strong>Release Workflow (<code>.github/workflows/release.yml</code>):</strong></p>
+<ul>
+<li>Trigger: Git tag creation (<code>v*.*.*</code>)</li>
+<li>Actions: Update CHANGELOG, create GitHub Release</li>
+<li><strong>Reference</strong>: <code>docs/stories/4/epic-4-setup-guide.md</code> (Step 6)</li>
+</ul>
+<p><strong>Security Scanning:</strong></p>
+<ul>
+<li><strong>TruffleHog OSS</strong>: Automatic secret scanning su ogni PR/push</li>
+<li><strong>CodeRabbit</strong>: AI-powered code review automatica</li>
+<li><strong>References</strong>: </li>
+<li>TruffleHog: https://github.com/marketplace/actions/trufflehog-oss</li>
+<li>CodeRabbit: https://docs.coderabbit.ai/platforms/github-com</li>
+</ul>
+<h2 id="development-environment">Development Environment</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li><strong>Python</strong>: 3.11+ (3.10+ minimum)</li>
+<li><strong>UV</strong>: Latest version (package manager)</li>
+<li><strong>PostgreSQL</strong>: 16+ with PGVector extension</li>
+<li><strong>Docker</strong>: Latest (for containerized development)</li>
+<li><strong>Git</strong>: Latest (for version control)</li>
+</ul>
+<h3 id="setup-commands">Setup Commands</h3>
+<pre><code class="language-bash"># Install dependencies
+uv sync
+
+# Setup environment
+cp .env.example .env
+# Edit .env with your API keys and database URL
+
+# Initialize database
+psql $DATABASE_URL &lt; sql/optimize_index.sql
+
+# Run Streamlit app
+streamlit run app.py
+
+# Run MCP server (for Cursor/Claude Desktop)
+uv run python -m mcp.server
+
+# Run tests
+pytest --cov=core --cov=ingestion --cov=mcp --cov-report=html
+
+# Run linting
+ruff check .
+
+# Run type checking
+mypy .
+</code></pre>
+<h3 id="git-workflow">Git Workflow</h3>
+<p><strong>Branching Strategy:</strong></p>
+<ul>
+<li><code>main</code>: Production-ready code</li>
+<li><code>develop</code>: Integration branch</li>
+<li><code>feature/*</code>: Feature development</li>
+<li><code>hotfix/*</code>: Urgent production fixes</li>
+</ul>
+<p><strong>Commit Conventions:</strong></p>
+<ul>
+<li>Format: <code>&lt;type&gt;(&lt;scope&gt;): &lt;description&gt;</code></li>
+<li>Types: <code>feat</code>, <code>fix</code>, <code>docs</code>, <code>refactor</code>, <code>test</code>, <code>chore</code></li>
+<li>Example: <code>feat(mcp): add LangFuse tracing to query_knowledge_base</code></li>
+</ul>
+<p><strong>Pull Request Process:</strong></p>
+<ol>
+<li>Create feature branch from <code>develop</code></li>
+<li>Implement changes with tests</li>
+<li>Ensure CI passes (lint, type-check, test, secret-scan)</li>
+<li>CodeRabbit review (automatic)</li>
+<li>Manual review (if needed)</li>
+<li>Merge to <code>develop</code>, then <code>main</code></li>
+</ol>
+<h3 id="versionamento">Versionamento</h3>
+<p><strong>Semantic Versioning:</strong></p>
+<ul>
+<li>Format: <code>MAJOR.MINOR.PATCH</code> (es. <code>0.1.0</code>)</li>
+<li>Current: <code>0.1.0</code> (in <code>pyproject.toml</code>)</li>
+<li>Changelog: <code>CHANGELOG.md</code> with Keep a Changelog format</li>
+<li>Tagging: Git tags <code>v0.1.0</code> for each release</li>
+</ul>
+<p><strong>Release Process:</strong></p>
+<ol>
+<li>Update version in <code>pyproject.toml</code></li>
+<li>Update <code>CHANGELOG.md</code> with changes</li>
+<li>Create git tag: <code>git tag v0.1.0</code></li>
+<li>Push tag: <code>git push origin v0.1.0</code></li>
+<li>GitHub Actions creates release automatically</li>
+<li>Set <code>LANGFUSE_RELEASE</code> env var with tag</li>
+</ol>
+<h2 id="architecture-decision-records-adrs">Architecture Decision Records (ADRs)</h2>
+<h3 id="adr-001-langfuse-integration-pattern">ADR-001: LangFuse Integration Pattern</h3>
+<p><strong>Status</strong>: Accepted<br />
+<strong>Date</strong>: 2025-11-26<br />
+<strong>Verified</strong>: 2025-11-26<br />
+<strong>Context</strong>: Need observability for MCP server operations with cost tracking and performance metrics.</p>
+<p><strong>Decision</strong>: Use LangFuse decorator-based pattern (<code>@observe()</code>) with <code>langfuse.openai</code> wrapper for automatic cost tracking.</p>
+<p><strong>Rationale</strong>:</p>
+<ul>
+<li>Minimal code changes required</li>
+<li>Automatic hierarchical trace structure</li>
+<li>Cost tracking built-in with current OpenAI pricing</li>
+<li>Graceful degradation if LangFuse unavailable</li>
+<li>OpenTelemetry-based (v3) enables third-party library integration</li>
+</ul>
+<p><strong>Implementation</strong>:</p>
+<pre><code class="language-python"># Step 1: Initialize LangFuse client (once at startup)
+from langfuse import get_client
+
+langfuse = get_client()  # Uses env vars: LANGFUSE_PUBLIC_KEY, LANGFUSE_SECRET_KEY
+
+# Step 2: Decorate critical functions
+from langfuse import observe
+
+@observe(name=&quot;search_knowledge_base&quot;)
+async def search_knowledge_base_structured(query: str, limit: int = 5):
+    # Automatic tracing: inputs, outputs, timing, errors
+    pass
+
+# Step 3: Use langfuse.openai wrapper for LLM calls
+from langfuse.openai import openai
+
+response = await openai.chat.completions.create(
+    model=&quot;gpt-4o-mini&quot;,
+    messages=[{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: query}]
+)
+# Automatic cost tracking and token usage
+
+# Step 4: Set trace attributes (user_id, session_id)
+from langfuse import propagate_attributes
+
+with propagate_attributes(user_id=&quot;user_123&quot;, session_id=&quot;session_abc&quot;):
+    # All child observations inherit these attributes
+    result = await search_knowledge_base_structured(query)
+</code></pre>
+<p><strong>Consequences</strong>:</p>
+<ul>
+<li>All critical functions must use <code>@observe()</code> decorator</li>
+<li>LangFuse SDK v3.0.0+ required (OTel-based)</li>
+<li>Environment variables needed: <code>LANGFUSE_PUBLIC_KEY</code>, <code>LANGFUSE_SECRET_KEY</code>, <code>LANGFUSE_HOST</code> (optional)</li>
+<li>Use <code>langfuse.openai</code> wrapper instead of direct <code>openai</code> import for cost tracking</li>
+<li>Trace attributes must be set via <code>propagate_attributes()</code> context manager (not directly on calls)</li>
+</ul>
+<hr />
+<h3 id="adr-002-mcp-server-standalone-architecture">ADR-002: MCP Server Standalone Architecture</h3>
+<p><strong>Status</strong>: Accepted<br />
+<strong>Date</strong>: 2025-11-26<br />
+<strong>Verified</strong>: 2025-11-26<br />
+<strong>Context</strong>: MCP server currently depends on external API server, causing reliability issues.</p>
+<p><strong>Decision</strong>: Refactor MCP server to use <code>core/rag_service.py</code> directly, eliminating HTTP dependency.</p>
+<p><strong>Rationale</strong>:</p>
+<ul>
+<li>Eliminates external dependency</li>
+<li>Reduces latency (no HTTP overhead)</li>
+<li>Simpler architecture, easier debugging</li>
+<li>Aligns with existing design (core logic decoupled)</li>
+</ul>
+<p><strong>Implementation</strong>:</p>
+<pre><code class="language-python"># mcp/server.py
+from fastmcp import FastMCP
+from contextlib import asynccontextmanager
+
+mcp = FastMCP(&quot;docling-rag-agent&quot;)
+
+@asynccontextmanager
+async def lifespan(app: FastMCP):
+    &quot;&quot;&quot;FastMCP lifespan pattern for startup/shutdown.&quot;&quot;&quot;
+    # Startup: Initialize resources
+    from utils.db_utils import init_db_pool
+    from ingestion.embedder import init_embedder
+
+    await init_db_pool()
+    await init_embedder()
+
+    yield  # Server runs here
+
+    # Shutdown: Cleanup resources
+    from utils.db_utils import close_db_pool
+    await close_db_pool()
+
+mcp.lifespan = lifespan
+
+# Direct import from core (no HTTP)
+from core.rag_service import search_knowledge_base_structured
+
+@mcp.tool
+async def query_knowledge_base(query: str, limit: int = 5):
+    &quot;&quot;&quot;Query knowledge base with direct function call.&quot;&quot;&quot;
+    try:
+        return await search_knowledge_base_structured(query, limit)
+    except Exception as e:
+        from mcp.server import ToolError
+        raise ToolError(f&quot;Failed to query knowledge base: {str(e)}&quot;)
+</code></pre>
+<p><strong>Breaking Changes</strong> (FastMCP 0.4.x+):</p>
+<ul>
+<li>FastMCP 0.4.x+ uses lifespan pattern instead of startup/shutdown hooks</li>
+<li>Tool error handling uses <code>ToolError</code> instead of generic exceptions</li>
+<li>Context injection via <code>Context</code> parameter (type-hinted) instead of global state</li>
+</ul>
+<p><strong>Consequences</strong>:</p>
+<ul>
+<li>MCP server must initialize DB pool and embedder at startup via lifespan</li>
+<li>Requires FastMCP lifespan management pattern (<code>@asynccontextmanager</code>)</li>
+<li><code>client/api_client.py</code> no longer needed for MCP (kept for other use cases)</li>
+<li>Testing requires FastMCP Client with in-memory transport for unit tests</li>
+</ul>
+<hr />
+<h3 id="adr-003-tdd-structure-rigorosa">ADR-003: TDD Structure Rigorosa</h3>
+<p><strong>Status</strong>: Accepted<br />
+<strong>Date</strong>: 2025-11-26<br />
+<strong>Context</strong>: Need comprehensive testing infrastructure for production-ready system.</p>
+<p><strong>Decision</strong>: Implement TDD structure with <code>tests/unit/</code>, <code>tests/integration/</code>, <code>tests/e2e/</code>, coverage &gt;70% enforcement.</p>
+<p><strong>Rationale</strong>:</p>
+<ul>
+<li>Prevents regressions</li>
+<li>Ensures code quality</li>
+<li>RAGAS evaluation for RAG quality</li>
+<li>Playwright E2E tests for user workflows</li>
+</ul>
+<p><strong>Consequences</strong>:</p>
+<ul>
+<li>All new code must have tests first (Red-Green-Refactor)</li>
+<li>CI/CD fails if coverage &lt;70%</li>
+<li>Golden dataset required for RAGAS evaluation (20+ pairs)</li>
+</ul>
+<hr />
+<h3 id="adr-004-git-workflow-cicd">ADR-004: Git Workflow &amp; CI/CD</h3>
+<p><strong>Status</strong>: Accepted<br />
+<strong>Date</strong>: 2025-11-26<br />
+<strong>Context</strong>: Need automated quality gates and security scanning for production deployment.</p>
+<p><strong>Decision</strong>: Git Flow + Conventional Commits + GitHub Actions CI/CD + TruffleHog secret scanning + CodeRabbit code review.</p>
+<p><strong>Rationale</strong>:</p>
+<ul>
+<li>Automated quality checks prevent bad code from merging</li>
+<li>Secret scanning prevents credential leaks</li>
+<li>CodeRabbit provides AI-powered code review</li>
+<li>Semantic versioning enables release tracking</li>
+</ul>
+<p><strong>Consequences</strong>:</p>
+<ul>
+<li>All commits must follow Conventional Commits format</li>
+<li>PRs must pass CI/CD before merging</li>
+<li>Secrets detected in PRs cause build failure</li>
+<li>CodeRabbit reviews every PR automatically</li>
+</ul>
+<hr />
+<h3 id="adr-005-prometheus-metrics-and-health-check-endpoints">ADR-005: Prometheus Metrics and Health Check Endpoints</h3>
+<p><strong>Status</strong>: Accepted<br />
+<strong>Date</strong>: 2025-11-27<br />
+<strong>Context</strong>: Need production-grade monitoring with standard Prometheus metrics and health check endpoints for Kubernetes/Docker orchestration.</p>
+<p><strong>Decision</strong>: Implement Prometheus metrics via <code>prometheus_client</code> library and JSON health check endpoint via FastAPI.</p>
+<p><strong>Rationale</strong>:</p>
+<ul>
+<li>Prometheus is industry standard for container monitoring</li>
+<li>Health check endpoints enable Kubernetes liveness/readiness probes</li>
+<li>Graceful degradation maintains service availability</li>
+<li>Histogram buckets aligned with SLO targets for meaningful alerting</li>
+</ul>
+<p><strong>Implementation</strong>:</p>
+<pre><code class="language-python"># docling_mcp/metrics.py
+from prometheus_client import Counter, Histogram, Gauge
+
+# Request counter (labeled by tool and status)
+mcp_requests_total = Counter(
+    &quot;mcp_requests_total&quot;,
+    &quot;Total MCP requests&quot;,
+    [&quot;tool_name&quot;, &quot;status&quot;]
+)
+
+# Request duration histogram (SLO: &lt;2s p95)
+mcp_request_duration_seconds = Histogram(
+    &quot;mcp_request_duration_seconds&quot;,
+    &quot;Request latency&quot;,
+    [&quot;tool_name&quot;],
+    buckets=[0.1, 0.5, 1.0, 1.5, 2.0, 3.0, 5.0]
+)
+
+# RAG-specific histograms
+rag_embedding_time_seconds = Histogram(
+    &quot;rag_embedding_time_seconds&quot;,
+    &quot;Embedding generation time&quot;,
+    buckets=[0.1, 0.2, 0.3, 0.4, 0.5, 1.0]  # SLO: &lt;500ms
+)
+
+rag_db_search_time_seconds = Histogram(
+    &quot;rag_db_search_time_seconds&quot;,
+    &quot;Database search time&quot;,
+    buckets=[0.01, 0.05, 0.1, 0.2, 0.5, 1.0]  # SLO: &lt;100ms
+)
+</code></pre>
+<pre><code class="language-python"># docling_mcp/health.py
+async def get_health_status() -&gt; HealthResponse:
+    &quot;&quot;&quot;
+    Status logic:
+    - ok: All services UP
+    - degraded: LangFuse DOWN (non-critical)
+    - down: Database or Embedder DOWN (critical)
+    &quot;&quot;&quot;
+    db_status = await check_database()
+    langfuse_status = check_langfuse()
+    embedder_status = await check_embedder()
+
+    if db_status.status == &quot;down&quot; or embedder_status.status == &quot;down&quot;:
+        overall_status = &quot;down&quot;
+    elif langfuse_status.status == &quot;down&quot;:
+        overall_status = &quot;degraded&quot;
+    else:
+        overall_status = &quot;ok&quot;
+
+    return HealthResponse(status=overall_status, ...)
+</code></pre>
+<p><strong>Endpoints</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Port</th>
+<th>Content-Type</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/metrics</code></td>
+<td>8080</td>
+<td>application/openmetrics-text</td>
+<td>Prometheus scraping</td>
+</tr>
+<tr>
+<td><code>/health</code></td>
+<td>8080</td>
+<td>application/json</td>
+<td>Kubernetes probes</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Prometheus Configuration</strong> (recommended <code>scrape_interval</code>):</p>
+<ul>
+<li><strong>15s</strong>: Default for real-time monitoring</li>
+<li><strong>60s</strong>: Cost-sensitive deployments (reduced alert responsiveness)</li>
+</ul>
+<p><strong>Consequences</strong>:</p>
+<ul>
+<li>HTTP server (<code>docling_mcp/http_server.py</code>) runs on port 8080 (configurable via <code>METRICS_PORT</code>)</li>
+<li>Metrics recording wrapped in try/except for graceful degradation</li>
+<li>Health check status "degraded" returns HTTP 200 (service still functional)</li>
+<li>Health check status "down" returns HTTP 503 (service unavailable)</li>
+</ul>
+<hr />
+<h2 id="references">References</h2>
+<h3 id="related-documentation">Related Documentation</h3>
+<ul>
+<li><strong><a href="../coding-standards/">Coding Standards</a></strong>: Complete code style guide, naming conventions, documentation standards, error handling patterns, and best practices based on existing codebase patterns.</li>
+<li><strong><a href="../testing-strategy/">Testing Strategy</a></strong>: Comprehensive testing strategy with TDD workflow, test organization (unit/integration/e2e), RAGAS evaluation, and CI/CD integration.</li>
+<li><strong><a href="./unified-project-structure.md">Unified Project Structure</a></strong>: Standardized directory structure, file organization rules, epic-to-directory mapping, and validation checklist.</li>
+<li><strong><a href="../development-guide/">Development Guide</a></strong>: Setup instructions, development workflow, database operations, and troubleshooting.</li>
+<li><strong><a href="../epics/">Epics Breakdown</a></strong>: Complete epic and story breakdown with acceptance criteria and technical notes.</li>
+<li><strong><a href="../prd/">PRD</a></strong>: Product Requirements Document with functional requirements inventory.</li>
+</ul>
+<h3 id="external-references">External References</h3>
+<ul>
+<li><strong>LangFuse Documentation</strong>: https://langfuse.com/docs</li>
+<li><strong>FastMCP Documentation</strong>: https://github.com/jlowin/fastmcp</li>
+<li><strong>PydanticAI Documentation</strong>: https://ai.pydantic.dev</li>
+<li><strong>Prometheus Best Practices</strong>: https://prometheus.io/docs/practices/histograms/</li>
+<li><strong>PostgreSQL PGVector</strong>: https://github.com/pgvector/pgvector</li>
+</ul>
+<hr />
+<p><em>Generated by BMAD Decision Architecture Workflow v1.0</em><br />
+<em>Date: 2025-11-26</em><br />
+<em>Updated: 2025-11-27</em><br />
+<em>For: Stefano</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "toc.integrate", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

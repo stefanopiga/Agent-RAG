@@ -1,0 +1,2692 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Documentation for the Docling RAG Agent">
+      
+      
+        <meta name="author" content="Stefano">
+      
+      
+      
+        <link rel="prev" href="../development-guide/">
+      
+      
+        <link rel="next" href="../testing-strategy/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Coding Standards - Docling RAG Agent</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#coding-standards-docling-rag-agent" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Docling RAG Agent" class="md-header__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Docling RAG Agent
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Coding Standards
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../getting-started/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Getting Started
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../architecture/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Architecture
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../development-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Development Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    <li class="md-tabs__item md-tabs__item--active">
+      <a href="./" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Coding Standards
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../testing-strategy/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Testing Strategy
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../unified-project-structure.md" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Project Structure
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../troubleshooting-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Troubleshooting Guide
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../langfuse-dashboard-guide/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  LangFuse Dashboard
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api-reference/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Docling RAG Agent" class="md-nav__button md-logo" aria-label="Docling RAG Agent" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    Docling RAG Agent
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/stefanopiga/docling-rag-agent" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    docling-rag-agent
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Getting Started
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../development-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Coding Standards
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-python-style-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Python Style Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Python Style Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-formattazione" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Formattazione
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-import-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Import Organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-type-hints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Type Hints
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-naming-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Naming Conventions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Naming Conventions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-file-e-directory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 File e Directory
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-codice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Codice
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Database
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-documentation-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Documentation Standards
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Documentation Standards">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-module-docstrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Module Docstrings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-function-docstrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Function Docstrings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-class-docstrings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Class Docstrings
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-inline-comments" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Inline Comments
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-error-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Error Handling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Error Handling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-graceful-degradation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Graceful Degradation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-exception-handling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Exception Handling
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-retry-logic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Retry Logic
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Logging
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Logging">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-logger-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Logger Setup
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-log-levels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Log Levels
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-structured-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Structured Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-asyncawait-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Async/Await Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Async/Await Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-async-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Async Functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-context-managers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Context Managers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-background-tasks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Background Tasks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-testing-standards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Testing Standards
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Testing Standards">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-test-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Test Organization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-test-naming" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Test Naming
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-test-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Test Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-coverage-requirements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Coverage Requirements
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-observability-patterns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Observability Patterns
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Observability Patterns">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-langfuse-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 LangFuse Integration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-prometheus-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Prometheus Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-health-checks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Health Checks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-code-organization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Code Organization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Code Organization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-module-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Module Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-separation-of-concerns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Separation of Concerns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-performance-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Performance Considerations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Performance Considerations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-resource-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Resource Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-caching" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Caching
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-background-initialization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Background Initialization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-security-best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Security Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Security Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#111-secrets-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.1 Secrets Management
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#112-input-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.2 Input Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#113-error-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11.3 Error Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-configuration-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Configuration Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="12. Configuration Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#121-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.1 Environment Variables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#122-configuration-classes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12.2 Configuration Classes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-code-review-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Code Review Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#14-tools-and-linting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14. Tools and Linting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="14. Tools and Linting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#141-ruff" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.1 Ruff
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#142-mypy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.2 MyPy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#143-black-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        14.3 Black (Optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#15-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        15. References
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="15. References">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#internal-documentation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Internal Documentation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#external-references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        External References
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#changelog" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Changelog
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../unified-project-structure.md" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Project Structure
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../troubleshooting-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Troubleshooting Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../langfuse-dashboard-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LangFuse Dashboard
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_10" >
+        
+          
+          <label class="md-nav__link" for="__nav_10" id="__nav_10_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/core/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Core
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/ingestion/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ingestion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api-reference/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utilities
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="coding-standards-docling-rag-agent">Coding Standards - docling-rag-agent</h1>
+<p><strong>Version:</strong> 1.0<br />
+<strong>Last Updated:</strong> 2025-01-27<br />
+<strong>Python Version:</strong> &gt;=3.10</p>
+<h2 id="overview">Overview</h2>
+<p>Questo documento definisce gli standard di codice per il progetto <code>docling-rag-agent</code>. Gli standard riflettono le pratiche consolidate nel codice esistente e garantiscono coerenza, manutenibilità e qualità del codice.</p>
+<p><strong>Principi Fondamentali:</strong></p>
+<ul>
+<li><strong>Type Safety</strong>: Type hints obbligatori per tutte le funzioni pubbliche</li>
+<li><strong>Documentation First</strong>: Docstrings completi con formato standardizzato</li>
+<li><strong>Graceful Degradation</strong>: Gestione robusta di dipendenze opzionali</li>
+<li><strong>Observability</strong>: Logging strutturato e tracing integrato</li>
+<li><strong>Test-Driven</strong>: Coverage minimo 70% con test organizzati rigorosamente</li>
+</ul>
+<hr />
+<h2 id="1-python-style-guide">1. Python Style Guide</h2>
+<h3 id="11-formattazione">1.1 Formattazione</h3>
+<p><strong>Line Length:</strong></p>
+<ul>
+<li>Massimo 100 caratteri per riga (configurato in <code>pyproject.toml</code>)</li>
+<li>Usare parentesi per continuare su più righe quando necessario</li>
+</ul>
+<p><strong>Indentazione:</strong></p>
+<ul>
+<li>4 spazi (no tab)</li>
+<li>Allineamento per parametri multipli quando necessario</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python"># ✅ Corretto
+async def search_knowledge_base(
+    query: str,
+    limit: int = 5,
+    source_filter: Optional[str] = None
+) -&gt; List[Dict[str, Any]]:
+    &quot;&quot;&quot;Search knowledge base with optional source filtering.&quot;&quot;&quot;
+    pass
+
+# ❌ Errato
+async def search_knowledge_base(query: str, limit: int = 5, source_filter: Optional[str] = None) -&gt; List[Dict[str, Any]]:
+    pass
+</code></pre>
+<h3 id="12-import-organization">1.2 Import Organization</h3>
+<p><strong>Ordine degli import:</strong></p>
+<ol>
+<li>Standard library</li>
+<li>Third-party packages</li>
+<li>Local application imports</li>
+</ol>
+<p><strong>Separazione:</strong></p>
+<ul>
+<li>Una riga vuota tra ogni gruppo</li>
+<li>Import assoluti preferiti (no relative imports)</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python"># Standard library
+import logging
+import time
+from typing import List, Dict, Any, Optional
+from contextlib import asynccontextmanager
+
+# Third-party
+from fastmcp import FastMCP
+from langfuse import observe
+
+# Local imports
+from core.rag_service import search_knowledge_base_structured
+from docling_mcp.metrics import record_request_start, record_request_end
+</code></pre>
+<h3 id="13-type-hints">1.3 Type Hints</h3>
+<p><strong>Obbligatori per:</strong></p>
+<ul>
+<li>Tutte le funzioni pubbliche (non private)</li>
+<li>Parametri di funzione</li>
+<li>Valori di ritorno</li>
+<li>Variabili di classe pubbliche</li>
+</ul>
+<p><strong>Optional e Union:</strong></p>
+<ul>
+<li>Usare <code>Optional[T]</code> invece di <code>Union[T, None]</code></li>
+<li>Usare <code>Literal</code> per valori fissi (es. status codes)</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">from typing import List, Dict, Any, Optional, Literal
+
+# ✅ Corretto
+async def check_database() -&gt; ServiceStatus:
+    &quot;&quot;&quot;Check database connectivity.&quot;&quot;&quot;
+    pass
+
+@dataclass
+class HealthResponse:
+    status: Literal[&quot;ok&quot;, &quot;degraded&quot;, &quot;down&quot;]
+    timestamp: float
+    services: Dict[str, Dict[str, Any]]
+
+# ❌ Errato
+async def check_database():
+    pass
+</code></pre>
+<hr />
+<h2 id="2-naming-conventions">2. Naming Conventions</h2>
+<h3 id="21-file-e-directory">2.1 File e Directory</h3>
+<p><strong>File Python:</strong></p>
+<ul>
+<li><code>snake_case.py</code> (es. <code>rag_service.py</code>, <code>mcp_server.py</code>)</li>
+<li>Test files: <code>test_*.py</code> o <code>*_test.py</code> (es. <code>test_rag_service.py</code>)</li>
+</ul>
+<p><strong>Directory:</strong></p>
+<ul>
+<li><code>snake_case/</code> (es. <code>docling_mcp/</code>, <code>core/</code>, <code>ingestion/</code>)</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code>docling_mcp/
+├── server.py
+├── metrics.py
+├── health.py
+└── tools/
+    ├── search.py
+    └── documents.py
+</code></pre>
+<h3 id="22-codice">2.2 Codice</h3>
+<p><strong>Classi:</strong></p>
+<ul>
+<li><code>PascalCase</code> (es. <code>EmbeddingGenerator</code>, <code>DatabasePool</code>, <code>ServiceStatus</code>)</li>
+</ul>
+<p><strong>Funzioni e Variabili:</strong></p>
+<ul>
+<li><code>snake_case</code> (es. <code>query_knowledge_base</code>, <code>search_results</code>, <code>embedding_time</code>)</li>
+</ul>
+<p><strong>Costanti:</strong></p>
+<ul>
+<li><code>UPPER_SNAKE_CASE</code> (es. <code>MAX_RETRIES</code>, <code>DEFAULT_LIMIT</code>, <code>CACHE_SIZE</code>)</li>
+</ul>
+<p><strong>Private/Internal:</strong></p>
+<ul>
+<li>Prefisso <code>_</code> per funzioni/variabili private (es. <code>_global_embedder</code>, <code>_initialize_metrics()</code>)</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python"># Costanti
+MAX_RETRIES = 3
+DEFAULT_BATCH_SIZE = 100
+
+# Classe pubblica
+class EmbeddingGenerator:
+    # Variabile privata
+    _cache: Dict[str, List[float]]
+
+    # Metodo pubblico
+    async def embed_query(self, text: str) -&gt; List[float]:
+        pass
+
+    # Metodo privato
+    def _get_from_cache(self, text: str) -&gt; Optional[List[float]]:
+        pass
+</code></pre>
+<h3 id="23-database">2.3 Database</h3>
+<p><strong>Tabelle:</strong></p>
+<ul>
+<li><code>snake_case</code>, plurale (es. <code>documents</code>, <code>chunks</code>)</li>
+</ul>
+<p><strong>Colonne:</strong></p>
+<ul>
+<li><code>snake_case</code> (es. <code>document_id</code>, <code>chunk_content</code>, <code>created_at</code>)</li>
+</ul>
+<p><strong>Indici:</strong></p>
+<ul>
+<li><code>idx_&lt;table&gt;_&lt;column&gt;_&lt;type&gt;</code> (es. <code>idx_chunks_embedding_hnsw</code>)</li>
+</ul>
+<hr />
+<h2 id="3-documentation-standards">3. Documentation Standards</h2>
+<h3 id="31-module-docstrings">3.1 Module Docstrings</h3>
+<p>Ogni modulo deve iniziare con un docstring che descrive:</p>
+<ul>
+<li>Scopo del modulo</li>
+<li>Architettura/pattern utilizzati</li>
+<li>Componenti principali</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">&quot;&quot;&quot;
+MCP Server
+==========
+Exposes the RAG agent capabilities as a Model Context Protocol (MCP) server.
+Compatible with Cursor, Claude Desktop, and other MCP clients.
+
+Architecture:
+- Standalone server with direct service integration (no HTTP proxy)
+- Uses core/rag_service.py directly for RAG operations
+- LangFuse integration for observability tracing (graceful degradation if unavailable)
+- Cost tracking via langfuse.openai wrapper in embedder (automatic token/cost calculation)
+- Prometheus metrics for performance monitoring (/metrics endpoint)
+- Health check endpoint (/health) for service status monitoring
+&quot;&quot;&quot;
+</code></pre>
+<h3 id="32-function-docstrings">3.2 Function Docstrings</h3>
+<p><strong>Formato standardizzato:</strong></p>
+<ul>
+<li>Breve descrizione (prima riga)</li>
+<li>Sezione <code>Args:</code> per parametri</li>
+<li>Sezione <code>Returns:</code> per valore di ritorno</li>
+<li>Sezione <code>Yields:</code> per generatori</li>
+<li>Sezione <code>Raises:</code> per eccezioni</li>
+<li>Sezione <code>Note:</code> per informazioni aggiuntive</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">async def langfuse_span(
+    name: str,
+    span_type: str = &quot;span&quot;,
+    metadata: dict = None
+) -&gt; AsyncGenerator[Any, None]:
+    &quot;&quot;&quot;
+    Create a nested LangFuse span for cost tracking and timing breakdown.
+
+    Args:
+        name: Name of the span (e.g., &quot;embedding-generation&quot;, &quot;vector-search&quot;)
+        span_type: Type of span (&quot;span&quot; for general, &quot;generation&quot; for LLM calls)
+        metadata: Optional metadata to attach to the span
+
+    Yields:
+        A dict with 'span' (LangFuse span or None) and 'start_time' for timing.
+
+    Note:
+        - Gracefully degrades to no-op if LangFuse unavailable
+        - Always records timing in span metadata (duration_ms)
+        - Also records to Prometheus metrics for embedding and db_search spans
+    &quot;&quot;&quot;
+    pass
+</code></pre>
+<h3 id="33-class-docstrings">3.3 Class Docstrings</h3>
+<p><strong>Formato:</strong></p>
+<ul>
+<li>Descrizione della classe</li>
+<li>Sezione <code>Attributes:</code> per attributi pubblici importanti</li>
+<li>Sezione <code>Example:</code> se utile</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">class EmbeddingGenerator(BaseEmbedder):
+    &quot;&quot;&quot;
+    Generates embeddings using OpenAI compatible API.
+
+    Cost Tracking:
+        Uses langfuse.openai wrapper when available for automatic cost tracking.
+        Falls back to direct OpenAI client if LangFuse unavailable.
+
+    Attributes:
+        model_name: OpenAI model name (default: &quot;text-embedding-3-small&quot;)
+        batch_size: Batch size for embedding generation (default: 100)
+        use_cache: Enable in-memory cache for embeddings (default: True)
+    &quot;&quot;&quot;
+    pass
+</code></pre>
+<h3 id="34-inline-comments">3.4 Inline Comments</h3>
+<p><strong>Quando usare:</strong></p>
+<ul>
+<li>Spiegare "perché" non "cosa" (il codice dovrebbe essere auto-esplicativo)</li>
+<li>Sezioni complesse o ottimizzazioni non ovvie</li>
+<li>Workaround o limitazioni note</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python"># OPTIMIZED: Runs in background to prevent blocking server startup (MCP handshake timeout)
+async def initialize_global_embedder():
+    &quot;&quot;&quot;Initialize global embedder instance at server startup.&quot;&quot;&quot;
+    # Offload heavy import and creation to thread to avoid blocking asyncio loop
+    # This is critical because importing transformers/docling takes ~40s
+    _global_embedder = await asyncio.to_thread(_create_embedder_sync)
+</code></pre>
+<hr />
+<h2 id="4-error-handling">4. Error Handling</h2>
+<h3 id="41-graceful-degradation">4.1 Graceful Degradation</h3>
+<p><strong>Pattern obbligatorio per dipendenze opzionali:</strong></p>
+<ul>
+<li>Try/except per import</li>
+<li>Fallback a implementazione no-op o alternativa</li>
+<li>Logging informativo</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python"># LangFuse integration with graceful degradation
+try:
+    from langfuse import observe, get_client as get_langfuse_client
+    _langfuse_available = True
+except ImportError:
+    _langfuse_available = False
+    get_langfuse_client = None
+    # Create no-op decorator as fallback
+    def observe(name=None, **kwargs):
+        def decorator(func):
+            return func
+        return decorator
+    logger.info(&quot;LangFuse SDK not installed, tracing disabled&quot;)
+</code></pre>
+<h3 id="42-exception-handling">4.2 Exception Handling</h3>
+<p><strong>Best Practices:</strong></p>
+<ul>
+<li>Catturare eccezioni specifiche quando possibile</li>
+<li>Logging con contesto (error message, stack trace se necessario)</li>
+<li>Re-raise dopo logging se necessario</li>
+<li>Usare <code>ToolError</code> per errori user-facing in MCP tools</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">from fastmcp import ToolError
+
+async def query_knowledge_base(query: str, limit: int = 5) -&gt; str:
+    &quot;&quot;&quot;Query knowledge base with error handling.&quot;&quot;&quot;
+    try:
+        results = await search_knowledge_base_structured(query, limit)
+        return format_results(results)
+    except ValueError as e:
+        logger.error(f&quot;Invalid query parameters: {e}&quot;)
+        raise ToolError(f&quot;Invalid query: {str(e)}&quot;)
+    except Exception as e:
+        logger.error(f&quot;Unexpected error in query_knowledge_base: {e}&quot;, exc_info=True)
+        raise ToolError(&quot;An error occurred while querying the knowledge base&quot;)
+</code></pre>
+<h3 id="43-retry-logic">4.3 Retry Logic</h3>
+<p><strong>Quando usare:</strong></p>
+<ul>
+<li>Operazioni di rete (API calls, DB connections)</li>
+<li>Operazioni transient che possono fallire temporaneamente</li>
+</ul>
+<p><strong>Pattern:</strong></p>
+<ul>
+<li>Usare <code>tenacity</code> per retry con exponential backoff</li>
+<li>Configurare max tentativi e delay appropriati</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">from tenacity import retry, stop_after_attempt, wait_exponential
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=1, max=10)
+)
+async def generate_embedding(text: str) -&gt; List[float]:
+    &quot;&quot;&quot;Generate embedding with retry logic for transient errors.&quot;&quot;&quot;
+    try:
+        response = await client.embeddings.create(
+            model=self.model_name,
+            input=text
+        )
+        return response.data[0].embedding
+    except Exception as e:
+        logger.warning(f&quot;Embedding generation failed (will retry): {e}&quot;)
+        raise
+</code></pre>
+<hr />
+<h2 id="5-logging">5. Logging</h2>
+<h3 id="51-logger-setup">5.1 Logger Setup</h3>
+<p><strong>Pattern standard:</strong></p>
+<ul>
+<li>Un logger per modulo con <code>__name__</code></li>
+<li>Configurazione centralizzata (non per-modulo)</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">import logging
+
+logger = logging.getLogger(__name__)
+
+# Non configurare logging qui - viene fatto a livello applicazione
+# logging.basicConfig(level=logging.INFO)  # ❌ Non fare questo
+</code></pre>
+<h3 id="52-log-levels">5.2 Log Levels</h3>
+<p><strong>DEBUG:</strong></p>
+<ul>
+<li>Informazioni dettagliate per debugging</li>
+<li>Non usare in produzione</li>
+</ul>
+<p><strong>INFO:</strong></p>
+<ul>
+<li>Eventi significativi dell'applicazione (startup, shutdown, operazioni principali)</li>
+<li>Metriche importanti</li>
+</ul>
+<p><strong>WARNING:</strong></p>
+<ul>
+<li>Situazioni anomale ma non critiche</li>
+<li>Fallback a funzionalità alternative</li>
+</ul>
+<p><strong>ERROR:</strong></p>
+<ul>
+<li>Errori che impediscono un'operazione ma non crashano l'applicazione</li>
+<li>Include stack trace quando utile</li>
+</ul>
+<p><strong>CRITICAL:</strong></p>
+<ul>
+<li>Errori critici che possono causare crash</li>
+<li>Raramente usato</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">logger.debug(f&quot;Processing query: {query[:50]}...&quot;)  # Debug info
+logger.info(&quot;Global embedder initialized successfully&quot;)  # Significant event
+logger.warning(&quot;LangFuse unavailable, continuing without tracing&quot;)  # Degradation
+logger.error(f&quot;Database connection failed: {e}&quot;, exc_info=True)  # Error with context
+</code></pre>
+<h3 id="53-structured-logging">5.3 Structured Logging</h3>
+<p><strong>Quando possibile:</strong></p>
+<ul>
+<li>Usare formattazione strutturata per parsing automatico</li>
+<li>Includere contesto rilevante (request_id, tool_name, etc.)</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">logger.info(
+    &quot;MCP request completed&quot;,
+    extra={
+        &quot;tool_name&quot;: &quot;query_knowledge_base&quot;,
+        &quot;duration_ms&quot;: duration_ms,
+        &quot;status&quot;: &quot;success&quot;,
+        &quot;results_count&quot;: len(results)
+    }
+)
+</code></pre>
+<hr />
+<h2 id="6-asyncawait-patterns">6. Async/Await Patterns</h2>
+<h3 id="61-async-functions">6.1 Async Functions</h3>
+<p><strong>Quando usare async:</strong></p>
+<ul>
+<li>Operazioni I/O (database, API calls, file operations)</li>
+<li>Operazioni che possono essere bloccanti</li>
+</ul>
+<p><strong>Quando NON usare async:</strong></p>
+<ul>
+<li>Operazioni CPU-bound pure</li>
+<li>Calcoli matematici semplici</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python"># ✅ Corretto - I/O operation
+async def search_knowledge_base(query: str) -&gt; List[Dict]:
+    async with db_pool.acquire() as conn:
+        results = await conn.fetch(query)
+    return results
+
+# ❌ Errato - CPU-bound operation
+async def calculate_embedding_similarity(emb1: List[float], emb2: List[float]) -&gt; float:
+    # Non serve async per operazioni CPU-bound
+    return cosine_similarity(emb1, emb2)
+</code></pre>
+<h3 id="62-context-managers">6.2 Context Managers</h3>
+<p><strong>Per risorse che richiedono cleanup:</strong></p>
+<ul>
+<li>Database connections</li>
+<li>File handles</li>
+<li>LangFuse spans</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def langfuse_span(name: str) -&gt; AsyncGenerator[Any, None]:
+    &quot;&quot;&quot;Create LangFuse span with automatic cleanup.&quot;&quot;&quot;
+    span = create_span(name)
+    try:
+        yield span
+    finally:
+        span.end()
+
+# Usage
+async with langfuse_span(&quot;embedding-generation&quot;) as span:
+    embedding = await generate_embedding(query)
+    span.update(metadata={&quot;tokens&quot;: len(query.split())})
+</code></pre>
+<h3 id="63-background-tasks">6.3 Background Tasks</h3>
+<p><strong>Per operazioni pesanti che non devono bloccare startup:</strong></p>
+<ul>
+<li>Inizializzazione modelli pesanti</li>
+<li>Pre-warming cache</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">async def initialize_global_embedder():
+    &quot;&quot;&quot;Initialize embedder in background to avoid blocking startup.&quot;&quot;&quot;
+    global _initialization_task
+
+    async def _init_task():
+        global _global_embedder
+        # Heavy operation offloaded to thread
+        _global_embedder = await asyncio.to_thread(_create_embedder_sync)
+        _embedder_ready.set()
+
+    # Start background task
+    _initialization_task = asyncio.create_task(_init_task())
+</code></pre>
+<hr />
+<h2 id="7-testing-standards">7. Testing Standards</h2>
+<h3 id="71-test-organization">7.1 Test Organization</h3>
+<p><strong>Struttura directory:</strong></p>
+<pre><code>tests/
+├── conftest.py          # Shared fixtures
+├── unit/                # Unit tests (&gt;70% coverage)
+│   ├── test_rag_service.py
+│   └── test_embedder.py
+├── integration/         # Integration tests
+│   ├── test_mcp_server.py
+│   └── test_observability_endpoints.py
+├── e2e/                # End-to-end tests
+│   └── test_streamlit_workflow.py
+└── fixtures/           # Test fixtures + golden dataset
+    └── golden_dataset.json
+</code></pre>
+<h3 id="72-test-naming">7.2 Test Naming</h3>
+<p><strong>File:</strong></p>
+<ul>
+<li><code>test_*.py</code> o <code>*_test.py</code></li>
+</ul>
+<p><strong>Funzioni:</strong></p>
+<ul>
+<li><code>test_&lt;functionality&gt;_&lt;condition&gt;_&lt;expected_result&gt;</code></li>
+<li>Usare nomi descrittivi</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python"># ✅ Corretto
+def test_query_knowledge_base_with_valid_query_returns_results():
+    pass
+
+def test_query_knowledge_base_with_empty_query_raises_error():
+    pass
+
+# ❌ Errato
+def test_query():
+    pass
+</code></pre>
+<h3 id="73-test-structure">7.3 Test Structure</h3>
+<p><strong>Pattern AAA (Arrange-Act-Assert):</strong></p>
+<ul>
+<li>Arrange: Setup test data</li>
+<li>Act: Execute function under test</li>
+<li>Assert: Verify results</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">import pytest
+from unittest.mock import AsyncMock, patch
+
+@pytest.mark.asyncio
+async def test_search_knowledge_base_returns_formatted_results():
+    # Arrange
+    query = &quot;test query&quot;
+    limit = 5
+    mock_results = [
+        {&quot;content&quot;: &quot;result 1&quot;, &quot;source&quot;: &quot;doc1&quot;},
+        {&quot;content&quot;: &quot;result 2&quot;, &quot;source&quot;: &quot;doc2&quot;}
+    ]
+
+    with patch('core.rag_service.search_knowledge_base_structured') as mock_search:
+        mock_search.return_value = mock_results
+
+        # Act
+        result = await query_knowledge_base(query, limit)
+
+        # Assert
+        assert &quot;result 1&quot; in result
+        assert &quot;doc1&quot; in result
+        mock_search.assert_called_once_with(query, limit)
+</code></pre>
+<h3 id="74-coverage-requirements">7.4 Coverage Requirements</h3>
+<p><strong>Minimo:</strong></p>
+<ul>
+<li>70% coverage per moduli core</li>
+<li>80% coverage per moduli critici (observability, error handling)</li>
+</ul>
+<p><strong>Verifica:</strong></p>
+<pre><code class="language-bash">pytest --cov=core --cov=docling_mcp --cov-report=term-missing
+</code></pre>
+<hr />
+<h2 id="8-observability-patterns">8. Observability Patterns</h2>
+<h3 id="81-langfuse-integration">8.1 LangFuse Integration</h3>
+<p><strong>Pattern decorator:</strong></p>
+<ul>
+<li>Usare <code>@observe()</code> per funzioni critiche</li>
+<li>Nested spans per operazioni child</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">from langfuse import observe
+
+@observe(name=&quot;query_knowledge_base&quot;)
+async def query_knowledge_base(query: str, limit: int = 5) -&gt; str:
+    &quot;&quot;&quot;Query knowledge base with LangFuse tracing.&quot;&quot;&quot;
+    # Nested span per embedding
+    async with langfuse_span(&quot;embedding-generation&quot;) as span_ctx:
+        embedding = await generate_query_embedding(query)
+        span_ctx[&quot;span&quot;].update(metadata={&quot;tokens&quot;: len(query.split())})
+
+    # Nested span per DB search
+    async with langfuse_span(&quot;vector-search&quot;) as span_ctx:
+        results = await search_with_embedding(embedding, limit)
+        span_ctx[&quot;span&quot;].update(metadata={&quot;results_count&quot;: len(results)})
+
+    return format_results(results)
+</code></pre>
+<h3 id="82-prometheus-metrics">8.2 Prometheus Metrics</h3>
+<p><strong>Pattern:</strong></p>
+<ul>
+<li>Inizializzazione lazy con graceful degradation</li>
+<li>Recording functions per metriche</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">from docling_mcp.metrics import record_request_start, record_request_end
+
+@mcp.tool()
+async def query_knowledge_base(query: str, limit: int = 5) -&gt; str:
+    &quot;&quot;&quot;Query knowledge base with Prometheus metrics.&quot;&quot;&quot;
+    tool_name = &quot;query_knowledge_base&quot;
+    start_time = record_request_start(tool_name)
+    status = &quot;success&quot;
+
+    try:
+        results = await search_knowledge_base_structured(query, limit)
+        return format_results(results)
+    except Exception as e:
+        status = &quot;error&quot;
+        raise
+    finally:
+        record_request_end(tool_name, start_time, status)
+</code></pre>
+<h3 id="83-health-checks">8.3 Health Checks</h3>
+<p><strong>Pattern:</strong></p>
+<ul>
+<li>Status logic chiaro (ok/degraded/down)</li>
+<li>Service checks individuali</li>
+<li>Timing information</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">@dataclass
+class HealthResponse:
+    status: Literal[&quot;ok&quot;, &quot;degraded&quot;, &quot;down&quot;]
+    timestamp: float
+    services: Dict[str, Dict[str, Any]]
+
+async def check_health() -&gt; HealthResponse:
+    &quot;&quot;&quot;Check system health with service status.&quot;&quot;&quot;
+    db_status = await check_database()
+    langfuse_status = await check_langfuse()
+    embedder_status = await check_embedder()
+
+    # Determine overall status
+    if db_status.status == &quot;down&quot;:
+        overall_status = &quot;down&quot;
+    elif langfuse_status.status == &quot;down&quot;:
+        overall_status = &quot;degraded&quot;  # LangFuse optional
+    else:
+        overall_status = &quot;ok&quot;
+
+    return HealthResponse(
+        status=overall_status,
+        timestamp=time.time(),
+        services={
+            &quot;database&quot;: asdict(db_status),
+            &quot;langfuse&quot;: asdict(langfuse_status),
+            &quot;embedder&quot;: asdict(embedder_status)
+        }
+    )
+</code></pre>
+<hr />
+<h2 id="9-code-organization">9. Code Organization</h2>
+<h3 id="91-module-structure">9.1 Module Structure</h3>
+<p><strong>Ordine standard:</strong></p>
+<ol>
+<li>Module docstring</li>
+<li>Imports (standard, third-party, local)</li>
+<li>Constants</li>
+<li>Global variables (con prefisso <code>_</code> se privati)</li>
+<li>Classes</li>
+<li>Functions</li>
+<li>Module-level code (se necessario)</li>
+</ol>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">&quot;&quot;&quot;
+Module description.
+&quot;&quot;&quot;
+
+# Standard library
+import logging
+from typing import List, Optional
+
+# Third-party
+from fastmcp import FastMCP
+
+# Local
+from core.rag_service import search_knowledge_base_structured
+
+# Constants
+DEFAULT_LIMIT = 5
+MAX_RETRIES = 3
+
+# Global variables
+logger = logging.getLogger(__name__)
+_global_state = None
+
+# Classes
+class ServiceClass:
+    pass
+
+# Functions
+async def public_function():
+    pass
+
+def _private_function():
+    pass
+</code></pre>
+<h3 id="92-separation-of-concerns">9.2 Separation of Concerns</h3>
+<p><strong>Principi:</strong></p>
+<ul>
+<li>Business logic separata da I/O (es. <code>core/rag_service.py</code> decoupled)</li>
+<li>Observability separata da business logic (decorators, metrics)</li>
+<li>Configuration separata da implementation</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python"># ✅ Corretto - Business logic separata
+# core/rag_service.py
+async def search_knowledge_base_structured(query: str, limit: int) -&gt; List[Dict]:
+    &quot;&quot;&quot;Pure business logic, no I/O concerns.&quot;&quot;&quot;
+    pass
+
+# docling_mcp/server.py - I/O layer
+@mcp.tool()
+@observe(name=&quot;query_knowledge_base&quot;)
+async def query_knowledge_base(query: str, limit: int = 5) -&gt; str:
+    &quot;&quot;&quot;MCP tool with observability, calls business logic.&quot;&quot;&quot;
+    results = await search_knowledge_base_structured(query, limit)
+    return format_results(results)
+
+# ❌ Errato - Business logic mescolata con I/O
+async def query_knowledge_base(query: str, limit: int = 5) -&gt; str:
+    # Business logic
+    embedding = await generate_embedding(query)
+    # I/O operations
+    async with db_pool.acquire() as conn:
+        results = await conn.fetch(...)
+    # Formatting
+    return format_results(results)
+</code></pre>
+<hr />
+<h2 id="10-performance-considerations">10. Performance Considerations</h2>
+<h3 id="101-resource-management">10.1 Resource Management</h3>
+<p><strong>Connection Pools:</strong></p>
+<ul>
+<li>Inizializzare una volta, riutilizzare</li>
+<li>Configurare size appropriato (min/max)</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python"># ✅ Corretto - Global pool
+db_pool = DatabasePool()
+await db_pool.initialize()  # Once at startup
+
+async def search_db(query: str):
+    async with db_pool.acquire() as conn:
+        return await conn.fetch(query)
+
+# ❌ Errato - New connection per query
+async def search_db(query: str):
+    conn = await asyncpg.connect(DATABASE_URL)
+    try:
+        return await conn.fetch(query)
+    finally:
+        await conn.close()
+</code></pre>
+<h3 id="102-caching">10.2 Caching</h3>
+<p><strong>Quando usare:</strong></p>
+<ul>
+<li>Operazioni costose ripetute (embedding generation)</li>
+<li>Dati che cambiano raramente</li>
+</ul>
+<p><strong>Pattern:</strong></p>
+<ul>
+<li>LRU cache con size limitato</li>
+<li>Cache key basata su input</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">class EmbeddingCache:
+    &quot;&quot;&quot;Simple in-memory cache for embeddings.&quot;&quot;&quot;
+    def __init__(self, max_size: int = 1000):
+        self.cache: Dict[str, List[float]] = {}
+        self.max_size = max_size
+
+    def get(self, text: str) -&gt; Optional[List[float]]:
+        return self.cache.get(text)
+
+    def set(self, text: str, embedding: List[float]):
+        if len(self.cache) &gt;= self.max_size:
+            # Simple eviction: remove first key (FIFO-ish)
+            first_key = next(iter(self.cache))
+            del self.cache[first_key]
+        self.cache[text] = embedding
+</code></pre>
+<h3 id="103-background-initialization">10.3 Background Initialization</h3>
+<p><strong>Per operazioni pesanti:</strong></p>
+<ul>
+<li>Non bloccare startup</li>
+<li>Pre-warm risorse</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python"># Initialize in background to avoid blocking MCP handshake
+_initialization_task = asyncio.create_task(initialize_global_embedder())
+
+# Check readiness before use
+if not _embedder_ready.is_set():
+    await _embedder_ready.wait()
+</code></pre>
+<hr />
+<h2 id="11-security-best-practices">11. Security Best Practices</h2>
+<h3 id="111-secrets-management">11.1 Secrets Management</h3>
+<p><strong>Pattern:</strong></p>
+<ul>
+<li>Environment variables per secrets</li>
+<li>Mai hardcode secrets nel codice</li>
+<li>Usare <code>.env</code> file per sviluppo locale</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# ✅ Corretto
+api_key = os.getenv(&quot;OPENAI_API_KEY&quot;)
+if not api_key:
+    raise ValueError(&quot;OPENAI_API_KEY environment variable not set&quot;)
+
+# ❌ Errato
+api_key = &quot;sk-...&quot;  # Never hardcode secrets
+</code></pre>
+<h3 id="112-input-validation">11.2 Input Validation</h3>
+<p><strong>Pattern:</strong></p>
+<ul>
+<li>Validare input all'ingresso</li>
+<li>Usare Pydantic models quando possibile</li>
+<li>Sanitizzare user input</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">from pydantic import BaseModel, Field, validator
+
+class QueryRequest(BaseModel):
+    query: str = Field(..., min_length=1, max_length=1000)
+    limit: int = Field(default=5, ge=1, le=100)
+
+    @validator('query')
+    def validate_query(cls, v):
+        if not v.strip():
+            raise ValueError(&quot;Query cannot be empty&quot;)
+        return v.strip()
+</code></pre>
+<h3 id="113-error-messages">11.3 Error Messages</h3>
+<p><strong>Pattern:</strong></p>
+<ul>
+<li>Non esporre informazioni sensibili in errori user-facing</li>
+<li>Log dettagli completi, messaggi user-friendly</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">try:
+    result = await process_request(request)
+except DatabaseError as e:
+    # Log completo per debugging
+    logger.error(f&quot;Database error: {e}&quot;, exc_info=True)
+    # Messaggio user-friendly
+    raise ToolError(&quot;An error occurred processing your request&quot;)
+</code></pre>
+<hr />
+<h2 id="12-configuration-management">12. Configuration Management</h2>
+<h3 id="121-environment-variables">12.1 Environment Variables</h3>
+<p><strong>Pattern:</strong></p>
+<ul>
+<li>Usare <code>python-dotenv</code> per sviluppo</li>
+<li>Validare variabili richieste all'avvio</li>
+<li>Fornire valori di default quando appropriato</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+# Required variables
+DATABASE_URL = os.getenv(&quot;DATABASE_URL&quot;)
+if not DATABASE_URL:
+    raise ValueError(&quot;DATABASE_URL environment variable required&quot;)
+
+# Optional variables with defaults
+METRICS_PORT = int(os.getenv(&quot;METRICS_PORT&quot;, &quot;8080&quot;))
+LOG_LEVEL = os.getenv(&quot;LOG_LEVEL&quot;, &quot;INFO&quot;)
+</code></pre>
+<h3 id="122-configuration-classes">12.2 Configuration Classes</h3>
+<p><strong>Pattern:</strong></p>
+<ul>
+<li>Usare dataclasses o Pydantic models per config</li>
+<li>Validazione automatica</li>
+<li>Type hints completi</li>
+</ul>
+<p><strong>Esempio:</strong></p>
+<pre><code class="language-python">from dataclasses import dataclass
+from typing import Optional
+
+@dataclass
+class ServerConfig:
+    host: str = &quot;0.0.0.0&quot;
+    port: int = 8080
+    database_url: str = &quot;&quot;
+    langfuse_public_key: Optional[str] = None
+    langfuse_secret_key: Optional[str] = None
+
+    def __post_init__(self):
+        if not self.database_url:
+            raise ValueError(&quot;database_url is required&quot;)
+</code></pre>
+<hr />
+<h2 id="13-code-review-checklist">13. Code Review Checklist</h2>
+<p>Prima di sottomettere codice per review, verificare:</p>
+<ul>
+<li>[ ] Type hints completi per funzioni pubbliche</li>
+<li>[ ] Docstrings con formato standardizzato</li>
+<li>[ ] Error handling appropriato (graceful degradation se necessario)</li>
+<li>[ ] Logging con livelli corretti</li>
+<li>[ ] Test aggiunti/modificati per nuove funzionalità</li>
+<li>[ ] Coverage mantenuto sopra 70%</li>
+<li>[ ] Nessun secret hardcoded</li>
+<li>[ ] Input validation dove necessario</li>
+<li>[ ] Performance considerations (caching, pooling) se applicabile</li>
+<li>[ ] Observability integrata (LangFuse, Prometheus) per operazioni critiche</li>
+</ul>
+<hr />
+<h2 id="14-tools-and-linting">14. Tools and Linting</h2>
+<h3 id="141-ruff">14.1 Ruff</h3>
+<p><strong>Configurazione in <code>pyproject.toml</code>:</strong></p>
+<pre><code class="language-toml">[tool.ruff]
+line-length = 100
+select = [&quot;E&quot;, &quot;F&quot;, &quot;I&quot;, &quot;N&quot;, &quot;W&quot;]
+ignore = [&quot;E501&quot;]  # Line too long (handled by formatter)
+</code></pre>
+<p><strong>Uso:</strong></p>
+<pre><code class="language-bash">ruff check .
+ruff check --fix .
+</code></pre>
+<h3 id="142-mypy">14.2 MyPy</h3>
+<p><strong>Configurazione:</strong></p>
+<pre><code class="language-toml">[tool.mypy]
+python_version = &quot;3.10&quot;
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+</code></pre>
+<p><strong>Uso:</strong></p>
+<pre><code class="language-bash">mypy core/ docling_mcp/
+</code></pre>
+<h3 id="143-black-optional">14.3 Black (Optional)</h3>
+<p><strong>Configurazione:</strong></p>
+<pre><code class="language-toml">[tool.black]
+line-length = 100
+target-version = [&quot;py310&quot;, &quot;py311&quot;]
+</code></pre>
+<p><strong>Uso:</strong></p>
+<pre><code class="language-bash">black .
+</code></pre>
+<hr />
+<h2 id="15-references">15. References</h2>
+<h3 id="internal-documentation">Internal Documentation</h3>
+<ul>
+<li><strong><a href="../architecture/">Architecture</a></strong>: System architecture, design decisions, and integration patterns</li>
+<li><strong><a href="./unified-project-structure.md">Unified Project Structure</a></strong>: Standardized directory structure and file organization rules</li>
+<li><strong><a href="../testing-strategy/">Testing Strategy</a></strong>: Complete testing strategy with TDD workflow and test organization</li>
+<li><strong><a href="../development-guide/">Development Guide</a></strong>: Setup instructions and development workflow</li>
+<li><strong><a href="../epics/">Epic Breakdown</a></strong>: Complete epic and story breakdown</li>
+<li><strong><a href="./stories/*/tech-spec-epic-*.md">Tech Specs</a></strong>: Technical specifications for each epic</li>
+</ul>
+<h3 id="external-references">External References</h3>
+<ul>
+<li><strong>Python Style Guide</strong>: PEP 8 (https://pep8.org/)</li>
+<li><strong>Type Hints</strong>: PEP 484 (https://peps.python.org/pep-0484/)</li>
+<li><strong>Async/Await</strong>: PEP 492 (https://peps.python.org/pep-0492/)</li>
+<li><strong>Ruff Documentation</strong>: https://docs.astral.sh/ruff/</li>
+<li><strong>MyPy Documentation</strong>: https://mypy.readthedocs.io/</li>
+<li><strong>Black Documentation</strong>: https://black.readthedocs.io/</li>
+</ul>
+<hr />
+<h2 id="changelog">Changelog</h2>
+<ul>
+<li><strong>2025-01-27</strong>: Initial version based on existing codebase patterns</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "toc.integrate", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
