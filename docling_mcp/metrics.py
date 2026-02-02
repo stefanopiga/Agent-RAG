@@ -123,7 +123,8 @@ def record_request_start(tool_name: str) -> float:
         return time.time()
 
     try:
-        mcp_active_requests.inc()
+        if mcp_active_requests is not None:
+            mcp_active_requests.inc()
     except Exception:
         pass  # Graceful degradation
 
@@ -145,8 +146,10 @@ def record_request_end(tool_name: str, start_time: float, status: str = "success
     duration = time.time() - start_time
 
     try:
-        mcp_active_requests.dec()
-        mcp_requests_total.labels(tool_name=tool_name, status=status).inc()
+        if mcp_active_requests is not None:
+            mcp_active_requests.dec()
+        if mcp_requests_total is not None:
+            mcp_requests_total.labels(tool_name=tool_name, status=status).inc()
         mcp_request_duration_seconds.labels(tool_name=tool_name).observe(duration)
     except Exception:
         pass  # Graceful degradation
@@ -163,7 +166,8 @@ def record_embedding_time(duration_seconds: float):
         return
 
     try:
-        rag_embedding_time_seconds.observe(duration_seconds)
+        if rag_embedding_time_seconds is not None:
+            rag_embedding_time_seconds.observe(duration_seconds)
     except Exception:
         pass  # Graceful degradation
 
@@ -179,7 +183,8 @@ def record_db_search_time(duration_seconds: float):
         return
 
     try:
-        rag_db_search_time_seconds.observe(duration_seconds)
+        if rag_db_search_time_seconds is not None:
+            rag_db_search_time_seconds.observe(duration_seconds)
     except Exception:
         pass  # Graceful degradation
 
@@ -195,7 +200,8 @@ def record_llm_generation_time(duration_seconds: float):
         return
 
     try:
-        rag_llm_generation_time_seconds.observe(duration_seconds)
+        if rag_llm_generation_time_seconds is not None:
+            rag_llm_generation_time_seconds.observe(duration_seconds)
     except Exception:
         pass  # Graceful degradation
 

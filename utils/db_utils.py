@@ -161,7 +161,7 @@ async def list_documents(
             LEFT JOIN chunks c ON d.id = c.document_id
         """
 
-        params = []
+        params: list[str | int] = []
         conditions = []
 
         if metadata_filter:
