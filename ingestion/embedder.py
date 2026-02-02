@@ -3,7 +3,7 @@ import logging
 import os
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 from tenacity import retry, stop_after_attempt, wait_exponential
 
@@ -22,7 +22,8 @@ try:
 except ImportError:
     from openai import AsyncOpenAI as LangfuseAsyncOpenAI
 
-    logger.info("LangFuse OpenAI wrapper not available - using direct OpenAI client")
+    logger.info(
+        "LangFuse OpenAI wrapper not available - using direct OpenAI client")
 
 
 class BaseEmbedder(ABC):
@@ -88,7 +89,8 @@ class EmbeddingGenerator(BaseEmbedder):
         self.base_url = base_url or provider_config.base_url
 
         # Initialize OpenAI client (LangFuse wrapper if available for cost tracking)
-        self.client = LangfuseAsyncOpenAI(api_key=self.api_key, base_url=self.base_url)
+        self.client = LangfuseAsyncOpenAI(
+            api_key=self.api_key, base_url=self.base_url)
 
         if self.use_cache:
             self.cache = EmbeddingCache()
@@ -125,7 +127,7 @@ class EmbeddingGenerator(BaseEmbedder):
 
         # Process in batches
         for i in range(0, len(texts), self.batch_size):
-            batch = texts[i : i + self.batch_size]
+            batch = texts[i: i + self.batch_size]
 
             # Check cache for each item in batch
             batch_embeddings: List[List[float] | None] = [None] * len(batch)
@@ -167,8 +169,9 @@ class EmbeddingGenerator(BaseEmbedder):
 
     async def embed_chunks(
         self,
-        chunks: List[Any],  # Typed as Any to avoid circular import with chunker.DocumentChunk
-        progress_callback: Optional[callable] = None,
+        # Typed as Any to avoid circular import with chunker.DocumentChunk
+        chunks: List[Any],
+        progress_callback: Optional[Callable] = None,
     ) -> List[Any]:
         """
         Generate embeddings for document chunks.
@@ -190,7 +193,8 @@ class EmbeddingGenerator(BaseEmbedder):
             chunk.embedding = embeddings[i]
             if chunk.metadata:
                 chunk.metadata["embedding_model"] = self.model_name
-                chunk.metadata["embedding_generated_at"] = datetime.now().isoformat()
+                chunk.metadata["embedding_generated_at"] = datetime.now(
+                ).isoformat()
 
         return chunks
 

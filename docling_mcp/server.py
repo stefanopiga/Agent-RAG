@@ -13,20 +13,30 @@ Architecture:
 - Health check endpoint (/health) for service status monitoring
 """
 
-import logging
-import time
-from contextlib import asynccontextmanager
-from typing import Any, AsyncGenerator
-
-from fastmcp import FastMCP
-
-from docling_mcp.lifespan import lifespan
+from utils.db_utils import get_document, list_documents
+from core.rag_service import (
+    generate_query_embedding,
+    search_with_embedding,
+)
+from fastmcp.exceptions import ToolError
+from fastmcp import Context
+from typing import Any, Dict, Optional, Set
+import json
 from docling_mcp.metrics import (
     record_db_search_time,
     record_embedding_time,
     record_request_end,
     record_request_start,
 )
+from docling_mcp.lifespan import lifespan
+from fastmcp import FastMCP
+import logging
+import time
+from contextlib import asynccontextmanager
+from typing import Any, AsyncGenerator, Callable, TypeVar
+
+F = TypeVar("F", bound=Callable[..., Any])
+
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -43,8 +53,8 @@ except ImportError:
     get_langfuse_client = None
 
     # Create no-op decorator as fallback
-    def observe(name=None, **kwargs):
-        def decorator(func):
+    def observe(name=None, **kwargs):  # type: ignore[misc]
+        def decorator(func: F) -> F:
             return func
 
         return decorator
@@ -80,10 +90,12 @@ async def langfuse_span(
         try:
             client = get_langfuse_client()
             if client is not None:
+                # type: ignore[attr-defined]
                 span = client.span(name=name, metadata=metadata or {})
                 span_context["span"] = span
         except Exception as e:
-            logger.debug(f"LangFuse span creation failed (graceful degradation): {e}")
+            logger.debug(
+                f"LangFuse span creation failed (graceful degradation): {e}")
 
     try:
         yield span_context
@@ -95,7 +107,8 @@ async def langfuse_span(
         # Update span metadata with timing
         if span is not None:
             try:
-                span.update(metadata={**(metadata or {}), "duration_ms": duration_ms})
+                span.update(metadata={**(metadata or {}),
+                            "duration_ms": duration_ms})
                 span.end()
             except Exception as e:
                 logger.debug(f"Failed to update span timing: {e}")
@@ -132,18 +145,6 @@ mcp = FastMCP("Docling RAG Agent", lifespan=lifespan)
 
 # Import and register tools using decorator
 # Tools are defined in their respective modules with @mcp.tool() applied during import
-
-import json
-from typing import Optional, Set
-
-from fastmcp import Context
-from fastmcp.exceptions import ToolError
-
-from core.rag_service import (
-    generate_query_embedding,
-    search_with_embedding,
-)
-from utils.db_utils import get_document, list_documents
 
 
 @mcp.tool()
@@ -187,7 +188,7 @@ async def query_knowledge_base(
         )
 
         if ctx:
-            ctx.info(f"Searching knowledge base for: '{query}'")
+            await ctx.info(f"Searching knowledge base for: '{query}'")
 
         # Create separate LangFuse spans for embedding and DB search (AC #2)
         # This provides granular timing breakdown in LangFuse dashboard
@@ -196,7 +197,8 @@ async def query_knowledge_base(
         async with langfuse_span(
             name="embedding-generation",
             span_type="span",
-            metadata={"query_length": len(query), "model": "text-embedding-3-small"},
+            metadata={"query_length": len(
+                query), "model": "text-embedding-3-small"},
         ) as embed_span:
             query_embedding, embedding_ms = await generate_query_embedding(query)
             if embed_span.get("span"):
@@ -220,7 +222,8 @@ async def query_knowledge_base(
             if search_span.get("span"):
                 try:
                     search_span["span"].update(
-                        metadata={"db_search_time_ms": db_ms, "results_count": len(results_list)}
+                        metadata={"db_search_time_ms": db_ms,
+                                  "results_count": len(results_list)}
                     )
                 except Exception:
                     pass
@@ -239,8 +242,9 @@ async def query_knowledge_base(
 
         response_parts = []
         for row in results["results"]:
-            title = row.get("title", "Unknown")
-            content = row.get("content", "")
+            row_dict: Dict[str, Any] = row  # type: ignore[assignment]
+            title = row_dict.get("title", "Unknown")
+            content = row_dict.get("content", "")
             response_parts.append(f"[Source: {title}]\n{content}\n")
 
         return "\n---\n".join(response_parts)
@@ -281,11 +285,12 @@ async def ask_knowledge_base(question: str, limit: int = 5, ctx: Context = None)
 
     try:
         _update_langfuse_metadata(
-            {"tool_name": tool_name, "question": question, "limit": limit, "source": "mcp"}
+            {"tool_name": tool_name, "question": question,
+                "limit": limit, "source": "mcp"}
         )
 
         if ctx:
-            ctx.info(f"Asking knowledge base: '{question}'")
+            await ctx.info(f"Asking knowledge base: '{question}'")
 
         # Create separate LangFuse spans for embedding and DB search (AC #2)
         # This provides granular timing breakdown in LangFuse dashboard
@@ -294,7 +299,8 @@ async def ask_knowledge_base(question: str, limit: int = 5, ctx: Context = None)
         async with langfuse_span(
             name="embedding-generation",
             span_type="span",
-            metadata={"question_length": len(question), "model": "text-embedding-3-small"},
+            metadata={"question_length": len(
+                question), "model": "text-embedding-3-small"},
         ) as embed_span:
             query_embedding, embedding_ms = await generate_query_embedding(question)
             if embed_span.get("span"):
@@ -316,7 +322,8 @@ async def ask_knowledge_base(question: str, limit: int = 5, ctx: Context = None)
             if search_span.get("span"):
                 try:
                     search_span["span"].update(
-                        metadata={"db_search_time_ms": db_ms, "results_count": len(results_list)}
+                        metadata={"db_search_time_ms": db_ms,
+                                  "results_count": len(results_list)}
                     )
                 except Exception:
                     pass
@@ -324,13 +331,15 @@ async def ask_knowledge_base(question: str, limit: int = 5, ctx: Context = None)
         if not results_list:
             return "I couldn't find any relevant information in the knowledge base to answer your question."
 
-        response_parts = [f"Found {len(results_list)} relevant results for your question:\n"]
+        response_parts = [
+            f"Found {len(results_list)} relevant results for your question:\n"]
 
         for i, row in enumerate(results_list, 1):
-            title = row.get("title", "Unknown")
-            source = row.get("source", "Unknown")
-            content = row.get("content", "")
-            similarity = row.get("similarity", 0)
+            row_dict: Dict[str, Any] = row  # type: ignore[assignment]
+            title = row_dict.get("title", "Unknown")
+            source = row_dict.get("source", "Unknown")
+            content = row_dict.get("content", "")
+            similarity = row_dict.get("similarity", 0)
 
             response_parts.append(
                 f"--- Result {i} (relevance: {similarity:.2%}) ---\n"
@@ -370,11 +379,12 @@ async def list_knowledge_base_documents(
 
     try:
         _update_langfuse_metadata(
-            {"tool_name": tool_name, "limit": limit, "offset": offset, "source": "mcp"}
+            {"tool_name": tool_name, "limit": limit,
+                "offset": offset, "source": "mcp"}
         )
 
         if ctx:
-            ctx.info(f"Listing documents (limit={limit}, offset={offset})")
+            await ctx.info(f"Listing documents (limit={limit}, offset={offset})")
 
         docs = await list_documents(limit, offset)
 
@@ -392,7 +402,8 @@ async def list_knowledge_base_documents(
 
     except Exception as e:
         status = "error"
-        logger.error(f"Error in list_knowledge_base_documents: {e}", exc_info=True)
+        logger.error(
+            f"Error in list_knowledge_base_documents: {e}", exc_info=True)
         raise ToolError(f"Failed to list documents: {str(e)}")
     finally:
         record_request_end(tool_name, request_start, status)
@@ -426,7 +437,7 @@ async def get_knowledge_base_document(document_id: str, ctx: Context = None) -> 
             raise ToolError("Document ID cannot be empty.")
 
         if ctx:
-            ctx.info(f"Getting document details for ID: {document_id}")
+            await ctx.info(f"Getting document details for ID: {document_id}")
 
         doc = await get_document(document_id)
 
@@ -443,7 +454,8 @@ async def get_knowledge_base_document(document_id: str, ctx: Context = None) -> 
 
         metadata = doc.get("metadata", {})
         if metadata:
-            result_parts.append(f"\nMetadata: {json.dumps(metadata, indent=2)}")
+            result_parts.append(
+                f"\nMetadata: {json.dumps(metadata, indent=2)}")
 
         content = doc.get("content", "")
         if content:
@@ -456,7 +468,8 @@ async def get_knowledge_base_document(document_id: str, ctx: Context = None) -> 
         raise
     except Exception as e:
         status = "error"
-        logger.error(f"Error in get_knowledge_base_document: {e}", exc_info=True)
+        logger.error(
+            f"Error in get_knowledge_base_document: {e}", exc_info=True)
         raise ToolError(f"Failed to get document: {str(e)}")
     finally:
         record_request_end(tool_name, request_start, status)
@@ -483,7 +496,7 @@ async def get_knowledge_base_overview(ctx: Context = None) -> str:
         _update_langfuse_metadata({"tool_name": tool_name, "source": "mcp"})
 
         if ctx:
-            ctx.info("Getting knowledge base overview")
+            await ctx.info("Getting knowledge base overview")
 
         docs = await list_documents(limit=10000)
 
@@ -518,7 +531,8 @@ async def get_knowledge_base_overview(ctx: Context = None) -> str:
                 title = doc.get("title", "Unknown")
                 source = doc.get("source", "Unknown")
                 chunks = doc.get("chunk_count", 0)
-                result_parts.append(f"  - [{source}] {title} ({chunks} chunks)")
+                result_parts.append(
+                    f"  - [{source}] {title} ({chunks} chunks)")
             if len(docs) > 20:
                 result_parts.append(f"  ... and {len(docs) - 20} more")
 
@@ -526,7 +540,8 @@ async def get_knowledge_base_overview(ctx: Context = None) -> str:
 
     except Exception as e:
         status = "error"
-        logger.error(f"Error in get_knowledge_base_overview: {e}", exc_info=True)
+        logger.error(
+            f"Error in get_knowledge_base_overview: {e}", exc_info=True)
         raise ToolError(f"Failed to get overview: {str(e)}")
     finally:
         record_request_end(tool_name, request_start, status)
