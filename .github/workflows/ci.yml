@@ -10,7 +10,7 @@ on:
     branches: [main, develop]
   push:
     branches: [main, develop]
-  workflow_dispatch:  # Permette esecuzione manuale da GitHub UI
+  workflow_dispatch: # Permette esecuzione manuale da GitHub UI
 
 # Cancel in-progress runs for the same branch
 concurrency:
@@ -159,6 +159,10 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+          verbose: true
+          # Aggiungi informazioni utili per debugging
+          override_commit: ${{ github.event.pull_request.head.sha || github.sha }}
+          override_branch: ${{ github.event.pull_request.head.ref || github.ref_name }}
 
   # ============================================================================
   # BUILD JOB

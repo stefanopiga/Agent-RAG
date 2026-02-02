@@ -2,12 +2,23 @@
 
 <div align="center">
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/stefanopiga/Agent-RAG/ci.yml?branch=main&label=build&logo=github&style=for-the-badge)](https://github.com/stefanopiga/Agent-RAG/actions)
-[![Coverage](https://img.shields.io/codecov/c/github/stefanopiga/Agent-RAG?label=coverage&logo=codecov&style=for-the-badge)](https://codecov.io/gh/stefanopiga/Agent-RAG)
-[![Version](https://img.shields.io/badge/version-0.1.0-blue?logo=semver&style=for-the-badge)](https://github.com/stefanopiga/Agent-RAG/releases)
-[![Python](https://img.shields.io/badge/python-3.10%2B-brightgreen?logo=python&logoColor=white&style=for-the-badge)](https://www.python.org/)
-[![Stars](https://img.shields.io/github/stars/stefanopiga/Agent-RAG?style=for-the-badge&logo=github)](https://github.com/stefanopiga/Agent-RAG/stargazers)
-[![Forks](https://img.shields.io/github/forks/stefanopiga/Agent-RAG?style=for-the-badge&logo=github)](https://github.com/stefanopiga/Agent-RAG/forks)
+### 🚀 Status & Quality
+
+[![Build Status](https://img.shields.io/github/actions/workflow/status/stefanopiga/Agent-RAG/ci.yml?branch=main&label=CI&logo=github&logoColor=white&style=flat-square)](https://github.com/stefanopiga/Agent-RAG/actions)
+[![Coverage](https://img.shields.io/codecov/c/github/stefanopiga/Agent-RAG?label=Coverage&logo=codecov&logoColor=white&style=flat-square)](https://codecov.io/gh/stefanopiga/Agent-RAG)
+
+### 📦 Project Info
+
+[![Version](https://img.shields.io/github/v/release/stefanopiga/Agent-RAG?label=Version&logo=semver&style=flat-square)](https://github.com/stefanopiga/Agent-RAG/releases)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white&style=flat-square)](https://www.python.org/)
+[![Documentation](https://img.shields.io/badge/Docs-MkDocs-blue?logo=readthedocs&style=flat-square)](https://stefanopiga.github.io/Agent-RAG/)
+
+### ⭐ Community
+
+[![Stars](https://img.shields.io/github/stars/stefanopiga/Agent-RAG?label=Stars&logo=github&style=flat-square)](https://github.com/stefanopiga/Agent-RAG/stargazers)
+[![Forks](https://img.shields.io/github/forks/stefanopiga/Agent-RAG?label=Forks&logo=github&style=flat-square)](https://github.com/stefanopiga/Agent-RAG/forks)
+[![Issues](https://img.shields.io/github/issues/stefanopiga/Agent-RAG?label=Issues&logo=github&style=flat-square)](https://github.com/stefanopiga/Agent-RAG/issues)
+[![Pull Requests](https://img.shields.io/github/issues-pr/stefanopiga/Agent-RAG?label=PRs&logo=github&style=flat-square)](https://github.com/stefanopiga/Agent-RAG/pulls)
 
 </div>
 
